@@ -12,10 +12,18 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Figtree', 'Inter', 'Roboto', 'Open Sans', ...defaultTheme.fontFamily.sans],
+                serif: ['Merriweather', 'Georgia', ...defaultTheme.fontFamily.serif],
+                mono: ['Fira Mono', 'Menlo', ...defaultTheme.fontFamily.mono],
+            },
+            colors: {
+                primary: '#232c5e',      // slate-900
+                secondary: '#33b1e7',    // blue-600
+                accent: '#2196f3',       // blue-500
+                text: '#ffffff',         // white
+                background: '#ffffff',   // white
             },
         },
     },
-
     plugins: [forms],
 };
