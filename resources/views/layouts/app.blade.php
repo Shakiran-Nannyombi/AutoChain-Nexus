@@ -11,26 +11,41 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
+        <!-- Scripts and Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @include('layouts.navigation')
-
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
-
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+    <body class="min-h-screen bg-gray-50">
+        <div class="flex">
+            @include('layouts.partials.sidebar')
+            
+            <div class="flex-1 flex flex-col">
+                @include('layouts.partials.header')
+                
+                <main class="flex-1 p-6">
+                    @yield('content')
+                </main>
+            </div>
         </div>
+
+        <!-- Notifications -->
+        <div id="notifications-container"></div>
+
+        <!-- Scripts -->
+        <script>
+            // Handle search
+            document.getElementById('search-form')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const query = document.getElementById('search-input').value;
+                if (query.trim()) {
+                    // Add your search logic here
+                    console.log('Searching for:', query);
+                }
+            });
+
+            // Handle logout
+            document.getElementById('logout-button')?.addEventListener('click', function() {
+                document.getElementById('logout-form').submit();
+            });
+        </script>
     </body>
 </html>

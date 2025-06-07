@@ -1,15 +1,29 @@
 body {
     font-family: 'Inter', sans-serif;
-   background-color: #ffffff;
+    background: white;
+    background-image: linear-gradient(200deg, rgba(171, 171, 171,0.05) 0%, rgba(171, 171, 171,0.05) 23%,rgba(90, 90, 90,0.05) 23%, rgba(90, 90, 90,0.05) 48%,rgba(65, 65, 65,0.05) 48%, rgba(65, 65, 65,0.05) 61%,rgba(232, 232, 232,0.05) 61%, rgba(232, 232, 232,0.05) 100%),linear-gradient(126deg, rgba(194, 194, 194,0.05) 0%, rgba(194, 194, 194,0.05) 11%,rgba(127, 127, 127,0.05) 11%, rgba(127, 127, 127,0.05) 33%,rgba(117, 117, 117,0.05) 33%, rgba(117, 117, 117,0.05) 99%,rgba(248, 248, 248,0.05) 99%, rgba(248, 248, 248,0.05) 100%),linear-gradient(144deg, rgba(64, 64, 64,0.05) 0%, rgba(64, 64, 64,0.05) 33%,rgba(211, 211, 211,0.05) 33%, rgba(211, 211, 211,0.05) 50%,rgba(53, 53, 53,0.05) 50%, rgba(53, 53, 53,0.05) 75%,rgba(144, 144, 144,0.05) 75%, rgba(144, 144, 144,0.05) 100%);
+    background-size: 400% 400%; /* Adjust size for animation */
+    animation: moveBackground 100s linear infinite;
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 100% 100%;
+    }
 }
 
 .logo img {
-    width: 50px;
-    height: 50px;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 4px ;
 }
 
 .features {
-    background: linear-gradient(rgba(33, 150, 243, 0.7), rgba(33, 150, 243, 0.9));
+    background: linear-gradient(#171d3f 50%, #171d3f 50%);
 }
 
 .swiper {
@@ -27,59 +41,27 @@ body {
 
 .slider-img {
     border-radius: 50%;
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
     margin-bottom: 1rem;
-    border: 4px solid #fff;
+    border: 4px solid #38b5ea;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-.hero {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    animation: fadeIn 1s ease-out;
-}
-
 .hero h2 {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: slideUp 0.8s ease-out 0.2s forwards;
+    opacity: 1;
+    transform: none;
 }
 
 .hero p {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: slideUp 0.8s ease-out 0.4s forwards;
+    opacity: 1;
+    transform: none;
 }
 
 .hero .flex.flex-row {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: slideUp 0.8s ease-out 0.6s forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    opacity: 1;
+    transform: none;
 }
 
 .hero a {
