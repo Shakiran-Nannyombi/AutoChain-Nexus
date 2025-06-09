@@ -1,155 +1,155 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Inventory Management</h2>
-                    <button class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
-                        Add New Item
-                    </button>
-                </div>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">Inventory Management</h2>
+        <button id="addItemButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            <span>Add Item</span>
+        </button>
+    </div>
 
-                <!-- Filters and Search -->
-                <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="relative">
-                        <input type="text" placeholder="Search items..." class="w-full px-4 py-2 border rounded-md">
-                    </div>
-                    <select class="w-full px-4 py-2 border rounded-md">
-                        <option value="">All Categories</option>
-                        <option value="raw">Raw Materials</option>
-                        <option value="finished">Finished Products</option>
-                        <option value="packaging">Packaging</option>
-                    </select>
-                    <select class="w-full px-4 py-2 border rounded-md">
-                        <option value="">All Locations</option>
-                        <option value="warehouse">Main Warehouse</option>
-                        <option value="production">Production Floor</option>
-                        <option value="shipping">Shipping Area</option>
-                    </select>
-                    <select class="w-full px-4 py-2 border rounded-md">
-                        <option value="">Stock Status</option>
-                        <option value="in_stock">In Stock</option>
-                        <option value="low_stock">Low Stock</option>
-                        <option value="out_of_stock">Out of Stock</option>
-                    </select>
-                </div>
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Total Items</h3>
+                <p class="text-3xl font-bold text-gray-900">{{ $totalItems }}</p>
+            </div>
+            <div class="text-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.368H6.622a2.25 2.25 0 01-2.247-2.368L3.75 7.5M10 11.25h4m-4 2.25h4m-4 2.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
+            </div>
+        </div>
 
-                <!-- Inventory Table -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($inventoryItems ?? [] as $item)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full" src="{{ $item->image_url }}" alt="">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $item->name }}</div>
-                                                <div class="text-sm text-gray-500">{{ $item->description }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->sku }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->category }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->location }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->quantity }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @if($item->status === 'in_stock') bg-green-100 text-green-800
-                                            @elseif($item->status === 'low_stock') bg-yellow-100 text-yellow-800
-                                            @else bg-red-100 text-red-800
-                                            @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $item->status)) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex space-x-2">
-                                            <button class="text-primary hover:text-primary-dark">Edit</button>
-                                            <button class="text-primary hover:text-primary-dark">View</button>
-                                            <button class="text-red-600 hover:text-red-900">Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                                        No inventory items found
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Low Stock Items</h3>
+                <p class="text-3xl font-bold text-orange-500">{{ $lowStockItems }}</p>
+            </div>
+        </div>
 
-                <!-- Pagination -->
-                <div class="mt-4">
-                    <nav class="flex items-center justify-between">
-                        <div class="flex-1 flex justify-between sm:hidden">
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                Previous
-                            </a>
-                            <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                Next
-                            </a>
-                        </div>
-                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                            <div>
-                                <p class="text-sm text-gray-700">
-                                    Showing
-                                    <span class="font-medium">1</span>
-                                    to
-                                    <span class="font-medium">10</span>
-                                    of
-                                    <span class="font-medium">97</span>
-                                    results
-                                </p>
-                            </div>
-                            <div>
-                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                        <span class="sr-only">Previous</span>
-                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                        </svg>
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                        1
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                        2
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                        3
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                        <span class="sr-only">Next</span>
-                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                        </svg>
-                                    </a>
-                                </nav>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Critical Items</h3>
+                <p class="text-3xl font-bold text-red-600">{{ $criticalItems }}</p>
+            </div>
+            <div class="text-red-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.368H6.622a2.25 2.25 0 01-2.247-2.368L3.75 7.5M10 11.25h4m-4 2.25h4m-4 2.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Total Value</h3>
+                <p class="text-3xl font-bold text-green-600">{{ $totalValue }}</p>
             </div>
         </div>
     </div>
+
+    <!-- Inventory Items List -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-semibold text-gray-800">Inventory Items</h3>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input type="text" placeholder="Search items..." class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 sm:text-sm">
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            @forelse($inventoryItems as $item)
+                @php
+                    $stockPercentage = ($item->max_stock > 0) ? ($item->current_stock / $item->max_stock) * 100 : 0;
+                    $status = 'normal';
+                    $statusColor = 'bg-green-100 text-green-800';
+
+                    if ($item->current_stock <= $item->critical_stock_threshold) {
+                        $status = 'critical';
+                        $statusColor = 'bg-red-100 text-red-800';
+                    } elseif ($item->current_stock <= $item->min_stock_threshold) {
+                        $status = 'low';
+                        $statusColor = 'bg-yellow-100 text-yellow-800';
+                    }
+                @endphp
+                <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between shadow-sm">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <h4 class="text-lg font-semibold text-gray-800">{{ $item->name }}</h4>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
+                                {{ ucfirst($status) }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-500">{{ $item->sku }} • {{ $item->category }}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-sm text-gray-600">
+                            <p class="font-medium">Location</p>
+                            <p>{{ $item->location }}</p>
+                        </div>
+                        <div class="w-32">
+                            <p class="text-sm text-gray-600 font-medium mb-1">Stock</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="h-2.5 rounded-full {{ $stockPercentage < 25 ? 'bg-red-500' : ($stockPercentage < 50 ? 'bg-yellow-500' : 'bg-green-500') }}" style="width: {{ $stockPercentage }}%;"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">{{ $item->current_stock }}/{{ $item->max_stock }}</p>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <p class="text-center text-gray-500 py-8">No inventory items found. Click "Add Item" to get started!</p>
+            @endforelse
+        </div>
+    </div>
 </div>
-@endsection 
+
+<x-add-item-modal/>
+
+@endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addItemButton = document.getElementById('addItemButton');
+        const addItemModal = document.getElementById('addItemModal');
+        const closeAddItemModalButton = document.getElementById('closeAddItemModal');
+        const cancelAddItemModalButton = document.getElementById('cancelAddItemModal');
+
+
+        if (addItemButton && addItemModal && closeAddItemModalButton && cancelAddItemModalButton) {
+            addItemButton.onclick = function(e) {
+                e.preventDefault();
+                addItemModal.classList.remove('hidden');
+            };
+
+            closeAddItemModalButton.onclick = function(e) {
+                e.preventDefault();
+                addItemModal.classList.add('hidden');
+            };
+
+            cancelAddItemModalButton.onclick = function(e) {
+                e.preventDefault();
+                addItemModal.classList.add('hidden');
+            };
+
+            addItemModal.addEventListener('click', function(event) {
+                if (event.target === addItemModal) {
+                    addItemModal.classList.add('hidden');
+                }
+            });
+        } else {
+            console.error('Could not find one or more elements for the Add Item modal.');
+        }
+    });
+</script>
+@endpush
