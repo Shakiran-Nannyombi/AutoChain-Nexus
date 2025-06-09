@@ -16,7 +16,7 @@
         <!-- Email Address -->
         <div class="mb-4">
             <label for="email" class="block text-black text-sm font-medium mb-1">Email Address</label>
-            <x-text-input id="email" class="block mt-1 w-full text-sm !bg-[#38b5ea] border !border-white placeholder-white-400 rounded-md shadow-sm focus:ring focus:ring-white focus:ring-opacity-50 input-text-color" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Enter your email" />
+            <x-ui.input id="email" class="block mt-1 w-full text-sm !bg-[#38b5ea] border !border-white placeholder-white-400 rounded-md shadow-sm focus:ring focus:ring-white focus:ring-opacity-50 input-text-color" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="Enter your email" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -24,7 +24,7 @@
         <div class="mb-2">
             <label for="password" class="block text-black text-sm font-medium mb-1">Password</label>
             <div class="relative">
-            <x-text-input id="password" class="block mt-1 w-full text-sm !bg-[#38b5ea] border !border-white placeholder-white-400 border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pr-10 input-text-color" type="password" name="password" required autocomplete="current-password" placeholder="Enter your password" />
+            <x-ui.input id="password" class="block mt-1 w-full text-sm !bg-[#38b5ea] border !border-white placeholder-white-400 border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity50 pr-10 input-text-color" type="password" name="password" required autocomplete="current-password" placeholder="Enter your password" />
             </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>

@@ -7,6 +7,10 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\DistributionController;
 use App\Http\Controllers\RetailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\ActivityLogController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\InventoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,75 +29,92 @@ Route::get('/', function () {
 })->name('welcome');
 
 Route::get('/register', function () {
-    return view('registration');
+    return view('auth.register');
 })->name('register');
 
 Route::get('/login', function () {
-    return view('login');
+    return view('auth.login');
 })->name('login');
 
 Route::get('/application-status', function () {
-    return view('application-status');
-})->name('application-status');
+    return view('dashboard_application_status', [
+        'user' => Auth::user(),
+    ]);
+})->middleware(['auth'])->name('application-status');
 
 // Protected Routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('index');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/admin', function () {
-        return view('admin-dashboard');
-    })->name('admin');
+    Route::get('/analyst', function () {
+        return view('pages.analyst-dashboard');
+    })->name('analyst');
 
     Route::get('/manufacturer', function () {
-        return view('manufacturer-dashboard');
+        return view('pages.manufacturer-dashboard');
     })->name('manufacturer');
 
     Route::get('/supplier', function () {
-        return view('supplier-dashboard');
+        return view('pages.supplier-dashboard');
     })->name('supplier');
 
-    Route::get('/inventory', function () {
-        return view('inventory');
-    })->name('inventory');
+    Route::get('/inventory', [App\Http\Controllers\InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory', [App\Http\Controllers\InventoryController::class, 'store'])->name('inventory.store');
 
     Route::get('/supply-chain', function () {
-        return view('supply-chain');
+        return view('pages.supply-chain');
     })->name('supply-chain');
 
     Route::get('/manufacturing', function () {
-        return view('manufacturing');
+        return view('pages.manufacturing');
     })->name('manufacturing');
 
     Route::get('/retail', function () {
-        return view('retail');
+        return view('pages.retail');
     })->name('retail');
 
     Route::get('/vendors', function () {
-        return view('vendors');
+        return view('pages.vendors');
     })->name('vendors');
 
     Route::get('/communications', function () {
-        return view('communications');
+        return view('pages.communications');
     })->name('communications');
 
     Route::get('/analytics', function () {
-        return view('analytics');
+        return view('pages.analytics');
     })->name('analytics');
 
     Route::get('/reports', function () {
-        return view('reports');
+        return view('pages.reports');
     })->name('reports');
 
     Route::get('/settings', function () {
-        return view('settings');
+        return view('pages.settings');
     })->name('settings');
 
+    // Activity Logs Route
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
     // Profile routes
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::view('/profile', 'profile.edit')
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::post('/users', [App\Http\Controllers\Admin\AdminUserController::class, 'store'])->name('users.store');
 });
 
 Route::middleware(['auth'])->prefix('supplier')->group(function () {

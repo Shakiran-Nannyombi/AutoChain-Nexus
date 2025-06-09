@@ -28,7 +28,29 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        // If user is admin, redirect to admin dashboard
+        if ($user->isAdmin()) {
+            return redirect()->route('admin');
+        }
+
+        // If user is pending, redirect to application status
+        if ($user->isPending()) {
+            return redirect()->route('application-status');
+        }
+
+        // For approved users, redirect to their role-specific dashboard
+        switch ($user->role) {
+            case 'analyst':
+                return redirect()->route('analyst');
+            case 'manufacturer':
+                return redirect()->route('manufacturer');
+            case 'supplier':
+                return redirect()->route('supplier');
+            default:
+                return redirect()->route('dashboard');
+        }
     }
 
     /**

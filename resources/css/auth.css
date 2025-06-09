@@ -1,3 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Auth-specific styles */
+.auth-container {
+    @apply min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-[#171d3f];
+}
+
+.auth-card {
+    @apply w-full sm:max-w-3xl mt-4 px-6 py-8 bg-white shadow-md overflow-hidden rounded-lg;
+}
+
+.auth-logo {
+    @apply h-16 w-auto;
+}
+
+.auth-form {
+    @apply space-y-6;
+}
+
+.auth-input {
+    @apply block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6;
+}
+
+.auth-button {
+    @apply w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary;
+}
+
 .input-text-color {
     color: #171d3f !important;
+}
+body {
+    background: #171d3f;
 }

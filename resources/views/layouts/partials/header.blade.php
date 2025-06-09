@@ -1,7 +1,7 @@
 <header class="bg-white border-b border-gray-200 px-6 py-4">
     <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
-            <h2 class="text-2xl font-semibold text-gray-900">Dashboard</h2>
+            <h2 class="text-2xl font-semibold text-gray-900">Admin Dashboard</h2>
         </div>
         
         <div class="flex items-center space-x-4">

@@ -14,11 +14,11 @@
         <!-- Scripts and Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-screen bg-gray-50">
+    <body class="min-h-screen bg-white">
         <div class="flex">
             @include('layouts.partials.sidebar')
             
-            <div class="flex-1 flex flex-col">
+            <div class="flex-1 flex flex-col overflow-y-auto">
                 @include('layouts.partials.header')
                 
                 <main class="flex-1 p-6">
@@ -47,5 +47,7 @@
                 document.getElementById('logout-form').submit();
             });
         </script>
+
+        @stack('scripts')
     </body>
 </html>

@@ -33,8 +33,8 @@
             </li>
             
             <li>
-                <a href="{{ route('inventory') }}" 
-                   class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('inventory') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                <a href="{{ route('inventory.index') }}" 
+                   class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('inventory.index') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\UserApprovalStatus;
+// use App\Mail\UserStatusNotification;
 
 class UserApprovalController extends Controller
 {
@@ -32,14 +32,14 @@ class UserApprovalController extends Controller
                 'rejection_reason' => null,
             ]);
 
-            Mail::to($user->email)->send(new UserApprovalStatus($user, true));
+            // Mail::to($user->email)->send(new UserStatusNotification($user, 'approved'));
         } else {
             $user->update([
                 'status' => 'rejected',
                 'rejection_reason' => $request->rejection_reason,
             ]);
 
-            Mail::to($user->email)->send(new UserApprovalStatus($user, false, $request->rejection_reason));
+            // Mail::to($user->email)->send(new UserStatusNotification($user, 'rejected', $request->rejection_reason));
         }
 
         return response()->json([

@@ -17,32 +17,44 @@
         <h3 class="text-lg font-semibold text-[#171d3f] mb-4">Personal Information</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-                <x-input-label for="name" :value="__('Full Name *')" class="!text-[#171d3f] text-sm"/>
-                <x-text-input id="name" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+                <x-ui.label for="name" class="!text-[#171d3f] text-sm">
+                    {{ __('Full Name *') }}
+                </x-ui.label>
+                <x-ui.input id="name" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
             <div>
-                <x-input-label for="email" :value="__('Email Address *')" class="!text-[#171d3f] text-sm"/>
-                <x-text-input id="email" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="email" name="email" :value="old('email')" required autocomplete="username" />
+                <x-ui.label for="email" class="!text-[#171d3f] text-sm">
+                    {{ __('Email Address *') }}
+                </x-ui.label>
+                <x-ui.input id="email" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="email" name="email" :value="old('email')" required autocomplete="username" />
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
             <div>
-                <x-input-label for="phone" :value="__('Phone Number *')" class="!text-[#171d3f] text-sm"/>
-                <x-text-input id="phone" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="phone" :value="old('phone')" required autocomplete="tel" />
+                <x-ui.label for="phone" class="!text-[#171d3f] text-sm">
+                    {{ __('Phone Number *') }}
+                </x-ui.label>
+                <x-ui.input id="phone" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="phone" :value="old('phone')" required autocomplete="tel" />
                 <x-input-error :messages="$errors->get('phone')" class="mt-2" />
             </div>
             <div>
-                <x-input-label for="password" :value="__('Password *')" class="!text-[#171d3f] text-sm"/>
-                <x-text-input id="password" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="password" name="password" required autocomplete="new-password" />
+                <x-ui.label for="password" class="!text-[#171d3f] text-sm">
+                    {{ __('Password *') }}
+                </x-ui.label>
+                <x-ui.input id="password" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="password" name="password" required autocomplete="new-password" />
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
             <div>
-                <x-input-label for="password_confirmation" :value="__('Confirm Password *')" class="!text-[#171d3f] text-sm"/>
-                <x-text-input id="password_confirmation" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="password" name="password_confirmation" required autocomplete="new-password" />
+                <x-ui.label for="password_confirmation" class="!text-[#171d3f] text-sm">
+                    {{ __('Confirm Password *') }}
+                </x-ui.label>
+                <x-ui.input id="password_confirmation" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="password" name="password_confirmation" required autocomplete="new-password" />
                 <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
             </div>
             <div>
-                <x-input-label for="role" :value="__('Desired Role *')" class="!text-[#171d3f] text-sm"/>
+                <x-ui.label for="role" class="!text-[#171d3f] text-sm">
+                    {{ __('Desired Role *') }}
+                </x-ui.label>
                 <select id="role" name="role" class="block mt-1 w-full text-sm text-black border-black rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
                     <option value="">Select your role</option>
                     <option value="supplier">Supplier</option>
@@ -59,12 +71,16 @@
         <h3 class="text-lg font-semibold text-[#171d3f] mb-4">Company Information</h3>
         <div class="mb-6">
              <div class="mb-4">
-                <x-input-label for="company_name" :value="__('Company Name')" class="!text-[#171d3f] text-sm"/>
-                <x-text-input id="company_name" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="company_name" :value="old('company_name')" autocomplete="organization" />
+                <x-ui.label for="company_name" class="!text-[#171d3f] text-sm">
+                    {{ __('Company Name') }}
+                </x-ui.label>
+                <x-ui.input id="company_name" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="company_name" :value="old('company_name')" autocomplete="organization" />
                 <x-input-error :messages="$errors->get('company_name')" class="mt-2" />
             </div>
             <div>
-                <x-input-label for="company_address" :value="__('Business Address')" class="!text-[#171d3f] text-sm"/>
+                <x-ui.label for="company_address" class="!text-[#171d3f] text-sm">
+                    {{ __('Business Address') }}
+                </x-ui.label>
                 <textarea id="company_address" name="company_address" class="block mt-1 w-full text-sm text-black placeholder-gray-400 border-black rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 input-text-color" autocomplete="street-address">{{ old('company_address') }}</textarea>
                 <x-input-error :messages="$errors->get('company_address')" class="mt-2" />
             </div>

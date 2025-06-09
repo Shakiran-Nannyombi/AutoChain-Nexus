@@ -16,10 +16,14 @@ class CheckApplicationStatus
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $user = Auth::user();
 
         // If user is authenticated and their status is 'pending' and they are not already on the status page
-        if ($user && $user->status === 'pending' && $request->route()->getName() !== 'application-status') {
+        if ($user->status === 'pending' && $request->route()->getName() !== 'application-status' && $user->role !== 'admin') {
             // Redirect to the application status page
             return redirect()->route('application-status');
         }

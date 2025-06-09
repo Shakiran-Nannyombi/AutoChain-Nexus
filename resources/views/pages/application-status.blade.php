@@ -5,154 +5,83 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Application Status</h2>
-                    <div class="flex space-x-2">
-                        <button class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
-                            Refresh Status
-                        </button>
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md">
-                            View Logs
-                        </button>
-                    </div>
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-semibold text-gray-900">Application Status</h2>
+                    <p class="mt-2 text-gray-600">Your application is currently under review</p>
                 </div>
 
-                <!-- System Health Overview -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">System Status</h3>
-                        <div class="mt-2 flex items-center">
-                            <span class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></span>
-                            <p class="text-lg font-semibold text-gray-900">Operational</p>
+                <div class="max-w-3xl mx-auto">
+                    <!-- Status Card -->
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    Your application is currently under review. We will notify you once it has been processed.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Response Time</h3>
-                        <p class="text-2xl font-semibold text-gray-900">{{ $responseTime ?? '120ms' }}</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Uptime</h3>
-                        <p class="text-2xl font-semibold text-gray-900">{{ $uptime ?? '99.9%' }}</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Active Users</h3>
-                        <p class="text-2xl font-semibold text-gray-900">{{ $activeUsers ?? 0 }}</p>
-                    </div>
-                </div>
 
-                <!-- System Components -->
-                <div class="bg-white p-4 rounded-lg shadow mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">System Components</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <span class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></span>
-                                <span class="text-sm font-medium text-gray-900">Database</span>
-                            </div>
-                            <span class="text-sm text-gray-500">Healthy</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <span class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></span>
-                                <span class="text-sm font-medium text-gray-900">API Services</span>
-                            </div>
-                            <span class="text-sm text-gray-500">Healthy</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <span class="h-2.5 w-2.5 rounded-full bg-yellow-500 mr-2"></span>
-                                <span class="text-sm font-medium text-gray-900">File Storage</span>
-                            </div>
-                            <span class="text-sm text-gray-500">High Usage</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <span class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></span>
-                                <span class="text-sm font-medium text-gray-900">Cache Service</span>
-                            </div>
-                            <span class="text-sm text-gray-500">Healthy</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Incidents -->
-                <div class="bg-white p-4 rounded-lg shadow mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Incidents</h3>
-                    <div class="space-y-4">
-                        <div class="border-l-4 border-yellow-500 pl-4">
-                            <div class="flex justify-between">
-                                <h4 class="text-sm font-medium text-gray-900">High CPU Usage</h4>
-                                <span class="text-sm text-gray-500">2 hours ago</span>
-                            </div>
-                            <p class="mt-1 text-sm text-gray-500">System experienced high CPU usage, affecting response times.</p>
-                        </div>
-                        <div class="border-l-4 border-red-500 pl-4">
-                            <div class="flex justify-between">
-                                <h4 class="text-sm font-medium text-gray-900">Database Connection Issues</h4>
-                                <span class="text-sm text-gray-500">1 day ago</span>
-                            </div>
-                            <p class="mt-1 text-sm text-gray-500">Temporary database connection issues resolved.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Maintenance Schedule -->
-                <div class="bg-white p-4 rounded-lg shadow mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Maintenance Schedule</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
+                    <!-- Application Details -->
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Application Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <h4 class="text-sm font-medium text-gray-900">Database Optimization</h4>
-                                <p class="text-sm text-gray-500">Scheduled for next week</p>
+                                <p class="text-sm text-gray-600">Name</p>
+                                <p class="font-medium">{{ auth()->user()->name }}</p>
                             </div>
-                            <span class="px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
-                                Scheduled
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
                             <div>
-                                <h4 class="text-sm font-medium text-gray-900">System Update</h4>
-                                <p class="text-sm text-gray-500">Planned for next month</p>
+                                <p class="text-sm text-gray-600">Email</p>
+                                <p class="font-medium">{{ auth()->user()->email }}</p>
                             </div>
-                            <span class="px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
-                                Planned
-                            </span>
+                            <div>
+                                <p class="text-sm text-gray-600">Role</p>
+                                <p class="font-medium capitalize">{{ auth()->user()->role }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Company</p>
+                                <p class="font-medium">{{ auth()->user()->company_name }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Performance Metrics -->
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Performance Metrics</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900 mb-2">CPU Usage</h4>
-                            <div class="h-2 bg-gray-200 rounded-full">
-                                <div class="h-2 bg-primary rounded-full" style="width: 65%"></div>
-                            </div>
-                            <p class="mt-1 text-sm text-gray-500">65% of capacity</p>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900 mb-2">Memory Usage</h4>
-                            <div class="h-2 bg-gray-200 rounded-full">
-                                <div class="h-2 bg-primary rounded-full" style="width: 45%"></div>
-                            </div>
-                            <p class="mt-1 text-sm text-gray-500">45% of capacity</p>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900 mb-2">Storage Usage</h4>
-                            <div class="h-2 bg-gray-200 rounded-full">
-                                <div class="h-2 bg-primary rounded-full" style="width: 80%"></div>
-                            </div>
-                            <p class="mt-1 text-sm text-gray-500">80% of capacity</p>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-900 mb-2">Network Usage</h4>
-                            <div class="h-2 bg-gray-200 rounded-full">
-                                <div class="h-2 bg-primary rounded-full" style="width: 30%"></div>
-                            </div>
-                            <p class="mt-1 text-sm text-gray-500">30% of capacity</p>
-                        </div>
+                    <!-- Next Steps -->
+                    <div class="mt-8 bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Next Steps</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <svg class="h-6 w-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <p class="font-medium">Application Review</p>
+                                    <p class="text-sm text-gray-600">Our team is reviewing your application and documents</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="h-6 w-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <p class="font-medium">Email Notification</p>
+                                    <p class="text-sm text-gray-600">You will receive an email once your application is approved</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="h-6 w-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <p class="font-medium">Access Granted</p>
+                                    <p class="text-sm text-gray-600">Upon approval, you'll have full access to your dashboard</p>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

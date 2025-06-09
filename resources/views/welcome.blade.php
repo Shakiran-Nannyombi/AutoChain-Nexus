@@ -18,54 +18,58 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="text-[#1b1b18] flex p-6 lg:p-8 lg:justify-center flex-col">
-    <main >
-        <div class="logo flex justify-center mb-8">
-            <img src="/images/logo1.png" alt="">
+<body class=" bg-[#171d3f] flex p-6 lg:p-8 lg:justify-center">
+    <main class="main w-full">
+        <!-- Logo Section -->
+        <div class="logo flex justify-center mb-28 mx-auto">
+            <img src="/images/logo1.png" alt="AutoChain Nexus Logo"
+            class="w-32 h-32 sm:w-50 sm:h-50 md:w-48 md:h-48 rounded-full border-4 border-transparent object-contain mx-auto" />
         </div>
         <!-- Hero Section -->
-        <section class="hero text-center bg-transparent">
-                <h2 class="text-5xl font-extrabold mb-8 text-[#38b5ea]" style="font-family: 'Inter', sans-serif; text-align: center;">Welcome to AutoChain Nexus</h2>
-                <p class="text-xl text-[#171d3f] mb-16 max-w-1xl mx-auto">
-                    The advanced automotive supply chain management platform for your car business needs.
-                </p>
+        <section class="hero text-center bg-transparent py-12">
+            <h2 class="text-5xl font-extrabold mb-6 text-[#38b5ea] text-center" style="font-family: 'Inter', sans-serif;">
+                Welcome to AutoChain Nexus
+            </h2>
+            <p class="text-xl text-white mb-8 max-w-2xl mx-auto text-center">
+                The advanced automotive supply chain management platform for your car business needs.
+            </p>
 
-                <!-- User Role Slider Section -->
+            <!-- User Role Slider Section -->
             <div class="container mx-auto text-center mb-8 space-x-4">
-                <h3 class="text-3xl mb-2 font-semibold text-[#171d3f]">Who Uses AutoChain Nexus?</h3>
+                <h3 class="text-3xl mb-8 font-semibold text-white">Who Uses AutoChain Nexus?</h3>
             </div>
             <!-- Swiper Slider -->
             <div class="swiper mb-8">
                 <div class="swiper-wrapper mb-8">
                     <div class="swiper-slide">
                         <img src="/images/supplier.jpg" alt="Supplier" class="slider-img">
-                        <h4 class="text-xl text-[#171d3f] font-semibold mb-1">Supplier</h4>
-                        <p class="text-[#171d3f]">Update stock, validate vendors, and manage raw material flow.</p>
+                        <h4 class="text-xl text-white font-semibold mb-1">Supplier</h4>
+                        <p class="text-white">Update stock, validate vendors, and manage raw material flow.</p>
                     </div>
                     <div class="swiper-slide">
                         <img src="/images/manufacturer.jpg" alt="Manufacturer" class="slider-img">
-                        <h4 class="text-xl text-[#171d3f] font-semibold mb-1">Manufacturer</h4>
-                        <p class="text-[#171d3f]">Track production, forecast demand, and optimize operations.</p>
+                        <h4 class="text-xl text-white font-semibold mb-1">Manufacturer</h4>
+                        <p class="text-white">Track production, forecast demand, and optimize operations.</p>
                     </div>
                     <div class="swiper-slide">
                         <img src="/images/vendor.jpg" alt="Vendor" class="slider-img">
-                        <h4 class="text-xl text-[#171d3f] font-semibold mb-1">Vendor</h4>
-                        <p class="text-[#171d3f]">Assign transport, monitor shipments, and coordinate delivery.</p>
+                        <h4 class="text-xl text-white font-semibold mb-1">Vendor</h4>
+                        <p class="text-white">Assign transport, monitor shipments, and coordinate delivery.</p>
                     </div>
                     <div class="swiper-slide">
                         <img src="/images/retailer.jpg" alt="Retailer" class="slider-img">
-                        <h4 class="text-xl text-[#171d3f] font-semibold mb-1">Retailer</h4>
-                        <p class="text-[#171d3f]">Receive inventory, record sales, and access personalized insights.</p>
+                        <h4 class="text-xl text-white font-semibold mb-1">Retailer</h4>
+                        <p class="text-white">Receive inventory, record sales, and access personalized insights.</p>
                     </div>
                     <div class="swiper-slide">
                         <img src="/images/analyst.jpg" alt="Analyst" class="slider-img">
-                        <h4 class="text-xl text-[#171d3f] font-semibold mb-1">Analyst</h4>
-                        <p class="text-[#171d3f]">Analyze trends, segment customers, and generate actionable reports.</p>
+                        <h4 class="text-xl text-white font-semibold mb-1">Analyst</h4>
+                        <p class="text-white">Analyze trends, segment customers, and generate actionable reports.</p>
                     </div>
                     <div class="swiper-slide">
                         <img src="/images/admin.jpg" alt="Admin" class="slider-img">
-                        <h4 class="text-xl text-[#171d3f] font-semibold mb-1">Admin</h4>
-                        <p class="text-[#171d3f]">Approve users, monitor system health, and oversee compliance.</p>
+                        <h4 class="text-xl text-white font-semibold mb-1">Admin</h4>
+                        <p class="text-white">Approve users, monitor system health, and oversee compliance.</p>
                     </div>
                 </div>
 
@@ -87,20 +91,20 @@
                 });
             </script>
 
-             <div class="flex justify-center mb-12 px-4 sm:px-6 lg:px-8">
-                    <div class="bg-[#38b5ea]/10 rounded-2xl shadow-lg px-6 py-8 sm:px-10 flex flex-col items-center w-full max-w-4xl">
-                        <h3 class="text-2xl font-bold mb-6 text-[#171d3f]">Get Started</h3>
-                        <div class="flex flex-col sm:flex-row gap-4 sm:gap-12 w-full justify-center items-center">
-                            <a href="{{ route('register') }}" class="bg-[#2c8ac9] text-[#f0f2f5] font-bold py-3 px-8 rounded-full hover:bg-[#2c7ad5] transition duration-300 text-lg w-full sm:w-auto text-center">Register to Create Account</a>
-                            <a href="{{ route('login') }}" class="bg-white text-[#171d2f] font-bold py-3 px-8 rounded-full hover:bg-[#e4e4e5] transition duration-300 text-lg w-full sm:w-auto text-center">Sign Into Your Account</a>
-                        </div>
+            <div class="flex justify-center px-4 sm:px-6 lg:px-8">
+                <div class="bg-[#38b5ea]/10 rounded-2xl shadow-lg px-6 py-8 sm:px-10 flex flex-col items-center w-full max-w-4xl">
+                    <h3 class="text-2xl font-bold mb-6 text-white">Get Started</h3>
+                    <div class="flex flex-col sm:flex-row gap-4 sm:gap-12 w-full justify-center items-center">
+                        <a href="{{ route('register') }}" class="bg-[#2c8ac9] text-[#f0f2f5] font-bold py-3 px-8 rounded-full hover:bg-[#2c7ad5] transition duration-300 text-lg w-full sm:w-auto text-center">Register to Create Account</a>
+                        <a href="{{ route('login') }}" class="bg-white text-[#171d2f] font-bold py-3 px-8 rounded-full hover:bg-[#e4e4e5] transition duration-300 text-lg w-full sm:w-auto text-center">Sign Into Your Account</a>
                     </div>
                 </div>
+            </div>
         </section>
-       
+
         <!-- Features Section -->
-        <section class="features py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-            <div class="container mx-auto text-center mb-8 sm:mb-12">
+        <section class="features py-6 sm:py-20 px-4 sm:px-6 lg:px-8">
+            <div class="container mx-auto text-center mb-2 sm:mb-12">
                 <h2 class="text-3xl sm:text-5xl font-bold mb-4 text-white">Key Features</h2>
                 <p class="text-base sm:text-xl text-white max-w-xl mx-auto">Everything you need for a modern, connected automotive supply chain.</p>
             </div>
