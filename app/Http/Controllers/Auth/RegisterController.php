@@ -36,7 +36,7 @@ class RegisterController extends Controller
                 'company_name' => $validated['company_name'],
                 'company_address' => $validated['company_address'],
                 'role' => $validated['role'],
-                'status' => 'pending',
+                'status' => $validated['role'] === 'admin' ? 'approved' : 'pending',
             ]);
 
             if ($request->hasFile('documents')) {

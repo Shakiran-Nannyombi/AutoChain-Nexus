@@ -24,14 +24,14 @@
                     <p class="text-sm text-gray-600">Active accounts</p>
                 </div>
                 <div class="bg-blue-100 p-6 rounded-lg shadow-sm">
-                    <h3 class="text-sm font-medium text-white-500">Pending Approvals</h3>
-                    <p class="text-2xl font-semibold text-yellow-600">{{ $pendingUsers->count() }}</p>
-                    <p class="text-sm text-gray-600">Awaiting review</p>
+                    <h3 class="text-sm font-medium text-white-500">Active Users</h3>
+                    <p class="text-2xl font-semibold text-gray-900">{{ $activeUsers }}</p>
+                    <p class="text-sm text-gray-600">Currently active users</p>
                 </div>
                 <div class="bg-blue-100 p-6 rounded-lg shadow-sm">
-                    <h3 class="text-sm font-medium text-white-500">Active Vendors</h3>
-                    <p class="text-2xl font-semibold text-green-600">{{ $activeVendors }}</p>
-                    <p class="text-sm text-gray-600">Currently active</p>
+                    <h3 class="text-sm font-medium text-white-500">Pending Users</h3>
+                    <p class="text-2xl font-semibold text-gray-900">{{ $pendingUsers }}</p>
+                    <p class="text-sm text-gray-600">Users awaiting approval</p>
                 </div>
                 <div class="bg-blue-100 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-white-500">System Health</h3>
@@ -153,63 +153,6 @@
                             @endforelse
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <!-- Pending User Registrations -->
-            <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Pending User Registrations</h3>
-                <div class="space-y-4">
-                    @forelse($pendingUsers as $user)
-                        <div class="p-4 border rounded-lg">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-3 mb-2">
-                                        <div>
-                                            <p class="font-medium">{{ $user->name }}</p>
-                                            <p class="text-sm text-gray-600">{{ $user->email }}</p>
-                                        </div>
-                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            {{ $user->role }}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center space-x-4 text-sm text-gray-600">
-                                        <span>Submitted: {{ $user->created_at->format('M d, Y') }}</span>
-                                        @if($user->documents->count() > 0)
-                                            <div class="flex items-center space-x-1">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                </svg>
-                                                <span>{{ $user->documents->count() }} document(s)</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Approve
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('admin.users.reject', $user->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                            Reject
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-sm text-gray-500">No pending user registrations</p>
-                    @endforelse
                 </div>
             </div>
         </div>

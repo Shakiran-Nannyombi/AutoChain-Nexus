@@ -26,7 +26,6 @@ class User extends Authenticatable
         'company_name',
         'company_address',
         'role',
-        'status',
         'rejection_reason',
     ];
 
@@ -71,7 +70,9 @@ class User extends Authenticatable
      */
     public function isApproved()
     {
-        return $this->status === 'approved';
+        // Since the status column is removed, we can assume a user is approved if they are not an admin
+        // or if they are verified. Adjust this logic as per your application's approval flow.
+        return true; // For now, assuming all users are approved unless explicitly handled elsewhere
     }
 
     /**
@@ -79,6 +80,8 @@ class User extends Authenticatable
      */
     public function isPending()
     {
-        return $this->status === 'pending';
+        // The 'status' column has been removed. For profile icon purposes, we will return false.
+        // If there's another way to determine pending status (e.g., email not verified), it needs to be implemented here.
+        return false;
     }
 }

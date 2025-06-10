@@ -91,7 +91,9 @@
                                 </svg>
                                 <div>
                                     <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
-                                    <p class="text-xs text-gray-500">{{ Auth::user()->role }}</p>
+                                    @if(Auth::user()->role !== 'pending')
+                                        <p class="text-xs text-gray-500">{{ Auth::user()->role }}</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>

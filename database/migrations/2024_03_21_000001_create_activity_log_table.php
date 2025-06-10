@@ -14,14 +14,11 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->string('action');
-            $table->string('description');
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('target_user_id')->nullable();
+            $table->text('description');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('target_user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->json('properties')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('target_user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
@@ -32,4 +29,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('activity_logs');
     }
-};
+}; 

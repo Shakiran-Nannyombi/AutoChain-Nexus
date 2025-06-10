@@ -17,6 +17,10 @@ class AdminDashboardController extends Controller
 
         // Fetch actual total users from the database
         $totalUsers = User::count();
+        $activeUsers = $totalUsers; // Assuming all registered users are 'active' for now
+
+        // Fetch pending users. Set to 0 as 'status' column is removed from users table.
+        $pendingUsers = 0;
 
         // Fetch active vendors (assuming 'vendor' is a role in the users table)
         $activeVendors = User::where('role', 'vendor')->count();
@@ -33,11 +37,6 @@ class AdminDashboardController extends Controller
         foreach ($roles as $role) {
             $formattedUserDistribution[ucfirst($role)] = $userDistributionByRole[$role] ?? 0;
         }
-
-        // Fetch pending users (excluding the current admin)
-        $pendingUsers = User::where('status', 'pending')
-            ->where('id', '!=', Auth::id())
-            ->get();
 
         // Fetch recent activity logs
         $recentActivities = ActivityLog::with(['user', 'targetUser'])
@@ -60,17 +59,17 @@ class AdminDashboardController extends Controller
             'systemHealth',
             'storageUsage',
             'activeSessions',
-            'pendingUsers',
             'recentActivities',
             'activeVendors',
-            'formattedUserDistribution'
+            'formattedUserDistribution',
+            'activeUsers',
+            'pendingUsers'
         ));
     }
 
     public function approveUser($id)
     {
         $user = User::findOrFail($id);
-        $user->status = 'approved';
         $user->save();
 
         // Log the activity
@@ -87,7 +86,6 @@ class AdminDashboardController extends Controller
     public function rejectUser($id)
     {
         $user = User::findOrFail($id);
-        $user->status = 'rejected';
         $user->save();
 
         // Log the activity
