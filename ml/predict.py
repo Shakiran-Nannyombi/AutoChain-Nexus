@@ -1,0 +1,1 @@
+#A simple prediction script you can call from Laravel.
