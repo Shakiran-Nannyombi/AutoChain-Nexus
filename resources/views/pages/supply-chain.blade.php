@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('content
+@section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold">Supply Chain Management</h2>
-                    <button class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
+                    <button id="newPurchaseOrderButton" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
                         New Purchase Order
                     </button>
                 </div>
@@ -23,8 +23,8 @@
                         <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $pendingDeliveries ?? 0 }}</p>
                     </div>
                     <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">On-Time Delivery</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($onTimeDelivery ?? 0, 1) }}%</p>
+                        <h3 class="text-sm font-medium text-gray-500">Active Suppliers</h3>
+                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $activeSuppliers ?? 0 }}</p>
                     </div>
                     <div class="bg-white p-4 rounded-lg shadow">
                         <h3 class="text-sm font-medium text-gray-500">Supplier Performance</h3>
@@ -64,12 +64,11 @@
                                             ${{ number_format($order->total, 2) }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                @if($order->status === 'delivered') bg-green-100 text-green-800
-                                                @elseif($order->status === 'in_transit') bg-blue-100 text-blue-800
-                                                @elseif($order->status === 'processing') bg-yellow-100 text-yellow-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{
+                                                $order->status === 'delivered' ? 'bg-green-100 text-green-800' :
+                                                ($order->status === 'in_transit' ? 'bg-blue-100 text-blue-800' :
+                                                ($order->status === 'processing' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'))
+                                            }}">
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
@@ -110,7 +109,7 @@
                                             <span class="text-sm font-medium text-gray-700">{{ number_format($supplier->performance, 1) }}%</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2">
-                                            <div class="bg-primary h-2 rounded-full" style="width: {{ $supplier->performance }}%"></div>
+                                           <div class="bg-primary h-2 rounded-full" style="width: {{ $supplier->performance }}%"></div>
                                         </div>
                                     </div>
                                 @empty
@@ -127,7 +126,7 @@
                                         <span class="text-sm font-medium text-gray-700">{{ number_format($onTimeDelivery ?? 0, 1) }}%</span>
                                     </div>
                                     <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: {{ $onTimeDelivery ?? 0 }}%"></div>
+                                      <div class="bg-primary h-2 rounded-full" style="width: {{ $onTimeDelivery ?? 0 }}%"></div>
                                     </div>
                                 </div>
                                 <div>
@@ -174,12 +173,16 @@
         </div>
     </div>
 </div>
-@endsection        if (event.target === addPurchaseOrderModal) {
-                    addPurchaseOrderModal.classList.add('hidden');
-                }
-            });
+
+<x-add-purchase-order-modal/>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addPurchaseOrderModal = document.getElementById('addPurchaseOrderModal');
+        if (addPurchaseOrderModal) {
+            addPurchaseOrderModal.classList.add('hidden');
         }
     });
 </script>
 @endpush
-@endsection

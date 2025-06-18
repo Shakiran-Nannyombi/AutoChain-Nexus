@@ -63,6 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/inventory', [App\Http\Controllers\InventoryController::class, 'store'])->name('inventory.store');
 
     Route::get('/supply-chain', [App\Http\Controllers\SupplyChainController::class, 'index'])->name('supply-chain');
+    Route::post('/purchase-orders', [App\Http\Controllers\SupplyChainController::class, 'store'])->name('purchase-orders.store');
 
     Route::get('/manufacturing', function () {
         return view('pages.manufacturing');

@@ -23,7 +23,7 @@
         <!-- Logo Section -->
         <div class="logo flex justify-center mb-28 mx-auto">
             <img src="/images/logo1.png" alt="AutoChain Nexus Logo"
-            class="w-32 h-32 sm:w-50 sm:h-50 md:w-48 md:h-48 rounded-full border-4 border-transparent object-contain mx-auto" />
+            class="w-32 h-32 sm:w-50 sm:h-50 md:w-48 md:h-48 object-contain mx-auto" />
         </div>
         <!-- Hero Section -->
         <section class="hero text-center bg-transparent py-12">

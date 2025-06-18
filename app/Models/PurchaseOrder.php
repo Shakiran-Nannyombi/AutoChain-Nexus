@@ -11,7 +11,8 @@ class PurchaseOrder extends Model
 
     protected $fillable = [
         'po_number',
-        'supplier_id',
+        'supplier_name',
+        'item_count',
         'status',
         'total',
         'expected_delivery',
@@ -25,10 +26,11 @@ class PurchaseOrder extends Model
         'quality_check_passed' => 'boolean',
     ];
 
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
+    // Removed supplier relationship as it's not directly used by the form
+    // public function supplier()
+    // {
+    //     return $this->belongsTo(Supplier::class);
+    // }
 
     public function logisticsUpdates()
     {
