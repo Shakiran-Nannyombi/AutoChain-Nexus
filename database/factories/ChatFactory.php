@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Chat;
 use App\Models\User;
-use App\Models\Order;
+use App\Models\Order\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -16,6 +16,11 @@ class CheckApplicationStatus
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Allow admin users to bypass application status check
+        if (Auth::guard('admin')->check()) {
+            return $next($request);
+        }
+
         if (!Auth::check()) {
             return redirect()->route('login');
         }

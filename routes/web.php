@@ -1,21 +1,23 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\ManufacturerController;
-use App\Http\Controllers\WarehouseController;
-use App\Http\Controllers\DistributionController;
-use App\Http\Controllers\RetailController;
+use App\Http\Controllers\Supplier\SupplierController;
+use App\Http\Controllers\Manufacturer\ManufacturerController;
+use App\Http\Controllers\Warehouse\WarehouseController;
+use App\Http\Controllers\SupplyChain\DistributionController;
+use App\Http\Controllers\Retailer\RetailController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdminDashboardController;
-use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\SupplyChainController;
+use App\Http\Controllers\Inventory\InventoryController;
+use App\Http\Controllers\SupplyChain\SupplyChainController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\AnalyticsController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Analysts\AnalyticsController;
+use App\Http\Controllers\Analysts\ReportController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\UserApprovalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,109 +43,113 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
+// Application Status Route - Accessible by authenticated users
 Route::get('/application-status', function () {
-    return view('dashboard_application_status', [
+    return view('application-status', [
         'user' => Auth::user(),
     ]);
 })->middleware(['auth'])->name('application-status');
 
-// Protected Routes
+// Protected Routes (Authenticated & Verified Users)
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Dashboard Routes (Role-based)
     Route::get('/analyst', function () {
         return view('pages.analyst-dashboard');
     })->name('analyst');
 
-    Route::get('/manufacturer', [App\Http\Controllers\ManufacturerController::class, 'index'])->name('manufacturer');
+    Route::get('/manufacturer', [ManufacturerController::class, 'index'])->name('manufacturer');
 
     Route::get('/supplier', function () {
         return view('pages.supplier-dashboard');
     })->name('supplier');
 
-    Route::get('/inventory', [App\Http\Controllers\InventoryController::class, 'index'])->name('inventory.index');
-    Route::post('/inventory', [App\Http\Controllers\InventoryController::class, 'store'])->name('inventory.store');
+    Route::get('/retail', [RetailController::class, 'index'])->name('retail');
 
-    Route::get('/supply-chain', [App\Http\Controllers\SupplyChainController::class, 'index'])->name('supply-chain');
-    Route::post('/purchase-orders', [App\Http\Controllers\SupplyChainController::class, 'store'])->name('purchase-orders.store');
+    // Inventory Management Routes
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
 
-    Route::get('/manufacturing', [App\Http\Controllers\ManufacturerController::class, 'index'])->name('manufacturing.index');
-    Route::post('/work-orders', [App\Http\Controllers\ManufacturerController::class, 'store'])->name('work-orders.store');
+    // Supply Chain Management Routes
+    Route::get('/supply-chain', [SupplyChainController::class, 'index'])->name('supply-chain');
+    Route::post('/purchase-orders', [SupplyChainController::class, 'store'])->name('purchase-orders.store');
 
-    Route::get('/retail', [App\Http\Controllers\RetailController::class, 'index'])->name('retail');
+    // Manufacturing Process Routes
+    Route::get('/manufacturing', [ManufacturerController::class, 'index'])->name('manufacturing.index');
+    Route::post('/work-orders', [ManufacturerController::class, 'store'])->name('work-orders.store');
+    Route::post('/manufacturer/checklist', [ManufacturerController::class, 'createChecklist']);
+    Route::get('/manufacturer/checklist/status', [ManufacturerController::class, 'checklistStatus']);
+    Route::post('/manufacturer/production/start', [ManufacturerController::class, 'startProduction']);
+    Route::put('/manufacturer/production/advance/{id}', [ManufacturerController::class, 'advanceProductionStage']); // Corrected method name
+    Route::post('/manufacturer/production/send/{id}', [ManufacturerController::class, 'sendToWarehouse']);
 
-    Route::get('/vendors', [App\Http\Controllers\SupplierController::class, 'index'])->name('vendors');
-    Route::post('/vendors', [App\Http\Controllers\SupplierController::class, 'store'])->name('vendors.store');
+    // Vendor Management Routes (Supplier)
+    Route::get('/vendors', [SupplierController::class, 'index'])->name('vendors');
+    Route::post('/vendors', [SupplierController::class, 'store'])->name('vendors.store');
+    Route::post('/supplier/raw-material/add', [SupplierController::class, 'addRawMaterial']);
+    Route::post('/supplier/deliver', [SupplierController::class, 'deliverRawMaterial']);
+    Route::get('/supplier/deliveries', [SupplierController::class, 'myDeliveries']);
 
-    Route::get('/communications', [App\Http\Controllers\ChatController::class, 'index'])->name('communications');
+    // Communication Routes
+    Route::get('/communications', [ChatController::class, 'index'])->name('communications');
 
-    Route::get('/analytics', [App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics');
+    // Analytics & Reports Routes
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 
-    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports');
-
-    Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
-    Route::patch('/settings', [App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
+    // Settings Routes
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
     // Activity Logs Route
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
-    // Profile routes
+    // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
-
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
-
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
+
+    // Admin Routes
+    Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard'); // Changed to dashboard to avoid conflict with /admin
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::patch('/users/{id}/approve', [UserApprovalController::class, 'approve'])->name('users.approve'); // Corrected controller and method
+        Route::patch('/users/{id}/reject', [UserApprovalController::class, 'reject'])->name('users.reject');   // Corrected controller and method
+        // Route::get('/users/{id}/documents', [AdminDashboardController::class, 'viewUserDocuments'])->name('viewUserDocuments'); // This route seems to be using a method not defined in AdminDashboardController
+        // Route::patch('/users/{id}/deactivate', [AdminDashboardController::class, 'deactivateUser'])->name('deactivateUser'); // This route seems to be using a method not defined in AdminDashboardController
+    });
+
+    // Warehouse Routes
+    Route::prefix('warehouses')->group(function () {
+        Route::get('/', [WarehouseController::class, 'index']);
+        Route::get('/{id}', [WarehouseController::class, 'show']);
+        Route::post('/create', [WarehouseController::class, 'create']); // Admin only
+        Route::post('/store-car', [WarehouseController::class, 'storeCar']);
+    });
+
+    // Distribution Routes
+    Route::prefix('distribution')->group(function () {
+        Route::post('/assign-transport', [DistributionController::class, 'assignTransport']);
+        Route::get('/track-shipment/{id}', [DistributionController::class, 'trackShipment']);
+        Route::put('/update-shipment/{id}', [DistributionController::class, 'updateShipmentStatus']);
+    });
+
+    // Retail Operations Routes
+    Route::prefix('retail')->group(function () {
+        Route::post('/receive-shipment', [RetailController::class, 'receiveShipment']);
+        Route::post('/record-purchase', [RetailController::class, 'recordPurchase']);
+    });
+
 });
 
-// Admin Routes
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin');
-    Route::patch('/admin/users/{id}/approve', [AdminDashboardController::class, 'approveUser'])->name('admin.approveUser');
-    Route::patch('/admin/users/{id}/reject', [AdminDashboardController::class, 'rejectUser'])->name('admin.rejectUser');
-    Route::get('/admin/users/{id}/documents', [AdminDashboardController::class, 'viewUserDocuments'])->name('admin.viewUserDocuments');
-    Route::patch('/admin/users/{id}/deactivate', [AdminDashboardController::class, 'deactivateUser'])->name('admin.deactivateUser');
-});
 
-// Admin Routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::post('/users', [App\Http\Controllers\Admin\AdminUserController::class, 'store'])->name('users.store');
-});
-
-Route::middleware(['auth'])->prefix('supplier')->group(function () {
-    Route::post('/raw-material/add', [SupplierController::class, 'addRawMaterial']);
-    Route::post('/deliver', [SupplierController::class, 'deliverRawMaterial']);
-    Route::get('/deliveries', [SupplierController::class, 'myDeliveries']);
-});
-
-Route::middleware(['auth'])->prefix('manufacturer')->group(function () {
-    Route::post('/checklist', [ManufacturerController::class, 'createChecklist']);
-    Route::get('/checklist/status', [ManufacturerController::class, 'checklistStatus']);
-    Route::post('/production/start', [ManufacturerController::class, 'startProduction']);
-    Route::put('/production/advance/{id}', [ManufacturerController::class, 'advanceProduction']);
-    Route::post('/production/send/{id}', [ManufacturerController::class, 'sendToWarehouse']);
-});
-
-Route::get('/warehouses', [WarehouseController::class, 'index']);
-Route::get('/warehouses/{id}', [WarehouseController::class, 'show']);
-Route::post('/warehouses/create', [WarehouseController::class, 'create']); // Admin only
-Route::post('/warehouses/store-car', [WarehouseController::class, 'storeCar']);
-
-Route::prefix('distribution')->group(function () {
-    Route::post('/assign-transport', [DistributionController::class, 'assignTransport']);
-    Route::get('/track-shipment/{id}', [DistributionController::class, 'trackShipment']);
-    Route::put('/update-shipment/{id}', [DistributionController::class, 'updateShipmentStatus']);
-});
-
-Route::prefix('retail')->group(function () {
-    Route::post('/receive-shipment', [RetailController::class, 'receiveShipment']);
-    Route::post('/record-purchase', [RetailController::class, 'recordPurchase']);
-});
-
+// Auth Routes (Laravel Breeze default)
+require __DIR__.'/auth.php';
 
 // 404 Page Route - Must be last
 Route::fallback(function () {
     return response()->view('not-found', [], 404);
 });
-
-require __DIR__.'/auth.php';

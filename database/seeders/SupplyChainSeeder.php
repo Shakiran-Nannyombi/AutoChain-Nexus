@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-// use App\Models\Shipment;
-// use App\Models\Suppliers;
+use App\Models\SupplyChain\Shipment;
+use App\Models\SupplyChain\Suppliers;
 
 class SupplyChainSeeder extends Seeder
 {

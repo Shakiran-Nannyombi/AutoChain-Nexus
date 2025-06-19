@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+use App\Models\User;
+use App\Models\Admin;
+use App\Models\ActivityLog;
+use App\Models\UserManagement\Customer;
 
 class AdminUserController extends Controller
 {

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
-use App\Models\Order;
+use App\Models\Order\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
