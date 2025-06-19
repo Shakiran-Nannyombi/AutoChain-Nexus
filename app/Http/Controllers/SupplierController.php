@@ -6,10 +6,53 @@ use Illuminate\Http\Request;
 use App\Models\RawMaterial;
 use App\Models\Delivery;
 use App\Models\Manufacturer;
+use App\Models\Suppliers;
 use Illuminate\Support\Facades\Auth;
 
 class SupplierController extends Controller
 {
+    /**
+     * Display a listing of the vendors (suppliers).
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        $headerTitle = 'Vendor Management';
+        $vendors = Suppliers::all(); // Fetch all suppliers to display as vendors
+
+        // Dummy data for overview cards - replace with real calculations if available
+        $totalVendors = Suppliers::count();
+        $activeContracts = []; // Changed from 0 to an empty array to prevent foreach error
+        $averageRating = 0; // Placeholder
+        $pendingApprovals = 0; // Placeholder
+
+        return view('pages.vendors', compact('headerTitle', 'vendors', 'totalVendors', 'activeContracts', 'averageRating', 'pendingApprovals'));
+    }
+
+    /**
+     * Store a newly created vendor (supplier) in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_email' => 'required|string|email|max:255|unique:suppliers,contact_email',
+            'contact_phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'status' => 'required|string|in:active,pending,inactive',
+        ]);
+
+        Suppliers::create($validated);
+
+        return redirect()->route('vendors')->with('success', 'Vendor added successfully!');
+    }
+
     public function addRawMaterial(Request $request)
     {
         $validated = $request->validate([

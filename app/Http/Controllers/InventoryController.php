@@ -21,7 +21,7 @@ class InventoryController extends Controller
         $totalValue = InventoryItem::select(DB::raw('SUM(current_stock * unit_price) as total_value'))
                                     ->value('total_value');
 
-        // Format totalValue to a मिलियन format if it's large
+        // Format totalValue to a format if it's large
         if ($totalValue >= 1000000) {
             $totalValue = '$' . round($totalValue / 1000000, 1) . 'M';
         } else {
@@ -29,13 +29,15 @@ class InventoryController extends Controller
         }
 
         $inventoryItems = InventoryItem::orderBy('name')->get();
+        $headerTitle = 'Inventory Dashboard';
 
         return view('pages.inventory', compact(
             'totalItems',
             'lowStockItems',
             'criticalItems',
             'totalValue',
-            'inventoryItems'
+            'inventoryItems',
+            'headerTitle'
         ));
     }
 

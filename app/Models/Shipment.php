@@ -9,6 +9,15 @@ class Shipment extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'shipment_id',
+        'origin',
+        'destination',
+        'progress',
+        'eta',
+        'status',
+    ];
+
     public function transporter()
     {
         return $this->belongsTo(Transporter::class);

@@ -12,6 +12,10 @@ use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\SupplyChainController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,15 +49,11 @@ Route::get('/application-status', function () {
 
 // Protected Routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
-
     Route::get('/analyst', function () {
         return view('pages.analyst-dashboard');
     })->name('analyst');
 
-    Route::get('/manufacturer', function () {
-        return view('pages.manufacturer-dashboard');
-    })->name('manufacturer');
+    Route::get('/manufacturer', [App\Http\Controllers\ManufacturerController::class, 'index'])->name('manufacturer');
 
     Route::get('/supplier', function () {
         return view('pages.supplier-dashboard');
@@ -65,39 +65,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/supply-chain', [App\Http\Controllers\SupplyChainController::class, 'index'])->name('supply-chain');
     Route::post('/purchase-orders', [App\Http\Controllers\SupplyChainController::class, 'store'])->name('purchase-orders.store');
 
-    Route::get('/manufacturing', function () {
-        return view('pages.manufacturing');
-    })->name('manufacturing');
+    Route::get('/manufacturing', [App\Http\Controllers\ManufacturerController::class, 'index'])->name('manufacturing.index');
+    Route::post('/work-orders', [App\Http\Controllers\ManufacturerController::class, 'store'])->name('work-orders.store');
 
-    Route::get('/retail', function () {
-        return view('pages.retail');
-    })->name('retail');
+    Route::get('/retail', [App\Http\Controllers\RetailController::class, 'index'])->name('retail');
 
-    Route::get('/vendors', function () {
-        return view('pages.vendors');
-    })->name('vendors');
+    Route::get('/vendors', [App\Http\Controllers\SupplierController::class, 'index'])->name('vendors');
+    Route::post('/vendors', [App\Http\Controllers\SupplierController::class, 'store'])->name('vendors.store');
 
-    Route::get('/communications', function () {
-        return view('pages.communications');
-    })->name('communications');
+    Route::get('/communications', [App\Http\Controllers\ChatController::class, 'index'])->name('communications');
 
-    Route::get('/analytics', function () {
-        return view('pages.analytics');
-    })->name('analytics');
+    Route::get('/analytics', [App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics');
 
-    Route::get('/reports', function () {
-        return view('pages.reports');
-    })->name('reports');
+    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports');
 
-    Route::get('/settings', function () {
-        return view('pages.settings');
-    })->name('settings');
+    Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings');
+    Route::patch('/settings', [App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
 
     // Activity Logs Route
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
     // Profile routes
-    Route::view('/profile', 'profile.edit')
+    Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
     Route::patch('/profile', [ProfileController::class, 'update'])
@@ -110,6 +99,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Admin Routes
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminDashboardController::class, 'index'])->name('admin');
+    Route::patch('/admin/users/{id}/approve', [AdminDashboardController::class, 'approveUser'])->name('admin.approveUser');
+    Route::patch('/admin/users/{id}/reject', [AdminDashboardController::class, 'rejectUser'])->name('admin.rejectUser');
+    Route::get('/admin/users/{id}/documents', [AdminDashboardController::class, 'viewUserDocuments'])->name('admin.viewUserDocuments');
+    Route::patch('/admin/users/{id}/deactivate', [AdminDashboardController::class, 'deactivateUser'])->name('admin.deactivateUser');
 });
 
 // Admin Routes

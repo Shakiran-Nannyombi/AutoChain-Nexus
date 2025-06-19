@@ -30,14 +30,14 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        // If user is admin, redirect to admin dashboard
-        if ($user->isAdmin()) {
-            return redirect()->route('admin');
-        }
-
         // If user is pending, redirect to application status
         if ($user->isPending()) {
             return redirect()->route('application-status');
+        }
+
+        // If user is admin, redirect to admin dashboard
+        if ($user->isAdmin()) {
+            return redirect()->route('admin');
         }
 
         // For approved users, redirect to their role-specific dashboard

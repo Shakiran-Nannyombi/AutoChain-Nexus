@@ -4,30 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
+use App\Models\Shipment;
+use App\Models\Suppliers;
 
 class SupplyChainController extends Controller
 {
     public function index()
     {
-        // Assuming you want to display existing purchase orders on the page
-        $purchaseOrders = PurchaseOrder::all(); // Fetch all purchase orders
-        $activeOrders = PurchaseOrder::where('status', 'processing')->count();
-        $pendingDeliveries = PurchaseOrder::where('status', 'in_transit')->count();
-        // Dummy data for now, you'd calculate these based on your logic
-        $onTimeDelivery = 95.5;
-        $supplierPerformance = 90.0;
-        $topSuppliers = [
-            (object)['name' => 'Supplier A', 'performance' => 98],
-            (object)['name' => 'Supplier B', 'performance' => 92],
-        ];
-        $qualityAcceptance = 97.0;
-        $logisticsUpdates = [
-            (object)['title' => 'Order #1234 in transit', 'description' => 'Shipped from warehouse, expected delivery tomorrow', 'timestamp' => now()->subHours(5)],
-            (object)['title' => 'Order #5678 delivered', 'description' => 'Received by customer', 'timestamp' => now()->subDays(1)],
-        ];
+        $activeShipmentsData = Shipment::all();
+        $activeShipments = Shipment::where('status', 'in-transit')->count();
+        $completedToday = Shipment::where('status', 'delivered')->whereDate('updated_at', today())->count();
 
+        $onTimeDeliveriesCount = Shipment::where('status', 'delivered')
+                                        ->whereRaw('updated_at <= expected_delivery_date') // Assuming you add expected_delivery_date to shipments table
+                                        ->count();
+        $totalDeliveriesCount = Shipment::where('status', 'delivered')->count();
+        $onTimeDelivery = $totalDeliveriesCount > 0 ? ($onTimeDeliveriesCount / $totalDeliveriesCount) * 100 : 0;
 
-        return view('pages.supply-chain', compact('purchaseOrders', 'activeOrders', 'pendingDeliveries', 'onTimeDelivery', 'supplierPerformance', 'topSuppliers', 'qualityAcceptance', 'logisticsUpdates'));
+        $activeSuppliers = Suppliers::count();
+
+        $supplierPerformanceData = Suppliers::all();
+
+        $headerTitle = 'Supply Chain Management';
+
+        return view('pages.supply-chain', compact('activeShipmentsData', 'activeShipments', 'completedToday', 'onTimeDelivery', 'activeSuppliers', 'supplierPerformanceData', 'headerTitle'));
     }
 
     public function store(Request $request)

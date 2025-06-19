@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('category')->nullable();
+            $table->float('rating')->nullable();
+            $table->integer('orders')->default(0);
+            $table->float('on_time_delivery')->nullable();
             $table->timestamps();
         });
     }

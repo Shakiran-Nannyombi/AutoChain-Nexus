@@ -9,6 +9,15 @@ class InventoryItem extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'description',
+        'current_stock',
+        'unit_price',
+        'min_stock_threshold',
+        'critical_stock_threshold',
+    ];
+
     public function car()
     {
         return $this->belongsTo(Car::class);

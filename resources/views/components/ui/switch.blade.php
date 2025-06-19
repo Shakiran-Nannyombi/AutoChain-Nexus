@@ -11,20 +11,22 @@
     $thumbClasses = 'pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0';
 @endphp
 
-<div class="flex items-center space-x-2">
+<div x-data="{ internalChecked: {{ json_encode($checked) }} }" class="flex items-center space-x-2">
     <button 
         type="button"
         role="switch"
-        aria-checked="{{ $checked ? 'true' : 'false' }}"
+        x-bind:aria-checked="internalChecked"
+        x-on:click="internalChecked = !internalChecked"
         {{ $attributes->merge([
-            'name' => $name,
             'id' => $id,
             'class' => $baseClasses . ' ' . $class,
-            'data-state' => $checked ? 'checked' : 'unchecked'
         ]) }}
+        x-bind:data-state="internalChecked ? 'checked' : 'unchecked'"
     >
-        <span class="{{ $thumbClasses }}" data-state="{{ $checked ? 'checked' : 'unchecked' }}"></span>
+        <span class="{{ $thumbClasses }}" x-bind:data-state="internalChecked ? 'checked' : 'unchecked'"></span>
     </button>
+    <input type="hidden" name="{{ $name }}" x-bind:value="internalChecked ? '1' : '0'">
+
     @if($slot->isNotEmpty())
         <label for="{{ $id }}" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             {{ $slot }}

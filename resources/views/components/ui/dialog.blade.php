@@ -1,6 +1,8 @@
 @props(['class' => ''])
 
-<div x-data="{ open: false }" {{ $attributes->merge(['class' => 'relative ' . $class]) }}>
+<div x-data="{ open: false }" {{ $attributes->merge(['class' => 'relative ' . $class]) }}
+     x-on:open-dialog.window="if ($event.detail.id === $el.id) open = true"
+     x-on:close-dialog.window="open = false">
     <div x-show="open" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -28,6 +30,8 @@
 
 @once
     @push('scripts')
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+        // Removed Alpine.js CDN as it should be managed by resources/js/app.js
+    </script>
     @endpush
 @endonce 

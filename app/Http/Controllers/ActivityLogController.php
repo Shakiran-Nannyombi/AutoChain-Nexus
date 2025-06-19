@@ -13,6 +13,8 @@ class ActivityLogController extends Controller
             ->latest()
             ->paginate(20); // Paginate for better performance
 
-        return view('pages.activity-logs', compact('activities'));
+        $headerTitle = 'Activity Log'; // Define the header title
+
+        return view('pages.activity-logs', compact('activities', 'headerTitle'));
     }
 }

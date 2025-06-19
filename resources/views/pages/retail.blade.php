@@ -1,210 +1,141 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Retail Management</h2>
-                    <button class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
-                        New Sale
-                    </button>
-                </div>
+@section('headerTitle', 'Retail Management')
 
-                <!-- Sales Overview -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Today's Sales</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">${{ number_format($todaySales ?? 0, 2) }}</p>
-                        <p class="text-sm text-gray-500 mt-1">
-                            <span class="{{ ($salesGrowth ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                {{ ($salesGrowth ?? 0) >= 0 ? '+' : '' }}{{ number_format($salesGrowth ?? 0, 1) }}%
-                            </span>
-                            vs yesterday
+@section('content')
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <!-- Monthly Sales Card -->
+        <x-ui.card class="p-4 flex items-start space-x-4 bg-white rounded-lg shadow">
+            <div class="bg-blue-100 p-3 rounded-full flex items-center justify-center">
+                <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Monthly Sales</h3>
+                <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $monthlySalesCount }}</p>
+                <p class="text-sm mt-1 @if($monthlySalesGrowth >= 0) text-green-600 @else text-red-600 @endif">
+                    {{ ($monthlySalesGrowth >= 0 ? '+' : '') }}{{ number_format($monthlySalesGrowth, 1) }}% vs last month
+                </p>
+            </div>
+        </x-ui.card>
+
+        <!-- Total Revenue Card -->
+        <x-ui.card class="p-4 flex items-start space-x-4 bg-white rounded-lg shadow">
+            <div class="bg-green-100 p-3 rounded-full flex items-center justify-center">
+                <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1L17 11.2V10a2 2 0 00-2-2h-2a2 2 0 00-2 2v.2L9.401 11C9.919 10.402 10.89 10 12 10zm0 0H5.25v2m0 4h.086l.607 1.25M7.75 8h.008M16.25 8h.008M13.75 8h.008"></path>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Total Revenue</h3>
+                <p class="mt-1 text-3xl font-semibold text-gray-900">${{ number_format($totalRevenue / 1000000, 1) }}M</p>
+                <p class="text-sm mt-1 @if($totalRevenueGrowth >= 0) text-green-600 @else text-red-600 @endif">
+                    {{ ($totalRevenueGrowth >= 0 ? '+' : '') }}{{ number_format($totalRevenueGrowth, 0) }}% growth
+                </p>
+            </div>
+        </x-ui.card>
+
+        <!-- Active Dealers Card -->
+        <x-ui.card class="p-4 flex items-start space-x-4 bg-white rounded-lg shadow">
+            <div class="bg-purple-100 p-3 rounded-full flex items-center justify-center">
+                <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H2m2 0h11.242M10 13a6 6 0 00-6 6v1a2 2 0 002 2h8a2 2 0 002-2v-1a6 6 0 00-6-6zm-3-2a3 3 0 11-6 0 3 3 0 016 0zm10-4a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Active Dealers</h3>
+                <p class="mt-1 text-3xl font-semibold text-gray-900">{{ $activeDealers }}</p>
+                <p class="text-sm mt-1 text-gray-500">Nationwide</p>
+            </div>
+        </x-ui.card>
+
+        <!-- Customer Satisfaction Card -->
+        <x-ui.card class="p-4 flex items-start space-x-4 bg-white rounded-lg shadow">
+            <div class="bg-orange-100 p-3 rounded-full flex items-center justify-center">
+                <svg class="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.085 11.085a1 1 0 011.829 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500">Customer Satisfaction</h3>
+                <p class="mt-1 text-3xl font-semibold text-gray-900">{{ number_format($customerSatisfaction, 1) }}<span class="text-yellow-400">★</span></p>
+                <p class="text-sm mt-1 @if($customerSatisfactionGrowth >= 0) text-green-600 @else text-red-600 @endif">
+                    {{ ($customerSatisfactionGrowth >= 0 ? '+' : '') }}{{ number_format($customerSatisfactionGrowth, 1) }} this quarter
+                </p>
+            </div>
+        </x-ui.card>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Sales Performance by Model -->
+        <x-ui.card class="md:col-span-2 p-6 bg-white rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Sales Performance by Model</h2>
+            <div class="space-y-6">
+                @foreach($salesPerformanceByModel as $item)
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-lg font-medium text-gray-900">{{ $item['model'] }}</span>
+                            <span class="text-lg font-semibold text-gray-900">${{ number_format($item['revenue'] / 1000000, 1) }}M</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-2">Sold: {{ $item['sold_units'] }}/{{ $item['sold_units'] + rand(5, 10) }}</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                            <div class="bg-blue-600 h-2.5 rounded-full progress-bar"
+                                 data-width="{{ $item['percentage_sold'] }}"></div>
+                        </div>
+                        <p class="text-xs @if($item['growth'] >= 0) text-green-600 @else text-red-600 @endif">
+                            {{ ($item['growth'] >= 0 ? '+' : '') }}{{ $item['growth'] }}%
                         </p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Total Orders</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalOrders ?? 0 }}</p>
-                        <p class="text-sm text-gray-500 mt-1">Today's transactions</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Average Order Value</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">${{ number_format($averageOrderValue ?? 0, 2) }}</p>
-                        <p class="text-sm text-gray-500 mt-1">Per transaction</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Customer Satisfaction</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($customerSatisfaction ?? 0, 1) }}</p>
-                        <p class="text-sm text-gray-500 mt-1">Out of 5.0</p>
-                    </div>
-                </div>
-
-                <!-- Recent Sales -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3">Recent Sales</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($recentSales ?? [] as $sale)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            #{{ $sale->order_id }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $sale->customer_name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $sale->item_count }} items
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            ${{ number_format($sale->total, 2) }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                @if($sale->status === 'completed') bg-green-100 text-green-800
-                                                @elseif($sale->status === 'processing') bg-yellow-100 text-yellow-800
-                                                @elseif($sale->status === 'cancelled') bg-red-100 text-red-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ ucfirst($sale->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $sale->date->format('M d, Y H:i') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-2">
-                                                <button class="text-primary hover:text-primary-dark">View</button>
-                                                <button class="text-primary hover:text-primary-dark">Print</button>
-                                                <button class="text-red-600 hover:text-red-900">Refund</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                                            No recent sales
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Product Performance -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3">Product Performance</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Top Selling Products</h4>
-                            <div class="space-y-4">
-                                @forelse($topProducts ?? [] as $product)
-                                    <div>
-                                        <div class="flex justify-between mb-1">
-                                            <span class="text-sm font-medium text-gray-700">{{ $product->name }}</span>
-                                            <span class="text-sm font-medium text-gray-700">{{ $product->quantity }} sold</span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-2">
-                                            <div class="bg-primary h-2 rounded-full" style="width: {{ $product->percentage }}%"></div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <p class="text-sm text-gray-500">No product data available</p>
-                                @endforelse
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Inventory Status</h4>
-                            <div class="space-y-4">
-                                @forelse($inventoryStatus ?? [] as $item)
-                                    <div>
-                                        <div class="flex justify-between mb-1">
-                                            <span class="text-sm font-medium text-gray-700">{{ $item->name }}</span>
-                                            <span class="text-sm font-medium text-gray-700">{{ $item->quantity }} in stock</span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-2">
-                                            <div class="bg-primary h-2 rounded-full" style="width: {{ $item->percentage }}%"></div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <p class="text-sm text-gray-500">No inventory data available</p>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Customer Insights -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-3">Customer Insights</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Customer Segments</h4>
-                            <div class="space-y-2">
-                                @forelse($customerSegments ?? [] as $segment)
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-sm font-medium text-gray-900">{{ $segment->name }}</span>
-                                        <span class="text-sm text-gray-500">{{ number_format($segment->percentage, 1) }}%</span>
-                                    </div>
-                                @empty
-                                    <p class="text-sm text-gray-500">No segment data available</p>
-                                @endforelse
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Purchase Frequency</h4>
-                            <div class="space-y-2">
-                                @forelse($purchaseFrequency ?? [] as $frequency)
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-sm font-medium text-gray-900">{{ $frequency->range }}</span>
-                                        <span class="text-sm text-gray-500">{{ $frequency->count }} customers</span>
-                                    </div>
-                                @empty
-                                    <p class="text-sm text-gray-500">No frequency data available</p>
-                                @endforelse
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Recent Reviews</h4>
-                            <div class="space-y-4">
-                                @forelse($recentReviews ?? [] as $review)
-                                    <div class="border-b pb-4 last:border-b-0 last:pb-0">
-                                        <div class="flex items-center mb-1">
-                                            <div class="flex items-center">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    <svg class="w-4 h-4 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                    </svg>
-                                                @endfor
-                                            </div>
-                                            <span class="ml-2 text-sm text-gray-500">{{ $review->customer_name }}</span>
-                                        </div>
-                                        <p class="text-sm text-gray-700">{{ $review->comment }}</p>
-                                        <p class="text-xs text-gray-500 mt-1">{{ $review->date->format('M d, Y') }}</p>
-                                    </div>
-                                @empty
-                                    <p class="text-sm text-gray-500">No recent reviews</p>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
-        </div>
+        </x-ui.card>
+
+        <!-- Top Performing Dealers -->
+        <x-ui.card class="p-6 bg-white rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Top Performing Dealers</h2>
+            <div class="space-y-4">
+                @foreach($topDealersData as $dealer)
+                    <div class="flex justify-between items-center py-2 border-b last:border-b-0">
+                        <div>
+                            <p class="text-lg font-medium text-gray-900">{{ $dealer['name'] }}</p>
+                            <p class="text-sm text-gray-500">{{ $dealer['location'] }}</p>
+                            <p class="text-sm text-gray-500">Sales: {{ $dealer['sales_units'] }} units</p>
+                        </div>
+                        <div class="text-right">
+                            @php
+                                $statusClass = '';
+                                if ($dealer['status'] === 'excellent') {
+                                    $statusClass = 'bg-green-100 text-green-800';
+                                } elseif ($dealer['status'] === 'good') {
+                                    $statusClass = 'bg-blue-100 text-blue-800';
+                                } elseif ($dealer['status'] === 'average') {
+                                    $statusClass = 'bg-yellow-100 text-yellow-800';
+                                } elseif ($dealer['status'] === 'warning') {
+                                    $statusClass = 'bg-red-100 text-red-800';
+                                }
+                            @endphp
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $statusClass }}">
+                                {{ ucfirst($dealer['status']) }}
+                            </span>
+                            <p class="mt-1 text-lg font-semibold text-gray-900">${{ number_format($dealer['revenue'] / 1000000, 1) }}M</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </x-ui.card>
     </div>
 </div>
-@endsection 
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.progress-bar').forEach(function(progressBar) {
+            const width = progressBar.getAttribute('data-width');
+            progressBar.style.width = (width && !isNaN(width)) ? width + '%' : '0%';
+        });
+    });
+</script>
+@endpush
+@endsection

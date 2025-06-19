@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('production_stages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('production_batch_id')->constrained('production_batches')->onDelete('cascade');
+            $table->string('stage_name'); // e.g., Frame, Engine, Interior, Paint, Quality Check
+            $table->float('target_defect_rate')->nullable();
+            $table->float('current_defect_rate')->nullable();
+            $table->string('status')->default('good'); // e.g., good, excellent, warning
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
             $table->timestamps();
         });
     }

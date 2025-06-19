@@ -9,6 +9,11 @@ class Retailer extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'location',
+    ];
+
     public function shipments()
     {
         return $this->hasMany(Shipment::class);

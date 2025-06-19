@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,13 +13,18 @@
 
         <!-- Scripts and Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Chart.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
-    <body class="min-h-screen bg-white">
-        <div class="flex">
+    <body class="h-full bg-white overflow-hidden">
+        @php
+            $headerTitle = $headerTitle ?? config('app.name', 'Dashboard');
+        @endphp
+        <div class="flex h-full">
             @include('layouts.partials.sidebar')
             
             <div class="flex-1 flex flex-col overflow-y-auto">
-                @include('layouts.partials.header')
+                @include('layouts.partials.header', ['headerTitle' => $headerTitle])
                 
                 <main class="flex-1 p-6">
                     @yield('content')

@@ -61,7 +61,7 @@
                     <option value="manufacturer">Manufacturer</option>
                     <option value="vendor">Vendor</option>
                     <option value="retailer">Retailer</option>
-                    <option value="admin">Admin</option>
+                    <option value="analyst">Analyst</option>
                 </select>
                 <x-input-error :messages="$errors->get('role')" class="mt-2" />
             </div>

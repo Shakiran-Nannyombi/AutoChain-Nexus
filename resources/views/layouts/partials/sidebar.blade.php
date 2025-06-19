@@ -19,14 +19,46 @@
                     @endif
                 </div>
             </div>
+            <div class="mt-4">
+                <a href="{{ route('profile.edit') }}"
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full justify-center">
+                    View Profile
+                </a>
+            </div>
         </div>
     @endauth
     
     <nav class="flex-1 px-4 py-6">
         <ul class="space-y-2">
             <li>
-                <a href="{{ route('dashboard') }}" 
-                   class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                @php
+                    $dashboardRoute = null;
+                    if (Auth::check()) {
+                        switch (Auth::user()->role) {
+                            case 'admin':
+                                $dashboardRoute = 'admin';
+                                break;
+                            case 'manufacturer':
+                                $dashboardRoute = 'manufacturer';
+                                break;
+                            case 'supplier':
+                                $dashboardRoute = 'supplier';
+                                break;
+                            case 'retailer':
+                                $dashboardRoute = 'retail'; // Assuming 'retail' is the route name for retailer dashboard
+                                break;
+                            case 'analyst':
+                                $dashboardRoute = 'analyst';
+                                break;
+                            // Add other roles and their dashboard routes here
+                            default:
+                                $dashboardRoute = 'application-status'; // Default for pending or unassigned roles
+                                break;
+                        }
+                    }
+                @endphp
+                <a href="{{ $dashboardRoute ? route($dashboardRoute) : '#' }}" 
+                   class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs($dashboardRoute) ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
@@ -55,8 +87,8 @@
             </li>
             
             <li>
-                <a href="{{ route('manufacturing') }}" 
-                   class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('manufacturing') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                <a href="{{ route('manufacturing.index') }}" 
+                   class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('manufacturing.index') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                     </svg>

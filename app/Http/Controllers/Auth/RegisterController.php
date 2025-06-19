@@ -23,7 +23,7 @@ class RegisterController extends Controller
                 'phone' => ['required', 'string', 'max:20'],
                 'company_name' => ['required', 'string', 'max:255'],
                 'company_address' => ['required', 'string', 'max:255'],
-                'role' => ['required', 'string', 'in:supplier,manufacturer,vendor,retailer,admin'],
+                'role' => ['required', 'string', 'in:supplier,manufacturer,vendor,retailer,analyst'],
                 'documents.*' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:51200'], // 50MB max
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
             ]);
@@ -36,7 +36,7 @@ class RegisterController extends Controller
                 'company_name' => $validated['company_name'],
                 'company_address' => $validated['company_address'],
                 'role' => $validated['role'],
-                'status' => $validated['role'] === 'admin' ? 'approved' : 'pending',
+                'status' => 'pending',
             ]);
 
             if ($request->hasFile('documents')) {
@@ -56,7 +56,7 @@ class RegisterController extends Controller
 
             event(new Registered($user));
 
-            // Redirect to the application status page after successful registration
+            // All registered users (non-admins) are redirected to the application status page
             return redirect()->route('application-status', ['id' => $user->id])->with('status', 'Registration successful! Your application is pending admin approval.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([

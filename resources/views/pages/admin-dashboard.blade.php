@@ -18,22 +18,22 @@
         <!-- Overview Tab Content -->
         <div class="p-4 rounded-lg bg-white" id="overview" role="tabpanel" aria-labelledby="overview-tab">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-                <div class="bg-blue-100 p-6 rounded-lg shadow-sm">
+                <div class="bg-blue-200 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-white-500">Total Users</h3>
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalUsers }}</p>
                     <p class="text-sm text-gray-600">Active accounts</p>
                 </div>
-                <div class="bg-blue-100 p-6 rounded-lg shadow-sm">
+                <div class="bg-green-200 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-white-500">Active Users</h3>
                     <p class="text-2xl font-semibold text-gray-900">{{ $activeUsers }}</p>
                     <p class="text-sm text-gray-600">Currently active users</p>
                 </div>
-                <div class="bg-blue-100 p-6 rounded-lg shadow-sm">
+                <div class="bg-yellow-200 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-white-500">Pending Users</h3>
                     <p class="text-2xl font-semibold text-gray-900">{{ $pendingUsers }}</p>
                     <p class="text-sm text-gray-600">Users awaiting approval</p>
                 </div>
-                <div class="bg-blue-100 p-6 rounded-lg shadow-sm">
+                <div class="bg-orange-200 p-6 rounded-lg shadow-sm">
                     <h3 class="text-sm font-medium text-white-500">System Health</h3>
                     <div class="mt-2 flex items-center">
                         <span class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></span>
@@ -91,10 +91,10 @@
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-900 border-b-2 border-primary pb-2 mb-4">User Management</h3>
                     <div class="flex space-x-2">
-                        <button id="addUserButton" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
+                        <button id="addUserButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">
                             Add User
                         </button>
-                        <a href="{{ route('activity-logs.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md">
+                        <a href="{{ route('activity-logs.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">
                             View Logs
                         </a>
                     </div>
@@ -132,16 +132,44 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $user->email_verified_at ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $user->email_verified_at ? 'Active' : 'Inactive' }}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        @if($user->status === 'pending')
+                                            bg-yellow-100 text-yellow-800
+                                        @elseif($user->status === 'approved')
+                                            bg-green-100 text-green-800
+                                        @else
+                                            bg-red-100 text-red-800
+                                        @endif
+                                    ">
+                                        {{ ucfirst($user->status) }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $user->last_active_at ? $user->last_active_at->diffForHumans() : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button class="text-primary hover:text-primary-dark mr-3">Edit</button>
-                                    <button class="text-red-600 hover:text-red-900">Delete</button>
+                                    @if($user->status === 'pending')
+                                    <form action="{{ route('admin.approveUser', $user->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('PATCH')
+                                        <x-ui.button type="submit" variant="primary" class="mr-2">Approve</x-ui.button>
+                                    </form>
+                                    <form action="{{ route('admin.rejectUser', $user->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('PATCH')
+                                        <x-ui.button type="submit" variant="destructive">Reject</x-ui.button>
+                                    </form>
+                                    <a href="{{ route('admin.viewUserDocuments', $user->id) }}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200">View Files</a>
+                                    @elseif($user->status === 'approved')
+                                    <a href="{{ route('admin.viewUserDocuments', $user->id) }}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 mr-2">View Files</a>
+                                    <form action="{{ route('admin.deactivateUser', $user->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('PATCH')
+                                        <x-ui.button type="submit" variant="destructive">Deactivate</x-ui.button>
+                                    </form>
+                                    @else
+                                    <span class="text-gray-500">No actions available</span>
+                                    @endif
                                 </td>
                             </tr>
                             @empty

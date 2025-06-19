@@ -7,10 +7,97 @@ use App\Models\Retailer;
 use App\Models\Shipment;
 use App\Models\Car;
 use App\Models\Purchase;
-
+use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
 
 class RetailController extends Controller
 {
+    public function index()
+    {
+        $headerTitle = 'Retail Dashboard';
+
+        // Monthly Sales & Total Revenue
+        $currentMonthSales = Purchase::whereYear('purchase_date', now()->year)
+                                     ->whereMonth('purchase_date', now()->month)
+                                     ->sum('price');
+        $lastMonthSales = Purchase::whereYear('purchase_date', now()->subMonth()->year)
+                                  ->whereMonth('purchase_date', now()->subMonth()->month)
+                                  ->sum('price');
+        $monthlySalesCount = Purchase::whereYear('purchase_date', now()->year)
+                                     ->whereMonth('purchase_date', now()->month)
+                                     ->count();
+
+        $monthlySalesGrowth = 0;
+        if ($lastMonthSales > 0) {
+            $monthlySalesGrowth = (($currentMonthSales - $lastMonthSales) / $lastMonthSales) * 100;
+        }
+
+        $totalRevenue = Purchase::sum('price');
+        // Assuming an overall revenue growth metric would need more historical data/targets
+        $totalRevenueGrowth = 18; // Placeholder
+
+        // Active Dealers - assuming 'retailers' table has an 'is_active' or similar field, or just count all
+        $activeDealers = Retailer::count(); // Or Retailer::where('is_active', true)->count(); if applicable
+
+        // Customer Satisfaction - placeholder, needs a dedicated reviews/ratings system
+        $customerSatisfaction = 4.7; // Placeholder
+        $customerSatisfactionGrowth = 0.2; // Placeholder
+
+        // Sales Performance by Model
+        $salesByModel = Car::select('cars.model', DB::raw('COUNT(purchases.id) as units_sold'), DB::raw('SUM(purchases.price) as revenue'))
+                           ->join('purchases', 'cars.id', '=', 'purchases.car_id')
+                           ->groupBy('cars.model')
+                           ->get();
+
+        $salesPerformanceByModel = $salesByModel->map(function ($item) {
+            $totalUnitsSold = Purchase::count(); // Total units sold across all models
+            $percentageSold = ($totalUnitsSold > 0) ? ($item->units_sold / $totalUnitsSold) * 100 : 0;
+            return [
+                'model' => $item->model,
+                'sold_units' => $item->units_sold,
+                'revenue' => $item->revenue,
+                'percentage_sold' => round($percentageSold, 1),
+                'growth' => rand(5, 20), // Placeholder for growth
+            ];
+        });
+
+        // Top Performing Dealers
+        $topPerformingDealers = Retailer::select('retailers.name', 'retailers.location', DB::raw('COUNT(purchases.id) as units_sold'), DB::raw('SUM(purchases.price) as revenue'))
+                                       ->join('purchases', 'retailers.id', '=', 'purchases.retailer_id')
+                                       ->groupBy('retailers.id', 'retailers.name', 'retailers.location')
+                                       ->orderByDesc('units_sold')
+                                       ->limit(4) // Limiting to top 4 as per image
+                                       ->get();
+
+        $topDealersData = $topPerformingDealers->map(function ($dealer) {
+            $status = 'good'; // Placeholder, would need logic for excellent/good/average/warning
+            if ($dealer->units_sold > 100) $status = 'excellent';
+            if ($dealer->units_sold < 50) $status = 'average';
+
+            return [
+                'name' => $dealer->name,
+                'location' => $dealer->location,
+                'sales_units' => $dealer->units_sold,
+                'revenue' => $dealer->revenue,
+                'status' => $status,
+            ];
+        });
+
+        return view('pages.retail', compact(
+            'headerTitle',
+            'currentMonthSales',
+            'monthlySalesGrowth',
+            'totalRevenue',
+            'totalRevenueGrowth',
+            'activeDealers',
+            'customerSatisfaction',
+            'customerSatisfactionGrowth',
+            'salesPerformanceByModel',
+            'topDealersData',
+            'monthlySalesCount'
+        ));
+    }
+
     public function receiveShipment(Request $request)
     {
         $validated = $request->validate([

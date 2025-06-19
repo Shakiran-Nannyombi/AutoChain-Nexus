@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('inventory_items', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->integer('current_stock')->default(0);
+            $table->decimal('unit_price', 8, 2)->default(0.00);
+            $table->integer('min_stock_threshold')->default(0);
+            $table->integer('critical_stock_threshold')->default(0);
             $table->timestamps();
         });
     }

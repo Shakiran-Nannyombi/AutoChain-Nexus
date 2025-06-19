@@ -9,6 +9,37 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
+    public function index()
+    {
+        $headerTitle = 'Communication Center';
+
+        // Unread Messages
+        $unreadMessages = Chat::where('receiver_id', Auth::id())
+                              ->whereNull('read_at')
+                              ->count();
+
+        // Placeholders for other overview cards
+        $pendingNotifications = 0; // To be connected to a Notification model later
+        $activeAlerts = 0; // To be connected to an Alert/ActivityLog model later
+        $responseRate = '0%'; // To be calculated based on message/response data
+
+        // Fetch chat messages for the authenticated user
+        $chats = Chat::with(['sender', 'receiver'])
+                    ->where('sender_id', Auth::id())
+                    ->orWhere('receiver_id', Auth::id())
+                    ->orderBy('timestamp', 'desc')
+                    ->get();
+
+        return view('pages.communications', compact(
+            'headerTitle',
+            'unreadMessages',
+            'pendingNotifications',
+            'activeAlerts',
+            'responseRate',
+            'chats'
+        ));
+    }
+
     public function sendMessage(Request $request)
     {
         $request->validate([

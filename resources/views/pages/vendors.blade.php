@@ -1,32 +1,43 @@
 @extends('layouts.app')
 
+@section('headerTitle', 'Vendor Management')
+
 @section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Vendor Management</h2>
-                    <button class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
-                        Add New Vendor
-                    </button>
-                </div>
 
+        <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-3xl font-semibold">Vendor Directory</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="Search vendors..." class="px-4 py-2 border rounded-md">
+                            <select class="px-4 py-2 border rounded-md">
+                                <option value="">Categories</option>
+                                <option value="raw_materials">Raw Materials</option>
+                                <option value="equipment">Equipment</option>
+                                <option value="services">Services</option>
+                            </select>
+                    <x-ui.button variant="primary" x-data="{}" x-on:click="$dispatch('open-dialog', { id: 'add-vendor-modal' })">
+                        Add New Vendor
+                    </x-ui.button>
+                        </div>
+                    </div>
+            <div class="p-6 bg-white border-b border-gray-200">
                 <!-- Vendor Overview -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="bg-pink-200 p-4 rounded-lg shadow">
                         <h3 class="text-sm font-medium text-gray-500">Total Vendors</h3>
                         <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalVendors ?? 0 }}</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="bg-blue-200 p-4 rounded-lg shadow">
                         <h3 class="text-sm font-medium text-gray-500">Active Contracts</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $activeContracts ?? 0 }}</p>
+                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ count($activeContracts) }}</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="bg-green-200 p-4 rounded-lg shadow">
                         <h3 class="text-sm font-medium text-gray-500">Average Rating</h3>
                         <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($averageRating ?? 0, 1) }}</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="bg-yellow-200 p-4 rounded-lg shadow">
                         <h3 class="text-sm font-medium text-gray-500">Pending Approvals</h3>
                         <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $pendingApprovals ?? 0 }}</p>
                     </div>
@@ -34,18 +45,7 @@
 
                 <!-- Vendor List -->
                 <div class="mb-6">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-lg font-semibold">Vendor Directory</h3>
-                        <div class="flex space-x-2">
-                            <input type="text" placeholder="Search vendors..." class="px-4 py-2 border rounded-md">
-                            <select class="px-4 py-2 border rounded-md">
-                                <option value="">All Categories</option>
-                                <option value="raw_materials">Raw Materials</option>
-                                <option value="equipment">Equipment</option>
-                                <option value="services">Services</option>
-                            </select>
-                        </div>
-                    </div>
+                    <h3 class="text-lg font-semibold mb-3">Vendor List</h3>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -121,60 +121,6 @@
                     </div>
                 </div>
 
-                <!-- Contract Management -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3">Active Contracts</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Contract Overview</h4>
-                            <div class="space-y-4">
-                                @forelse($activeContracts ?? [] as $contract)
-                                    <div class="border-b pb-4 last:border-b-0 last:pb-0">
-                                        <div class="flex justify-between items-start">
-                                            <div>
-                                                <p class="text-sm font-medium text-gray-900">{{ $contract->vendor_name }}</p>
-                                                <p class="text-xs text-gray-500">Contract #{{ $contract->number }}</p>
-                                            </div>
-                                            <span class="text-xs text-gray-500">Expires: {{ $contract->expiry_date->format('M d, Y') }}</span>
-                                        </div>
-                                        <div class="mt-2">
-                                            <div class="flex justify-between text-xs text-gray-500">
-                                                <span>Value: ${{ number_format($contract->value, 2) }}</span>
-                                                <span>Status: {{ ucfirst($contract->status) }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <p class="text-sm text-gray-500">No active contracts</p>
-                                @endforelse
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Contract Performance</h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex justify-between mb-1">
-                                        <span class="text-sm font-medium text-gray-700">On-Time Delivery</span>
-                                        <span class="text-sm font-medium text-gray-700">{{ number_format($onTimeDelivery ?? 0, 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: {{ $onTimeDelivery ?? 0 }}%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between mb-1">
-                                        <span class="text-sm font-medium text-gray-700">Quality Compliance</span>
-                                        <span class="text-sm font-medium text-gray-700">{{ number_format($qualityCompliance ?? 0, 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: {{ $qualityCompliance ?? 0 }}%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Vendor Performance -->
                 <div>
                     <h3 class="text-lg font-semibold mb-3">Vendor Performance</h3>
@@ -199,7 +145,7 @@
                                     @forelse($improvementAreas ?? [] as $area)
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm font-medium text-gray-900">{{ $area->name }}</span>
-                                            <span class="text-sm text-gray-500">{{ number_format($area->score, 1) }}%</span>
+                                            <span class="text-sm text-gray-500">{{ number_format($area->value, 1) }}%</span>
                                         </div>
                                     @empty
                                         <p class="text-sm text-gray-500">No improvement areas identified</p>
@@ -227,4 +173,17 @@
         </div>
     </div>
 </div>
-@endsection 
+
+<x-add-vendor-modal />
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('vendorPage', () => ({
+            openAddVendorModal() {
+                this.$dispatch('open-dialog', { id: 'add-vendor-modal' });
+            },
+            // Any other Alpine.js logic for the vendors page can go here
+        }));
+    });
+</script>
+@endsection

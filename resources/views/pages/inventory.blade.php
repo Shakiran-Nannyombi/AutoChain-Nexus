@@ -2,19 +2,9 @@
 
 @section('content')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-bold text-gray-800">Inventory Management</h2>
-        <button id="addItemButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-            </svg>
-            <span>Add Item</span>
-        </button>
-    </div>
-
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+        <div class="bg-gray-100 rounded-lg shadow p-6 flex items-center justify-between">
             <div>
                 <h3 class="text-sm font-medium text-gray-500">Total Items</h3>
                 <p class="text-3xl font-bold text-gray-900">{{ $totalItems }}</p>
@@ -26,14 +16,14 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+        <div class="bg-gray-100 rounded-lg shadow p-6 flex items-center justify-between">
             <div>
                 <h3 class="text-sm font-medium text-gray-500">Low Stock Items</h3>
                 <p class="text-3xl font-bold text-orange-500">{{ $lowStockItems }}</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+        <div class="bg-gray-100 rounded-lg shadow p-6 flex items-center justify-between">
             <div>
                 <h3 class="text-sm font-medium text-gray-500">Critical Items</h3>
                 <p class="text-3xl font-bold text-red-600">{{ $criticalItems }}</p>
@@ -45,7 +35,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
+        <div class="bg-gray-100 rounded-lg shadow p-6 flex items-center justify-between">
             <div>
                 <h3 class="text-sm font-medium text-gray-500">Total Value</h3>
                 <p class="text-3xl font-bold text-green-600">{{ $totalValue }}</p>
@@ -53,10 +43,28 @@
         </div>
     </div>
 
+    <div class="flex flex-row justify-between items-center">
+    <div class=" mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Inventory Overview</h2>
+    </div>
+
+    <!-- Add Item Button -->
+     <div class="flex mb-8">
+        {{-- The header is now dynamically set via $headerTitle in the controller and rendered by layouts.partials.header --}}
+        <button id="addItemButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            <span>Add Item</span>
+        </button>
+    </div>
+    </div>
+    
+
     <!-- Inventory Items List -->
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-2xl font-semibold text-gray-800">Inventory Items</h3>
+            <h3 class="text-xl font-semibold text-gray-800">Inventory Items</h3>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -69,26 +77,23 @@
 
         <div class="space-y-4">
             @forelse($inventoryItems as $item)
-                @php
-                    $stockPercentage = ($item->max_stock > 0) ? ($item->current_stock / $item->max_stock) * 100 : 0;
-                    $status = 'normal';
-                    $statusColor = 'bg-green-100 text-green-800';
-
-                    if ($item->current_stock <= $item->critical_stock_threshold) {
-                        $status = 'critical';
-                        $statusColor = 'bg-red-100 text-red-800';
-                    } elseif ($item->current_stock <= $item->min_stock_threshold) {
-                        $status = 'low';
-                        $statusColor = 'bg-yellow-100 text-yellow-800';
-                    }
-                @endphp
                 <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between shadow-sm">
                     <div class="flex-1">
                         <div class="flex items-center space-x-2">
                             <h4 class="text-lg font-semibold text-gray-800">{{ $item->name }}</h4>
-                            <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
-                                {{ ucfirst($status) }}
-                            </span>
+                            @if($item->current_stock <= $item->critical_stock_threshold)
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Critical
+                                </span>
+                            @elseif($item->current_stock <= $item->min_stock_threshold)
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Low
+                                </span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Normal
+                                </span>
+                            @endif
                         </div>
                         <p class="text-sm text-gray-500">{{ $item->sku }} • {{ $item->category }}</p>
                     </div>
@@ -100,7 +105,16 @@
                         <div class="w-32">
                             <p class="text-sm text-gray-600 font-medium mb-1">Stock</p>
                             <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                <div class="h-2.5 rounded-full {{ $stockPercentage < 25 ? 'bg-red-500' : ($stockPercentage < 50 ? 'bg-yellow-500' : 'bg-green-500') }}" style="width: {{ $stockPercentage }}%;"></div>
+                                @php
+                                    $stockPercentage = ($item->max_stock > 0) ? ($item->current_stock / $item->max_stock) * 100 : 0;
+                                @endphp
+                                @if($stockPercentage < 25)
+                                    <div class="h-2.5 rounded-full bg-red-500 stock-bar" data-width="{{ $stockPercentage }}"></div>
+                                @elseif($stockPercentage < 50)
+                                    <div class="h-2.5 rounded-full bg-yellow-500 stock-bar" data-width="{{ $stockPercentage }}"></div>
+                                @else
+                                    <div class="h-2.5 rounded-full bg-green-500 stock-bar" data-width="{{ $stockPercentage }}"></div>
+                                @endif
                             </div>
                             <p class="text-xs text-gray-500 mt-1">{{ $item->current_stock }}/{{ $item->max_stock }}</p>
                         </div>
@@ -120,11 +134,11 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Handle modal functionality
         const addItemButton = document.getElementById('addItemButton');
         const addItemModal = document.getElementById('addItemModal');
         const closeAddItemModalButton = document.getElementById('closeAddItemModal');
         const cancelAddItemModalButton = document.getElementById('cancelAddItemModal');
-
 
         if (addItemButton && addItemModal && closeAddItemModalButton && cancelAddItemModalButton) {
             addItemButton.onclick = function(e) {
@@ -150,6 +164,13 @@
         } else {
             console.error('Could not find one or more elements for the Add Item modal.');
         }
+
+        // Handle stock bar widths with JavaScript instead of inline styles
+        const stockBars = document.querySelectorAll('.stock-bar');
+        stockBars.forEach(function(bar) {
+            const width = bar.dataset.width;
+            bar.style.width = width + '%';
+        });
     });
 </script>
 @endpush

@@ -1,180 +1,142 @@
 @extends('layouts.app')
 
+@section('headerTitle', 'Supply Chain Management')
+
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 bg-white border-b border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-semibold">Supply Chain Management</h2>
-                    <button id="newPurchaseOrderButton" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">
-                        New Purchase Order
-                    </button>
-                </div>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Supply Chain Overview -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-pink-200 p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-700">Active Shipments</h3>
+        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $activeShipments ?? 0 }}</p>
+    </div>
+    <div class="bg-orange-200 p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-700">On-Time Delivery</h3>
+        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($onTimeDelivery ?? 0, 1) }}%</p>
+    </div>
+    <div class="bg-blue-200 p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-700">Active Suppliers</h3>
+        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $activeSuppliers ?? 0 }}</p>
+    </div>
+    <div class="bg-green-200 p-4 rounded-lg shadow">
+        <h3 class="text-sm font-medium text-gray-700">Completed Today</h3>
+        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $completedToday ?? 0 }}</p>
+    </div>
+</div>
 
-                <!-- Supply Chain Overview -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Active Orders</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $activeOrders ?? 0 }}</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Pending Deliveries</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $pendingDeliveries ?? 0 }}</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Active Suppliers</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ $activeSuppliers ?? 0 }}</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Supplier Performance</h3>
-                        <p class="mt-2 text-3xl font-semibold text-gray-900">{{ number_format($supplierPerformance ?? 0, 1) }}%</p>
-                    </div>
-                </div>
+<div class="flex flex-row justify-between items-center">
+    <div class=" mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Supply Chain Overview</h2>
+    </div>
 
-                <!-- Purchase Orders -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3">Recent Purchase Orders</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PO Number</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Delivery</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse($purchaseOrders ?? [] as $order)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            #{{ $order->po_number }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $order->supplier_name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $order->item_count }} items
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            ${{ number_format($order->total, 2) }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{
-                                                $order->status === 'delivered' ? 'bg-green-100 text-green-800' :
-                                                ($order->status === 'in_transit' ? 'bg-blue-100 text-blue-800' :
-                                                ($order->status === 'processing' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'))
-                                            }}">
-                                                {{ ucfirst($order->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $order->expected_delivery->format('M d, Y') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-2">
-                                                <button class="text-primary hover:text-primary-dark">View</button>
-                                                <button class="text-primary hover:text-primary-dark">Track</button>
-                                                <button class="text-red-600 hover:text-red-900">Cancel</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                                            No purchase orders found
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<!-- Add Purchase Order Button -->
+ <div class="flex justify-between items-center mb-6">
+    <button id="newPurchaseOrderButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">
+        New Purchase Order
+    </button>
+</div>
+</div>
 
-                <!-- Supplier Performance -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3">Supplier Performance</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Top Suppliers</h4>
-                            <div class="space-y-4">
-                                @forelse($topSuppliers ?? [] as $supplier)
-                                    <div>
-                                        <div class="flex justify-between mb-1">
-                                            <span class="text-sm font-medium text-gray-700">{{ $supplier->name }}</span>
-                                            <span class="text-sm font-medium text-gray-700">{{ number_format($supplier->performance, 1) }}%</span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-2">
-                                           <div class="bg-primary h-2 rounded-full" style="width: {{ $supplier->performance }}%"></div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <p class="text-sm text-gray-500">No supplier data available</p>
-                                @endforelse
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg shadow">
-                            <h4 class="text-sm font-medium text-gray-500 mb-2">Performance Metrics</h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex justify-between mb-1">
-                                        <span class="text-sm font-medium text-gray-700">On-Time Delivery</span>
-                                        <span class="text-sm font-medium text-gray-700">{{ number_format($onTimeDelivery ?? 0, 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                      <div class="bg-primary h-2 rounded-full" style="width: {{ $onTimeDelivery ?? 0 }}%"></div>
-                                    </div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Active Shipments Table -->
+    <div class="md:col-span-2 mb-6">
+        <h3 class="text-lg font-semibold mb-3">Active Shipments</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shipment ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin -> Destination</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($activeShipmentsData ?? [] as $shipment)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $shipment->shipment_id }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $shipment->origin }} -> {{ $shipment->destination }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full progress-bar" data-width="{{ $shipment->progress }}"></div>
                                 </div>
-                                <div>
-                                    <div class="flex justify-between mb-1">
-                                        <span class="text-sm font-medium text-gray-700">Quality Acceptance</span>
-                                        <span class="text-sm font-medium text-gray-700">{{ number_format($qualityAcceptance ?? 0, 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-primary h-2 rounded-full" style="width: {{ $qualityAcceptance ?? 0 }}%"></div>
-                                    </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $shipment->eta }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($shipment->status === 'delivered')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ ucfirst($shipment->status) }}
+                                    </span>
+                                @elseif($shipment->status === 'in-transit')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ ucfirst($shipment->status) }}
+                                    </span>
+                                @elseif($shipment->status === 'pending')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ ucfirst($shipment->status) }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ ucfirst($shipment->status) }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">View</button>
+                                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md flex items-center space-x-2 transition duration-200">Update</button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                                No active shipments found
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-                <!-- Logistics Tracking -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-3">Logistics Tracking</h3>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <div class="space-y-4">
-                            @forelse($logisticsUpdates ?? [] as $update)
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">{{ $update->title }}</p>
-                                        <p class="text-sm text-gray-500">{{ $update->description }}</p>
-                                        <p class="text-xs text-gray-400 mt-1">{{ $update->timestamp->format('M d, Y H:i') }}</p>
-                                    </div>
-                                </div>
-                            @empty
-                                <p class="text-sm text-gray-500">No recent logistics updates</p>
-                            @endforelse
-                        </div>
+    <!-- Supplier Performance -->
+    <div class="md:col-span-1 mb-6">
+        <h3 class="text-lg font-semibold mb-3">Supplier Performance</h3>
+        <div class="space-y-4">
+            @forelse($supplierPerformanceData ?? [] as $supplier)
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium text-gray-700">{{ $supplier->name }}</span>
+                        <span class="text-sm font-medium text-gray-700">{{ number_format($supplier->rating, 1) }} ★</span>
+                    </div>
+                    <p class="text-xs text-gray-500">{{ $supplier->category }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ $supplier->orders }} orders</p>
+                    <div class="flex justify-between mt-2">
+                        <span class="text-sm text-gray-500">On-time delivery</span>
+                        <span class="text-sm font-medium text-gray-700">{{ number_format($supplier->on_time_delivery, 1) }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div class="bg-blue-600 h-2 rounded-full progress-bar" data-width="{{ $supplier->on_time_delivery }}"></div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <p class="text-sm text-gray-500">No supplier data available</p>
+            @endforelse
         </div>
     </div>
 </div>
 
 <x-add-purchase-order-modal/>
+@endsection
 
 @push('scripts')
 <script>
@@ -183,6 +145,13 @@
         if (addPurchaseOrderModal) {
             addPurchaseOrderModal.classList.add('hidden');
         }
+
+        // Handle progress bar widths with JavaScript
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(function(bar) {
+            const width = bar.dataset.width;
+            bar.style.width = width + '%';
+        });
     });
 </script>
 @endpush
