@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
+use App\Providers\RouteServiceProvider;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -24,40 +26,50 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        Log::info('AuthenticatedSessionController@store method entered.');
         $request->authenticate();
-
-        $request->session()->regenerate();
 
         // Check if an admin user has been authenticated
         if (Auth::guard('admin')->check()) {
-            return redirect()->route('admin');
+            Log::info('Admin guard checked and returned true.');
+            Log::info('Authenticated Admin User ID: ' . Auth::guard('admin')->id());
+            Log::info('Redirecting admin to: ' . route('admin.dashboard'));
+            $request->session()->regenerate();
+            return redirect()->route('admin.dashboard');
         }
 
         // If not an admin, proceed with regular user checks
         $user = Auth::user();
+        Log::info('Regular user login attempt for: ' . ($user ? $user->email : 'N/A'));
 
         // Check if the authenticated user is an instance of the User model
         if ($user instanceof \App\Models\User) {
             // If user is pending, redirect to application status
             if ($user->isPending()) {
+                Log::info('Redirecting pending user to: ' . route('application-status'));
+                $request->session()->regenerate();
                 return redirect()->route('application-status');
             }
 
             // For approved users, redirect to their role-specific dashboard
             switch ($user->role) {
                 case 'analyst':
+                    $request->session()->regenerate();
                     return redirect()->route('analyst');
                 case 'manufacturer':
+                    $request->session()->regenerate();
                     return redirect()->route('manufacturer');
                 case 'supplier':
+                    $request->session()->regenerate();
                     return redirect()->route('supplier');
                 default:
+                    $request->session()->regenerate();
                     return redirect()->route('dashboard');
             }
         }
-
-        // Fallback for any other unhandled authenticated user type
-        return redirect()->route('dashboard'); // Or a more appropriate default route
+        Log::info('No specific redirection for user. Proceeding with default Laravel user redirection.');
+        $request->session()->regenerate();
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 
     /**
