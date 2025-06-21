@@ -6,46 +6,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'phone',
-        'company_name',
-        'company_address',
-        'role',
-        'rejection_reason',
-        'bio',
-        'email_notifications',
-        'inventory_alerts',
-        'production_updates',
-        'vendor_communications',
-        'report_generation',
-        'two_factor_authentication',
-        'time_zone',
-        'language',
-        'date_format',
-        'dark_mode',
-        'auto_refresh_dashboard',
         'status',
+        'role',
+        'phone',
+        'company',
+        'address',
+        'profile_picture',
+        'supporting_documents',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -53,53 +41,16 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'email_notifications' => 'boolean',
-        'inventory_alerts' => 'boolean',
-        'production_updates' => 'boolean',
-        'vendor_communications' => 'boolean',
-        'report_generation' => 'boolean',
-        'two_factor_authentication' => 'boolean',
-        'dark_mode' => 'boolean',
-        'auto_refresh_dashboard' => 'boolean',
-        'status' => 'string',
-    ];
-
-    /**
-     * Get the documents associated with the user.
-     */
-    public function documents()
+    protected function casts(): array
     {
-        return $this->hasMany(UserDocument::class);
-    }
-
-    /**
-     * Check if the user is an admin.
-     */
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
-    /**
-     * Check if the user is approved.
-     */
-    public function isApproved()
-    {
-        return $this->status === 'approved';
-    }
-
-    /**
-     * Check if the user is pending.
-     */
-    public function isPending()
-    {
-        return $this->status === 'pending';
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'supporting_documents' => 'array',
+        ];
     }
 }

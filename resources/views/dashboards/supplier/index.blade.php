@@ -1,0 +1,205 @@
+@extends('layouts.dashboard')
+
+@section('sidebar-content')
+    <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="/supplier/dashboard" class="nav-item active">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/supplier/inventory" class="nav-item">
+            <i class="fas fa-warehouse"></i> Inventory
+        </a>
+        <a href="/supplier/orders" class="nav-item">
+            <i class="fas fa-shopping-cart"></i> Orders
+        </a>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-section-title">Supply Chain</div>
+        <a href="/supplier/manufacturers" class="nav-item">
+            <i class="fas fa-industry"></i> Manufacturers
+        </a>
+        <a href="/supplier/shipments" class="nav-item">
+            <i class="fas fa-shipping-fast"></i> Shipments
+        </a>
+        <a href="/supplier/supplies" class="nav-item">
+            <i class="fas fa-boxes"></i> Supplies
+        </a>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-section-title">Reports</div>
+        <a href="/supplier/reports/inventory" class="nav-item">
+            <i class="fas fa-chart-bar"></i> Inventory Reports
+        </a>
+        <a href="/supplier/reports/sales" class="nav-item">
+            <i class="fas fa-chart-line"></i> Sales Reports
+        </a>
+        <a href="/supplier/reports/supply" class="nav-item">
+            <i class="fas fa-chart-pie"></i> Supply Reports
+        </a>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-section-title">Settings</div>
+        <a href="/supplier/profile" class="nav-item">
+            <i class="fas fa-user"></i> Profile
+        </a>
+        <a href="/supplier/settings" class="nav-item">
+            <i class="fas fa-cog"></i> Settings
+        </a>
+    </div>
+@endsection
+
+@section('content')
+    @php
+        $title = 'Supplier Dashboard';
+    @endphp
+
+    <div class="content-card">
+        <h2 style="color: var(--deep-purple); margin-bottom: 1.5rem; font-size: 1.8rem;">
+            <i class="fas fa-truck"></i> Supplier Dashboard
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Quick Stats -->
+            <div style="background: linear-gradient(135deg, var(--deep-purple), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $activeSupplies ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Active Supplies</div>
+                    </div>
+                    <i class="fas fa-boxes" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, var(--maroon), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $pendingOrders ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Pending Orders</div>
+                    </div>
+                    <i class="fas fa-clock" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, var(--blue), var(--light-cyan)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $activeShipments ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Active Shipments</div>
+                    </div>
+                    <i class="fas fa-shipping-fast" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $monthlyRevenue ?? '$0' }}</div>
+                        <div style="opacity: 0.9;">Monthly Revenue</div>
+                    </div>
+                    <i class="fas fa-dollar-sign" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="margin-bottom: 2rem;">
+            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
+                <i class="fas fa-bolt"></i> Quick Actions
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="/supplier/supplies/create" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                    <i class="fas fa-plus" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                    <div style="font-weight: 600;">Add New Supply</div>
+                </a>
+                
+                <a href="/supplier/orders" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                    <i class="fas fa-shopping-cart" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                    <div style="font-weight: 600;">View Orders</div>
+                </a>
+                
+                <a href="/supplier/shipments" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                    <i class="fas fa-shipping-fast" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                    <div style="font-weight: 600;">Track Shipments</div>
+                </a>
+                
+                <a href="/supplier/inventory" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                    <i class="fas fa-warehouse" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                    <div style="font-weight: 600;">Check Inventory</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div style="margin-bottom: 2rem;">
+            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
+                <i class="fas fa-shopping-cart"></i> Recent Orders
+            </h3>
+            <div style="background: var(--gray); padding: 1rem; border-radius: 8px;">
+                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd;">
+                    <i class="fas fa-clock" style="color: var(--orange);"></i>
+                    <div>
+                        <div style="font-weight: 600;">Order #SUP-001</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7;">Raw Materials - Steel</div>
+                    </div>
+                    <div style="margin-left: auto; font-size: 0.9rem; opacity: 0.7;">Pending</div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd;">
+                    <i class="fas fa-check-circle" style="color: var(--blue);"></i>
+                    <div>
+                        <div style="font-weight: 600;">Order #SUP-002</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7;">Electronics - Chips</div>
+                    </div>
+                    <div style="margin-left: auto; font-size: 0.9rem; opacity: 0.7;">Delivered</div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0;">
+                    <i class="fas fa-shipping-fast" style="color: var(--maroon);"></i>
+                    <div>
+                        <div style="font-weight: 600;">Order #SUP-003</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7;">Plastics - Resin</div>
+                    </div>
+                    <div style="margin-left: auto; font-size: 0.9rem; opacity: 0.7;">In Transit</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipment Status -->
+        <div>
+            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
+                <i class="fas fa-shipping-fast"></i> Active Shipments
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div style="background: var(--white); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--orange);">
+                    <div style="font-weight: 600; color: var(--deep-purple);">Shipment #SHP-001</div>
+                    <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem;">Raw Materials to Factory A</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 0.9rem;">ETA: 2 days</div>
+                        <div style="background: var(--orange); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">In Transit</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--white); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--blue);">
+                    <div style="font-weight: 600; color: var(--deep-purple);">Shipment #SHP-002</div>
+                    <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem;">Electronics to Factory B</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 0.9rem;">ETA: Today</div>
+                        <div style="background: var(--blue); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Out for Delivery</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--white); padding: 1rem; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <div style="font-weight: 600; color: var(--deep-purple);">Shipment #SHP-003</div>
+                    <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem;">Plastics to Factory C</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 0.9rem;">Delivered</div>
+                        <div style="background: #28a745; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Completed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection 

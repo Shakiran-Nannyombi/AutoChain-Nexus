@@ -1,148 +1,118 @@
-<x-guest-layout>
-    <!-- Content within the white card container provided by guest layout -->
+<!-- filepath: /opt/lampp/htdocs/Inventory-Mgt-System-25/resources/views/auth/register.blade.php -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Autochain Nexus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/auth.css'])
+</head>
+<body>
+    <a href="/" style="display:inline-block;margin:1rem 0 0 1rem;color:#6c63ff;text-decoration:none;font-weight:600;">&#8592; Back to Home</a>
+    <div class="register-container">
+        <div class="register-logo">
+            <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="register-logo-img">
+        </div>
+        <div class="register-title">Register for Autochain Nexus</div>
+        <div class="register-desc">Join our automotive supply chain network</div>
+        <form class="register-form" method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
+            @csrf
 
-    <div class="flex flex-col items-center text-center mb-6">
-        <h2 class="text-2xl font-bold text-[#171d3f] mt-0">Join AUTOCHAIN NEXUS</h2>
-        <p class="text-black text-sm">Apply to become a verified partner in our supply chain network</p>
-    </div>
+            @if ($errors->any())
+                <div class="alert alert-danger" style="margin-bottom:1rem;">
+                    <ul style="margin:0; padding-left:1.2rem;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-    {{-- Message display area (Optional, using session status) --}}
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('register') }}" class="w-full" enctype="multipart/form-data">
-        @csrf
-        {{-- CSRF token input is handled by @csrf --}}
-
-        <!-- Personal Information Section -->
-        <h3 class="text-lg font-semibold text-[#171d3f] mb-4">Personal Information</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-                <x-ui.label for="name" class="!text-[#171d3f] text-sm">
-                    {{ __('Full Name *') }}
-                </x-ui.label>
-                <x-ui.input id="name" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus>
             </div>
-            <div>
-                <x-ui.label for="email" class="!text-[#171d3f] text-sm">
-                    {{ __('Email Address *') }}
-                </x-ui.label>
-                <x-ui.input id="email" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="email" name="email" :value="old('email')" required autocomplete="username" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required>
             </div>
-            <div>
-                <x-ui.label for="phone" class="!text-[#171d3f] text-sm">
-                    {{ __('Phone Number *') }}
-                </x-ui.label>
-                <x-ui.input id="phone" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="phone" :value="old('phone')" required autocomplete="tel" />
-                <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+             <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" required>
             </div>
-            <div>
-                <x-ui.label for="password" class="!text-[#171d3f] text-sm">
-                    {{ __('Password *') }}
-                </x-ui.label>
-                <x-ui.input id="password" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="password" name="password" required autocomplete="new-password" />
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" type="password" name="password" required>
             </div>
-            <div>
-                <x-ui.label for="password_confirmation" class="!text-[#171d3f] text-sm">
-                    {{ __('Confirm Password *') }}
-                </x-ui.label>
-                <x-ui.input id="password_confirmation" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="password" name="password_confirmation" required autocomplete="new-password" />
-                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            <div class="form-group">
+                <label for="password_confirmation">Confirm Password</label>
+                <input id="password_confirmation" type="password" name="password_confirmation" required>
             </div>
-            <div>
-                <x-ui.label for="role" class="!text-[#171d3f] text-sm">
-                    {{ __('Desired Role *') }}
-                </x-ui.label>
-                <select id="role" name="role" class="block mt-1 w-full text-sm text-black border-black rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
-                    <option value="">Select your role</option>
-                    <option value="supplier">Supplier</option>
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select name="role" id="role" required>
+                    <option value="">Select Role</option>
                     <option value="manufacturer">Manufacturer</option>
+                    <option value="supplier">Supplier</option>
                     <option value="vendor">Vendor</option>
                     <option value="retailer">Retailer</option>
                     <option value="analyst">Analyst</option>
                 </select>
-                <x-input-error :messages="$errors->get('role')" class="mt-2" />
             </div>
-        </div>
-
-        <!-- Company Information Section -->
-        <h3 class="text-lg font-semibold text-[#171d3f] mb-4">Company Information</h3>
-        <div class="mb-6">
-             <div class="mb-4">
-                <x-ui.label for="company_name" class="!text-[#171d3f] text-sm">
-                    {{ __('Company Name') }}
-                </x-ui.label>
-                <x-ui.input id="company_name" class="block mt-1 w-full text-sm text-black !bg-[#38b5ea] border !border-white placeholder-white-400 input-text-color" type="text" name="company_name" :value="old('company_name')" autocomplete="organization" />
-                <x-input-error :messages="$errors->get('company_name')" class="mt-2" />
+            <div class="form-group">
+                <label for="company">Company Name</label>
+                <input id="company" type="text" name="company" value="{{ old('company') }}" required>
             </div>
-            <div>
-                <x-ui.label for="company_address" class="!text-[#171d3f] text-sm">
-                    {{ __('Business Address') }}
-                </x-ui.label>
-                <textarea id="company_address" name="company_address" class="block mt-1 w-full text-sm text-black placeholder-gray-400 border-black rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 input-text-color" autocomplete="street-address">{{ old('company_address') }}</textarea>
-                <x-input-error :messages="$errors->get('company_address')" class="mt-2" />
+            <div class="form-group">
+                <label for="address">Company Address</label>
+                <input id="address" type="text" name="address" value="{{ old('address') }}" required>
             </div>
-        </div>
-
-        <!-- Supporting Documents Section -->
-        <h3 class="text-lg font-semibold text-[#171d3f] mb-4">Supporting Documents</h3>
-        <div class="border-2 border-dashed border-gray-300 rounded-md p-6 text-center mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            <label for="documents" class="mt-2 block text-sm font-medium text-blue-600 cursor-pointer hover:text-blue-800">Click to upload documents</label>
-            <input id="documents" name="documents[]" type="file" class="hidden" multiple accept=".pdf,.jpg,.jpeg,.png">
-            <p class="mt-1 text-xs text-gray-500">Please upload certifications, financial records, or other relevant documents (PDF, JPG, PNG format, max 50MB)</p>
-            <div id="selected-files" class="mt-4 text-left text-sm"></div>
-            <x-input-error :messages="$errors->get('documents')" class="mt-2" />
-        </div>
-
-        <!-- Submit Button -->
-        <div>
-            <button type="submit" class="w-full bg-[#171d3f] hover:bg-[#2c8ac9] text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline text-sm">
-                {{ __('Submit Application') }}
-            </button>
-        </div>
-    </form>
-
+            <!-- Supporting Documents Upload -->
+            <div class="form-group-full">
+                <label style="font-weight:700; color:var(--deep-purple); margin-bottom:0.5rem;">Supporting Documents</label>
+                <div class="custom-upload-box">
+                    <input type="file" id="supporting_documents" name="supporting_documents[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required style="display:none;">
+                    <label for="supporting_documents" class="upload-label">
+                        <div class="upload-icon">&#8679;</div>
+                        <div class="upload-text">Upload documents</div>
+                        <div class="upload-desc">
+                            Please upload certifications, Business License, Identification Card, and financial records, or other relevant documents (PDF, DOC format, jpg, png).
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group profile-picture-group">
+                <label for="profile_picture" class="profile-picture-label">Upload Profile Picture</label>
+                <input id="profile_picture" type="file" name="profile_picture" accept=".jpg,.jpeg,.png" required class="profile-picture-input">
+            </div>
+            <div class="form-group-full">
+                <button type="submit" class="btn-register">Register</button>
+            </div>
+        </form>
+    </div>
     <script>
-        // File upload handling (kept for displaying selected files)
-        const fileInput = document.getElementById('documents');
-        const selectedFilesDiv = document.getElementById('selected-files');
-
-        fileInput.addEventListener('change', function() {
-            selectedFilesDiv.innerHTML = ''; // Clear previous files
-            
-            if (this.files.length > 0) {
-                const fileList = document.createElement('ul');
-                fileList.className = 'space-y-2';
-                
-                Array.from(this.files).forEach(file => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'flex items-center text-gray-700';
-                    
-                    // File icon based on type
-                    let icon = '📄';
-                    if (file.type.includes('pdf')) icon = '📑';
-                    if (file.type.includes('image')) icon = '🖼️';
-                    
-                    listItem.innerHTML = `
-                        <span class="mr-2">${icon}</span>
-                        <span class="flex-1">${file.name}</span>
-                        <span class="text-xs text-gray-500">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                    `;
-                    
-                    fileList.appendChild(listItem);
-                });
-                
-                selectedFilesDiv.appendChild(fileList);
-            } else {
-                selectedFilesDiv.innerHTML = '<p class="text-gray-500">No files selected</p>';
-            }
+        // Enhance file input click for custom upload box
+        document.querySelectorAll('.custom-upload-box').forEach(box => {
+            const input = box.querySelector('input[type="file"]');
+            box.addEventListener('click', () => input.click());
         });
 
-        // Removed AJAX form submission script
+        // Prevent form submission if any required field is empty
+        document.querySelector('.register-form').addEventListener('submit', function(e) {
+            let valid = true;
+            this.querySelectorAll('input[required], select[required]').forEach(field => {
+                if (!field.value || (field.type === 'file' && field.files.length === 0)) {
+                    valid = false;
+                    field.classList.add('input-error');
+                } else {
+                    field.classList.remove('input-error');
+                }
+            });
+            if (!valid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
     </script>
-</x-guest-layout>
+</body>
+</html>

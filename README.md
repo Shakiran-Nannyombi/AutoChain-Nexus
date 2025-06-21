@@ -1,65 +1,156 @@
-HEAD
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Autochain Nexus Inventory Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, multi-role inventory management system for the automotive supply chain, built with Laravel 12, Vite, and Tailwind CSS. The system supports multiple user roles (Manufacturer, Supplier, Vendor, Retailer, Analyst, Admin), custom registration with document uploads, and a visually appealing, responsive UI.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Structure
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```
+Inventory-Mgt-System-25/
+│
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Auth/                # Authentication controllers (login, register, password reset)
+│   │   ├── Middleware/              # Custom and default middleware
+│   │   ├── Requests/                # Form request validation (e.g., LoginRequest)
+│   │   └── Kernel.php               # HTTP kernel
+│   ├── Models/                      # Eloquent models for all user roles
+│   ├── Providers/                   # App and route service providers
+│   └── ...                          # Other Laravel app folders
+│
+├── bootstrap/                       # Laravel bootstrap files
+├── config/                          # Configuration files (app, auth, database, etc.)
+├── database/
+│   ├── migrations/                  # All migration files (users, roles, custom tables)
+│   ├── seeders/                     # Database seeders (admin, test users)
+│   └── factories/                   # Model factories (if any)
+│
+├── public/
+│   ├── images/                      # Logo and car images for the landing page
+│   └── ...                          # Public assets
+│
+├── resources/
+│   ├── css/                         # Tailwind and custom CSS (welcome.css, auth.css, app.css)
+│   ├── js/                          # JS files for Vite (welcome.js, auth.js, app.js, bootstrap.js)
+│   └── views/
+│       ├── auth/                    # Auth pages (login, register, admin-login, etc.)
+│       ├── layouts/                 # Layouts for dashboards, etc.
+│       ├── dashboards/              # Custom dashboards for roles (if any)
+│       └── welcome.blade.php        # Custom landing page
+│
+├── routes/
+│   ├── web.php                      # Web routes
+│   ├── api.php                      # API routes (if any)
+│   └── ...                          # Other route files
+│
+├── .env                             # Environment configuration
+├── composer.json                    # PHP dependencies
+├── package.json                     # JS dependencies
+├── vite.config.js                   # Vite configuration
+├── tailwind.config.js               # Tailwind configuration
+├── README.md                        # Project documentation
+└── ...
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Setup Instructions
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Prerequisites
+- PHP 8.2+ (recommended 8.3+)
+- Composer
+- Node.js & npm
+- XAMPP (for Apache & MySQL)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 2. Installation Steps
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Clone the repository**
+   ```bash
+   git clone <repo-url>
+   cd Inventory-Mgt-System-25
+   ```
 
-## Laravel Sponsors
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. **Install JS dependencies**
+   ```bash
+   npm install
+   ```
 
-### Premium Partners
+4. **Copy and configure environment file**
+   ```bash
+   cp .env.example .env
+   ```
+   - Set your database credentials in `.env`:
+     ```
+     DB_CONNECTION=mysql
+     DB_HOST=127.0.0.1
+     DB_PORT=3306
+     DB_DATABASE=inventory_system
+     DB_USERNAME=root
+     DB_PASSWORD=
+     ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+5. **Generate application key**
+   ```bash
+   php artisan key:generate
+   ```
 
-## Contributing
+6. **Run migrations and seeders**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+7. **Build assets**
+   - For development (hot reload):
+     ```bash
+     npm run dev
+     ```
+   - For production:
+     ```bash
+     npm run build
+     ```
 
-## Code of Conduct
+8. **Start the Laravel server**
+   ```bash
+   php artisan serve
+   ```
+   - Visit [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Default Users
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Admin**
+  - Email: `admin@autochain.com`
+  - Password: `admin123`
+- **Test User**
+  - Email: `test@example.com`
+  - Password: (set by factory, check seeder)
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
+## Features
 
- 9b0e0f0ca0b48dba5e4e61bb13a9ab7f721b3a37
+- Multi-role authentication and registration
+- File uploads for registration (documents, profile picture)
+- Custom dashboards and layouts for each user role
+- Application status checking
+- Admin management
+- Responsive, modern UI (Tailwind CSS, custom CSS)
+- Vite-powered asset bundling
+- Database seeding for quick setup
+
+---
+
+## Notes
+
+- All landing page images are in `public/images/`
+- "Back to Home" links are present on login and register pages
+- Vite and Tailwind are fully configured for easy asset management
+- The project is ready for further customization and development
