@@ -3,37 +3,47 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class ForgotPasswordController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Password Reset Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling password reset emails and
-    | includes a trait which assists in sending these notifications from
-    | your application to your users. Feel free to explore this trait.
-    |
-    */
-
-    use SendsPasswordResetEmails;
-
+    /**
+     * Handle an incoming password reset link request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function sendResetLink(Request $request)
     {
         $request->validate(['email' => 'required|email']);
+
         $status = Password::sendResetLink($request->only('email'));
-        return back()->with('status', __($status));
+
+        return $status == Password::RESET_LINK_SENT
+                    ? back()->with(['status' => __($status)])
+                    : back()->withErrors(['email' => __($status)]);
     }
 
+    /**
+     * Display the form to enter a password reset token.
+     *
+     * @return \Illuminate\View\View
+     */
     public function showTokenForm()
     {
         return view('auth.reset-password-token');
     }
 
+    /**
+     * Verify the password reset token.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function verifyToken(Request $request)
     {
         $request->validate([
@@ -41,16 +51,15 @@ class ForgotPasswordController extends Controller
             'token' => 'required|string',
         ]);
 
-        $user = \App\Models\User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return back()->withErrors(['email' => 'We can\'t find a user with that email address.']);
+        if (!$user || !Password::broker()->tokenExists($user, $request->token)) {
+            return back()->withErrors(['token' => 'This password reset token is invalid.']);
         }
 
-        if (Password::broker()->tokenExists($user, $request->token)) {
-            return redirect()->route('password.reset', ['token' => $request->token, 'email' => $request->email]);
-        }
-
-        return back()->withErrors(['token' => 'This password reset token is invalid.']);
+        return redirect()->route('password.reset', [
+            'token' => $request->token,
+            'email' => $request->email
+        ]);
     }
 }

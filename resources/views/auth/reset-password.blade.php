@@ -9,7 +9,7 @@
         @if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
-            </div>
+        </div>
         @endif
 
         @if ($errors->any())
@@ -19,7 +19,7 @@
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-            </div>
+        </div>
         @endif
 
         <form method="POST" action="{{ route('password.email') }}" class="login-form">
@@ -27,8 +27,8 @@
             <div class="input-group">
                 <label for="email">Email Address</label>
                 <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
-            </div>
+        </div>
             <button type="submit" class="btn-login">Send Reset Link</button>
-        </form>
+    </form>
     </div>
 </x-guest-layout>

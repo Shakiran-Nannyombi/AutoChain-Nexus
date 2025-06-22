@@ -11,20 +11,38 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('documents')->where('role', '!=', 'admin')->get();
+        $query = User::with('documents')->where('role', '!=', 'admin');
+
+        // Handle search
+        if ($request->has('search') && $request->input('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%")
+                  ->orWhere('company', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Handle role filter
+        if ($request->has('role') && $request->input('role')) {
+            $query->where('role', $request->input('role'));
+        }
+
+        $users = $query->get();
 
         $stats = [
-            'total' => $users->count(),
-            'active' => $users->where('status', 'approved')->count(),
-            'inactive' => $users->where('status', '!=', 'approved')->count(),
-            'new_this_month' => $users->where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
+            'total' => User::where('role', '!=', 'admin')->count(),
+            'active' => User::where('role', '!=', 'admin')->where('status', 'approved')->count(),
+            'inactive' => User::where('role', '!=', 'admin')->where('status', '!=', 'approved')->count(),
+            'new_this_month' => User::where('role', '!=', 'admin')->where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
         ];
 
         return view('dashboards.admin.user-management', [
             'users' => $users,
             'stats' => $stats,
+            'filters' => $request->only(['search', 'role']),
         ]);
     }
 
@@ -119,7 +137,7 @@ class UserController extends Controller
 
         $user->update($request->all());
 
-        return redirect()->route('admin.user.index')->with('success', 'User updated successfully.');
+        return redirect()->route('admin.user-management')->with('success', 'User updated successfully.');
     }
 
     public function destroy(User $user)

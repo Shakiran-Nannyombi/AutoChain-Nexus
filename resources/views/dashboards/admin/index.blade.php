@@ -57,7 +57,7 @@
                     <div style="font-weight: 600;">Review Pending Users</div>
                 </a>
                 
-                <a href="/admin/users" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="/admin/user-management" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
                     <i class="fas fa-user-cog" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
                     <div style="font-weight: 600;">Manage Users</div>
                 </a>

@@ -3,7 +3,7 @@
         <div class="status-card">
             <div class="register-logo">
                 <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="register-logo-img">
-            </div>
+        </div>
             <div class="status-title">Application Status</div>
             
             @if(isset($user))
@@ -36,7 +36,7 @@
                 <div class="input-group">
                     <label for="email">Check another application</label>
                     <input type="email" id="email" name="email" placeholder="Enter email address" required value="{{ request('email') }}">
-                </div>
+        </div>
                 <button type="submit" class="btn-primary">Check Status</button>
             </form>
         </div>

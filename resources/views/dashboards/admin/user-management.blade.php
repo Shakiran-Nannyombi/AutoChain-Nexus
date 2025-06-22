@@ -55,23 +55,28 @@
     <!-- Search and Filter -->
     <div class="filter-card">
         <h2 class="card-title">Search & Filter Users</h2>
-        <div class="filter-controls">
-            <div class="search-bar" style="flex-grow: 1;">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search by name or email...">
+        <form id="filterForm" action="{{ route('admin.user-management') }}" method="GET">
+            <div class="filter-controls">
+                <div class="search-bar" style="flex-grow: 1;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" placeholder="Search by name, email, or company..." value="{{ $filters['search'] ?? '' }}">
+                </div>
+                <div class="filter-role">
+                    <i class="fas fa-filter"></i>
+                    <select name="role">
+                        <option value="">All Roles</option>
+                        @php
+                            $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];
+                        @endphp
+                        @foreach($roles as $role)
+                            <option value="{{ $role }}" {{ ($filters['role'] ?? '') == $role ? 'selected' : '' }}>
+                                {{ ucfirst($role) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <div class="filter-role">
-                <i class="fas fa-filter"></i>
-                <select>
-                    <option value="">All Roles</option>
-                    <option value="manufacturer">Manufacturer</option>
-                    <option value="supplier">Supplier</option>
-                    <option value="vendor">Vendor</option>
-                    <option value="retailer">Retailer</option>
-                    <option value="analyst">Analyst</option>
-                </select>
-            </div>
-        </div>
+        </form>
     </div>
 
     <!-- All Users List -->
@@ -101,7 +106,16 @@
                         <div>Last Login: {{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->format('Y-m-d') : 'N/A' }}</div>
                     </div>
                     <div class="user-actions">
-                        <button class="btn-action btn-view" data-url="{{ route('admin.user.show', $user) }}"><i class="fas fa-eye"></i> View</button>
+                        <button class="btn-action btn-view" 
+                                data-user-name="{{ $user->name }}"
+                                data-user-email="{{ $user->email }}"
+                                data-user-company="{{ $user->company ?? 'N/A' }}"
+                                data-user-role="{{ ucfirst($user->role) }}"
+                                data-user-status="{{ ucfirst($user->status) }}"
+                                data-user-joined="{{ $user->created_at->format('n/j/Y') }}"
+                                data-user-documents="{{ json_encode($user->documents) }}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
                         <a href="{{ route('admin.user.edit', $user) }}" class="btn-action btn-edit"><i class="fas fa-pencil-alt"></i> Edit</a>
                         <form action="{{ route('admin.user.destroy', $user) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
                             @csrf
@@ -117,11 +131,13 @@
     </div>
 
     <!-- View User Modal -->
-    <div id="viewUserModal" class="modal">
+    <div id="viewUserModal" class="modal user-details-modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modalTitle">User Details</h2>
-            <div id="modalBody">
+            <div class="modal-header">
+                <h3 id="modalTitle">User Details</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
                 <!-- User details will be loaded here -->
             </div>
         </div>
@@ -131,53 +147,93 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const filterForm = document.getElementById('filterForm');
+    const searchInput = filterForm.querySelector('input[name="search"]');
+    const roleSelect = filterForm.querySelector('select[name="role"]');
+    let searchTimeout;
+
+    // Auto-submit on search input with debounce
+    searchInput.addEventListener('keyup', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            filterForm.submit();
+        }, 500); // Wait 500ms after user stops typing
+    });
+
+    // Auto-submit on role change
+    roleSelect.addEventListener('change', function() {
+        filterForm.submit();
+    });
+
     const modal = document.getElementById('viewUserModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
     const closeBtn = modal.querySelector('.close');
 
     document.querySelectorAll('.btn-view').forEach(button => {
         button.addEventListener('click', function () {
-            const url = this.dataset.url;
-            fetch(url)
-                .then(response => response.json())
-                .then(user => {
-                    const modalBody = document.getElementById('modalBody');
-                    
-                    let documentsHtml = '<h4>Documents</h4>';
-                    if (user.documents && user.documents.length > 0) {
-                        documentsHtml += '<ul class="documents-list">';
-                        user.documents.forEach(doc => {
-                            documentsHtml += `<li><a href="/storage/${doc.file_path}" target="_blank">${doc.file_path.split('/').pop()}</a> (${doc.document_type})</li>`;
-                        });
-                        documentsHtml += '</ul>';
-                    } else {
-                        documentsHtml += '<p>No documents submitted.</p>';
-                    }
+            const userName = this.dataset.userName;
+            const documents = JSON.parse(this.dataset.userDocuments);
 
-                    modalBody.innerHTML = `
-                        <p><strong>Name:</strong> ${user.name}</p>
-                        <p><strong>Email:</strong> ${user.email}</p>
-                        <p><strong>Company:</strong> ${user.company || 'N/A'}</p>
-                        <p><strong>Role:</strong> ${user.role}</p>
-                        <p><strong>Status:</strong> ${user.status}</p>
-                        <p><strong>Joined:</strong> ${new Date(user.created_at).toLocaleDateString()}</p>
-                        <hr>
-                        ${documentsHtml}
-                    `;
-                    document.getElementById('modalTitle').innerText = `Details for ${user.name}`;
-                    modal.style.display = 'block';
+            let documentsHtml = '<div class="detail-section"><h4>Documents</h4>';
+            if (documents && documents.length > 0) {
+                documentsHtml += '<ul class="documents-list">';
+                documents.forEach(doc => {
+                    // Assuming a public 'storage' link is set up
+                    const docUrl = `/storage/${doc.file_path}`;
+                    const docName = doc.file_path.split('/').pop();
+                    documentsHtml += `<li><a href="${docUrl}" target="_blank">${docName}</a></li>`;
                 });
+                documentsHtml += '</ul></div>';
+            } else {
+                documentsHtml += '<p>No documents submitted.</p></div>';
+            }
+
+            modalTitle.innerText = `Details for ${userName}`;
+            modalBody.innerHTML = `
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span>Name:</span>
+                        <p>${userName}</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Email:</span>
+                        <p>${this.dataset.userEmail}</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Company:</span>
+                        <p>${this.dataset.userCompany}</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Role:</span>
+                        <p>${this.dataset.userRole}</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Status:</span>
+                        <p>${this.dataset.userStatus}</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Joined:</span>
+                        <p>${this.dataset.userJoined}</p>
+                    </div>
+                </div>
+                ${documentsHtml}
+            `;
+            
+            modal.classList.add('show');
         });
     });
 
-    closeBtn.onclick = function() {
-        modal.style.display = "none";
-    }
+    const hideModal = () => {
+        modal.classList.remove('show');
+    };
 
-    window.onclick = function(event) {
+    closeBtn.addEventListener('click', hideModal);
+    window.addEventListener('click', (event) => {
         if (event.target == modal) {
-            modal.style.display = "none";
+            hideModal();
         }
-    }
+    });
 });
 </script>
 @endpush

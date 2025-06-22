@@ -15,7 +15,7 @@
                 </ul>
             </div>
         @endif
-
+        
         <form method="POST" action="{{ route('password.token.submit') }}" class="login-form">
             @csrf
             <div class="input-group">

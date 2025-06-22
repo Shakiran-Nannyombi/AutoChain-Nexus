@@ -63,7 +63,7 @@
 
             <div class="form-actions-alt">
                 <button type="submit" class="btn-save">Save Changes</button>
-                <a href="{{ route('admin.user.index') }}" class="link-cancel">Cancel</a>
+                <a href="{{ route('admin.user-management') }}" class="link-cancel">Cancel</a>
             </div>
         </form>
     </div>

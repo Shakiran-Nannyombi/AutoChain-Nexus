@@ -3,9 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Services\UserMigrationService;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ValidationCriteriaController;
@@ -13,6 +13,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Admin\VisitController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ProfileController;
 
 // Welcome page
 Route::get('/', function () {
@@ -227,7 +228,7 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 // Role-specific dashboard routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/system-flow', [DashboardController::class, 'systemFlow'])->name('admin.system-flow');
     Route::get('/analytics', [DashboardController::class, 'analytics'])->name('admin.analytics');
@@ -247,16 +248,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/user-validation', [UserController::class, 'validation'])->name('admin.user-validation');
     Route::post('/users/{user}/approve', [UserController::class, 'approve'])->name('admin.users.approve');
     Route::post('/users/{user}/reject', [UserController::class, 'reject'])->name('admin.users.reject');
-    
+    Route::post('/users/{user}/validate', [UserController::class, 'runValidation'])->name('admin.user.validate');
+
     // Validation criteria routes
     Route::get('/validation-criteria', [ValidationCriteriaController::class, 'index'])->name('admin.validation-criteria');
-    Route::post('/validation-criteria', [ValidationCriteriaController::class, 'store'])->name('admin.validation-criteria.store');
-    Route::put('/validation-criteria/{rule}', [ValidationCriteriaController::class, 'update'])->name('admin.validation-criteria.update');
-    Route::delete('/validation-criteria/{rule}', [ValidationCriteriaController::class, 'destroy'])->name('admin.validation-criteria.destroy');
+    Route::post('/validation-criteria', [ValidationCriteriaController::class, 'store'])->name('admin.validation.store');
+    Route::put('/validation-criteria/{rule}', [ValidationCriteriaController::class, 'update'])->name('admin.validation.update');
+    Route::delete('/validation-criteria/{rule}', [ValidationCriteriaController::class, 'destroy'])->name('admin.validation.destroy');
+    Route::post('/validation-sync', [ValidationCriteriaController::class, 'syncRules'])->name('admin.validation.sync');
 
     // Visit scheduling routes
     Route::get('/visit-scheduling', [VisitController::class, 'index'])->name('admin.visit-scheduling');
-    Route::post('/visit-scheduling', [VisitController::class, 'store'])->name('admin.visit-scheduling.store');
+    Route::post('/visits/{visit}/approve', [VisitController::class, 'approve'])->name('admin.visits.approve');
+    Route::post('/visits/{visit}/reject', [VisitController::class, 'reject'])->name('admin.visits.reject');
+    Route::post('/visits/{visit}/confirm', [VisitController::class, 'sendConfirmationEmail'])->name('admin.visits.confirm');
+    Route::post('/visits/{visit}/reschedule', [VisitController::class, 'reschedule'])->name('admin.visits.reschedule');
 });
 
 Route::get('/manufacturer/dashboard', function () {
@@ -328,12 +334,28 @@ Route::post('/admin/login', function (Request $request) {
             'user_role' => 'admin'
         ]);
 
+        // Debug: Log the session data
+        Log::info('Admin login successful', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+            'session_data' => session()->all()
+        ]);
+
         return redirect('/admin/dashboard');
     }
+
+    // Debug: Log failed login attempt
+    Log::info('Admin login failed', [
+        'email' => $email,
+        'attempted_at' => now()
+    ]);
 
     return back()->withErrors([
         'email' => 'The provided credentials do not match our records.',
     ]);
-});
+})->name('admin.login.submit');
 
-Auth::routes();
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+});

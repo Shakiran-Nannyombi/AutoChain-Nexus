@@ -91,19 +91,19 @@
                         <div class="visit-actions">
                              @if ($visit->status == 'pending')
                                 <button type="button" class="btn-action-visit btn-reschedule" onclick="openRescheduleModal({{ $visit->id }}, '{{ $visit->visit_date->format('Y-m-d') }}', '{{ $visit->visit_date->format('H:i') }}')">Reschedule</button>
-                                <form action="{{ route('admin.visit.approve', $visit) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('admin.visits.approve', $visit) }}" method="POST" style="display:inline;">
                                     @csrf
                                     <button type="submit" class="btn-action-visit btn-approve-visit">Approve</button>
                                 </form>
-                                <form action="{{ route('admin.visit.reject', $visit) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('admin.visits.reject', $visit) }}" method="POST" style="display:inline;">
                                     @csrf
                                     <button type="submit" class="btn-action-visit btn-reject-visit">Reject</button>
                                 </form>
                             @elseif ($visit->status == 'approved')
                                 <button type="button" class="btn-action-visit btn-view-calendar" onclick="openCalendarModal()">View Calendar</button>
-                                <form action="{{ route('admin.visit.confirm', $visit) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('admin.visits.confirm', $visit) }}" method="POST" style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn-action-visit btn-send-email">Send Confirmation</button>
+                                    <button type="submit" class="btn-action-visit btn-send-email">Confirm & Send Details</button>
                                 </form>
                             @endif
                         </div>
@@ -117,7 +117,7 @@
 @endsection
 
 <!-- Calendar Modal -->
-<div id="calendarModal" class="modal" style="display: none;">
+<div id="calendarModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>Visit Calendar</h3>
@@ -151,7 +151,7 @@
 </div>
 
 <!-- Reschedule Modal -->
-<div id="rescheduleModal" class="modal" style="display: none;">
+<div id="rescheduleModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>Reschedule Visit</h3>
@@ -179,22 +179,23 @@
 
 <script>
 function openCalendarModal() {
-    document.getElementById('calendarModal').style.display = 'block';
+    document.getElementById('calendarModal').classList.add('show');
 }
 
 function closeCalendarModal() {
-    document.getElementById('calendarModal').style.display = 'none';
+    document.getElementById('calendarModal').classList.remove('show');
 }
 
 function openRescheduleModal(visitId, currentDate, currentTime) {
-    document.getElementById('rescheduleForm').action = `/admin/visit-scheduling/reschedule/${visitId}`;
+    const form = document.getElementById('rescheduleForm');
+    form.action = `/admin/visits/${visitId}/reschedule`;
     document.getElementById('visit_date').value = currentDate;
     document.getElementById('visit_time').value = currentTime;
-    document.getElementById('rescheduleModal').style.display = 'block';
+    document.getElementById('rescheduleModal').classList.add('show');
 }
 
 function closeRescheduleModal() {
-    document.getElementById('rescheduleModal').style.display = 'none';
+    document.getElementById('rescheduleModal').classList.remove('show');
 }
 
 // Close modals when clicking outside

@@ -14,11 +14,11 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        Admin::firstOrCreate(
+        Admin::updateOrCreate(
             ['email' => 'admin@autochain.com'],
             [
                 'name' => 'Admin User',
-                'password' => bcrypt('password'),
+                'password' => Hash::make('password'),
                 'phone' => '1234567890',
                 'company' => 'Autochain Nexus',
                 'address' => 'Admin Address',

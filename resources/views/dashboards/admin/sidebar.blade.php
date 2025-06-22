@@ -7,7 +7,7 @@
 <a href="/admin/user-validation" class="nav-item {{ request()->is('admin/user-validation') ? 'active' : '' }}">
     <i class="fas fa-user-check"></i> User Validation
 </a>
-<a href="{{ route('admin.visit.index') }}" class="nav-item {{ request()->is('admin/visit-scheduling*') ? 'active' : '' }}">
+<a href="/admin/visit-scheduling" class="nav-item {{ request()->is('admin/visit-scheduling*') ? 'active' : '' }}">
     <i class="fas fa-calendar-check"></i> Visit Scheduling
 </a>
 <a href="/admin/validation-criteria" class="nav-item {{ request()->is('admin/validation-criteria') ? 'active' : '' }}">
@@ -16,15 +16,15 @@
 <a href="/admin/system-flow" class="nav-item {{ request()->is('admin/system-flow') ? 'active' : '' }}">
     <i class="fas fa-project-diagram"></i> System Flow
 </a>
-<a href="{{ url('/admin/analytics') }}" class="nav-item {{ request()->is('admin/analytics') ? 'active' : '' }}">
+<a href="/admin/analytics" class="nav-item {{ request()->is('admin/analytics') ? 'active' : '' }}">
     <i class="fas fa-chart-line"></i> Analytics
 </a>
 <a href="/admin/reports" class="nav-item {{ request()->is('admin/reports') ? 'active' : '' }}">
     <i class="fas fa-file-alt"></i> Reports
 </a>
-<a href="{{ route('admin.settings') }}" class="nav-item {{ request()->is('admin/settings') ? 'active' : '' }}">
+<a href="/admin/settings" class="nav-item {{ request()->is('admin/settings') ? 'active' : '' }}">
     <i class="fas fa-cog"></i> Settings
 </a>
-<a href="{{ route('admin.backups') }}" class="nav-item {{ request()->is('admin/backups') ? 'active' : '' }}">
+<a href="/admin/backups" class="nav-item {{ request()->is('admin/backups') ? 'active' : '' }}">
     <i class="fas fa-database"></i> Backup
 </a> 

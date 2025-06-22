@@ -138,11 +138,11 @@
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-run-validation">Run Validation</button>
                             </form>
-                            <form action="{{ route('admin.user.approve', $user->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-approve">Approve & Send Email</button>
                             </form>
-                            <form action="{{ route('admin.user.reject', $user->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('admin.users.reject', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-reject">Reject</button>
                             </form>
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             ${documentsHtml}
                         `;
                         document.getElementById('modalTitle').innerText = `Details for ${user.name}`;
-                        userModal.style.display = 'block';
+                        userModal.classList.add('show');
                     })
                     .catch(error => {
                         console.error('Error fetching user details:', error);
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (closeBtn) {
             closeBtn.onclick = function() {
-                userModal.style.display = "none";
+                userModal.classList.remove('show');
             }
         }
     }
@@ -255,8 +255,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!userId) return;
 
                 // Fetch user data to show validation details
-                fetch(`/admin/user-management/${userId}`)
-                    .then(response => response.json())
+                fetch(`/admin/user-management/user/${userId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
                     .then(user => {
                         const modalBody = document.getElementById('validationModalBody');
                         
@@ -313,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                         `;
                         document.getElementById('validationModalTitle').innerText = `Validation Details for ${user.name}`;
-                        validationModal.style.display = 'block';
+                        validationModal.classList.add('show');
                     })
                     .catch(error => {
                         console.error('Error fetching validation details:', error);
@@ -324,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (closeBtn) {
             closeBtn.onclick = function() {
-                validationModal.style.display = "none";
+                validationModal.classList.remove('show');
             }
         }
     }
@@ -332,10 +337,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close modals when clicking outside
     window.onclick = function(event) {
         if (event.target == userModal) {
-            userModal.style.display = "none";
+            userModal.classList.remove('show');
         }
         if (event.target == validationModal) {
-            validationModal.style.display = "none";
+            validationModal.classList.remove('show');
         }
     }
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Dashboard' }} - Autochain Nexus</title>
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
-    @vite(['resources/css/app.css', 'resources/css/auth.css'])
+    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/js/app.js', 'resources/css/auth.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @stack('styles')
 </head>
@@ -14,23 +14,25 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="sidebar-logo-img">
                 <div>
                     <div class="sidebar-logo">AUTOCHAIN NEXUS</div>
-                    <div class="sidebar-subtitle">System Administration</div>
+                    <div class="sidebar-subtitle">Car Inventory Management System</div>
                 </div>
             </div>
 
             <div class="sidebar-user">
-                <div class="user-avatar">
+                <div class="user-avatar" style="margin-left: 0.9rem;">
                     {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}{{ strtoupper(substr(session('user_name', 'er'), strpos(session('user_name', 'er'), ' ')+1, 1)) }}
                 </div>
-                <div class="user-info">
-                    <div style="font-weight: 600;">{{ session('user_name', 'User') }}</div>
-                    <div style="font-size: 0.8rem; opacity: 0.8;">{{ ucfirst(session('user_role', 'User')) }}</div>
+                <div class="user-info" style="display: flex; flex-direction: column; align-items: flex-start;">
+                    <div style="font-weight: 600; color: #fff; font-size: 1.05rem; line-height: 1.1;">
+                        {{ session('user_name', 'User') }}
+                    </div>
+                    <div style="font-size: 0.85rem; color: #2a6eea">
+                        {{ strtolower(session('user_role', 'user')) }}
+                    </div>
                 </div>
             </div>
-            
             <nav class="sidebar-nav">
                 @yield('sidebar-content')
             </nav>
