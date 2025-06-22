@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Services\UserMigrationService;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ValidationCriteriaController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\Admin\VisitController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 // Welcome page
 Route::get('/', function () {
@@ -107,27 +114,10 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         'phone' => 'required|string|max:20',
         'address' => 'required|string|max:500',
         'company_name' => 'required|string|max:255',
-        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'supporting_documents' => 'required|array|min:1',
+        'supporting_documents.*' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
     ]);
-
-    // Handle file uploads
-    $profilePicturePath = null;
-    $supportingDocuments = [];
-
-    if ($request->hasFile('profile_picture')) {
-        $profilePicture = $request->file('profile_picture');
-        $profilePictureName = time() . '_' . $profilePicture->getClientOriginalName();
-        $profilePicture->storeAs('public/profile_pictures', $profilePictureName);
-        $profilePicturePath = 'profile_pictures/' . $profilePictureName;
-    }
-
-    if ($request->hasFile('supporting_documents')) {
-        foreach ($request->file('supporting_documents') as $document) {
-            $documentName = time() . '_' . $document->getClientOriginalName();
-            $document->storeAs('public/supporting_documents', $documentName);
-            $supportingDocuments[] = 'supporting_documents/' . $documentName;
-        }
-    }
 
     // Create user with pending status
     $user = \App\Models\User::create([
@@ -138,10 +128,39 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         'role' => $request->role,
         'company' => $request->company_name,
         'address' => $request->address,
-        'profile_picture' => $profilePicturePath,
-        'supporting_documents' => $supportingDocuments,
         'status' => 'pending',
     ]);
+
+    // Handle profile picture upload
+    if ($request->hasFile('profile_picture')) {
+        $profilePicture = $request->file('profile_picture');
+        $profilePictureName = time() . '_' . $profilePicture->getClientOriginalName();
+        $profilePicture->storeAs('public/profile_pictures', $profilePictureName);
+        $profilePicturePath = 'profile_pictures/' . $profilePictureName;
+        
+        // Save profile picture to user_documents table
+        \App\Models\UserDocument::create([
+            'user_id' => $user->id,
+            'document_type' => 'profile_picture',
+            'file_path' => $profilePicturePath
+        ]);
+    }
+
+    // Handle supporting documents upload
+    if ($request->hasFile('supporting_documents')) {
+        foreach ($request->file('supporting_documents') as $document) {
+            $documentName = time() . '_' . $document->getClientOriginalName();
+            $document->storeAs('public/supporting_documents', $documentName);
+            $documentPath = 'supporting_documents/' . $documentName;
+            
+            // Save each supporting document to user_documents table
+            \App\Models\UserDocument::create([
+                'user_id' => $user->id,
+                'document_type' => 'supporting_document',
+                'file_path' => $documentPath
+            ]);
+        }
+    }
 
     // Redirect to status page
     return redirect()->route('application.status', ['email' => $user->email])
@@ -191,17 +210,13 @@ Route::get('/password/enter-token', function () {
     return view('auth.reset-password-token');
 })->name('password.token');
 
-Route::post('/password.email', function () {
-    // Logic to send password reset link will go here
-    // For now, we'll just redirect back with a message
-    return back()->with('status', 'Password reset link sent!');
-})->name('password.email');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
 
-Route::post('/password.reset', function () {
-    // Logic to reset the password will go here
-    // For now, we'll just redirect to login with a message
-    return redirect()->route('login')->with('status', 'Password has been reset!');
-})->name('password.update');
+Route::get('/password/enter-token', [ForgotPasswordController::class, 'showTokenForm'])->name('password.token');
+Route::post('/password/verify-token', [ForgotPasswordController::class, 'verifyToken'])->name('password.token.submit');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Dashboard (for testing)
 Route::get('/dashboard', function () {
@@ -212,11 +227,36 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 // Role-specific dashboard routes
-Route::get('/admin/dashboard', function () {
-    if (!session('user_id') || session('user_role') !== 'admin') {
-        return redirect('/login');
-    }
-    return view('dashboards.admin.index');
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/system-flow', [DashboardController::class, 'systemFlow'])->name('admin.system-flow');
+    Route::get('/analytics', [DashboardController::class, 'analytics'])->name('admin.analytics');
+    Route::get('/reports', [DashboardController::class, 'reports'])->name('admin.reports');
+    Route::get('/settings', [DashboardController::class, 'settings'])->name('admin.settings');
+    Route::get('/backups', [DashboardController::class, 'backups'])->name('admin.backups');
+    Route::post('/backups/create', [DashboardController::class, 'createBackup'])->name('admin.backups.create');
+
+    // User management specific routes
+    Route::get('/user-management', [UserController::class, 'index'])->name('admin.user-management');
+    Route::get('/user-management/user/{user}', [UserController::class, 'show'])->name('admin.user.show');
+    Route::get('/user-management/user/{user}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
+    Route::put('/user-management/user/{user}', [UserController::class, 'update'])->name('admin.user.update');
+    Route::delete('/user-management/user/{user}', [UserController::class, 'destroy'])->name('admin.user.destroy');
+
+    // User validation routes
+    Route::get('/user-validation', [UserController::class, 'validation'])->name('admin.user-validation');
+    Route::post('/users/{user}/approve', [UserController::class, 'approve'])->name('admin.users.approve');
+    Route::post('/users/{user}/reject', [UserController::class, 'reject'])->name('admin.users.reject');
+    
+    // Validation criteria routes
+    Route::get('/validation-criteria', [ValidationCriteriaController::class, 'index'])->name('admin.validation-criteria');
+    Route::post('/validation-criteria', [ValidationCriteriaController::class, 'store'])->name('admin.validation-criteria.store');
+    Route::put('/validation-criteria/{rule}', [ValidationCriteriaController::class, 'update'])->name('admin.validation-criteria.update');
+    Route::delete('/validation-criteria/{rule}', [ValidationCriteriaController::class, 'destroy'])->name('admin.validation-criteria.destroy');
+
+    // Visit scheduling routes
+    Route::get('/visit-scheduling', [VisitController::class, 'index'])->name('admin.visit-scheduling');
+    Route::post('/visit-scheduling', [VisitController::class, 'store'])->name('admin.visit-scheduling.store');
 });
 
 Route::get('/manufacturer/dashboard', function () {
@@ -295,3 +335,5 @@ Route::post('/admin/login', function (Request $request) {
         'email' => 'The provided credentials do not match our records.',
     ]);
 });
+
+Auth::routes();

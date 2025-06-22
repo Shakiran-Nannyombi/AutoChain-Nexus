@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\UserResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -21,13 +22,19 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'status',
         'role',
+        'status',
         'phone',
-        'company',
         'address',
-        'profile_picture',
-        'supporting_documents',
+        'company',
+        'validation_score',
+        'financial_score',
+        'reputation_score',
+        'compliance_score',
+        'profile_score',
+        'extracted_data',
+        'validated_at',
+        'auto_visit_scheduled',
     ];
 
     /**
@@ -45,12 +52,42 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'extracted_data' => 'array',
+        'validated_at' => 'datetime',
+        'auto_visit_scheduled' => 'boolean',
+    ];
+
+    public function documents()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'supporting_documents' => 'array',
-        ];
+        return $this->hasMany(UserDocument::class);
+    }
+
+    public function profilePicture()
+    {
+        return $this->documents()->where('document_type', 'profile_picture')->first();
+    }
+
+    public function supportingDocuments()
+    {
+        return $this->hasMany(UserDocument::class)->where('document_type', 'supporting_document');
+    }
+
+    public function facilityVisits()
+    {
+        return $this->hasMany(FacilityVisit::class);
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new UserResetPasswordNotification($token));
     }
 }

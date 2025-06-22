@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login | Autochain Nexus</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite(['resources/css/auth.css'])
-</head>
-<body bgcolor=#0F2C67> 
-    <a href="/" style="display:inline-block;margin:1rem 0 0 1rem;color:#6c63ff;text-decoration:none;font-weight:600;">&#8592; Back to Home</a>
+<x-guest-layout>
     <div class="login-container">
         @if(session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
@@ -104,5 +95,4 @@
             }
         }
     </script>
-</body>
-</html>
+</x-guest-layout>

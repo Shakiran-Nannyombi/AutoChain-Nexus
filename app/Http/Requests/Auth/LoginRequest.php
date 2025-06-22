@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Log;
 
 class LoginRequest extends FormRequest
 {
@@ -42,22 +41,12 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        Log::info('Attempting to authenticate user: ' . $this->input('email'));
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
 
-        if ($this->authenticateAdmin()) {
-            Log::info('Admin authentication successful for: ' . $this->input('email'));
-        } else {
-            Log::info('Admin authentication failed for: ' . $this->input('email') . '. Attempting regular user authentication.');
-            if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-                RateLimiter::hit($this->throttleKey());
-
-                Log::warning('Regular user authentication failed for: ' . $this->input('email'));
-
-                throw ValidationException::withMessages([
-                    'email' => trans('auth.failed'),
-                ]);
-            }
-            Log::info('Regular user authentication successful for: ' . $this->input('email'));
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
         }
 
         RateLimiter::clear($this->throttleKey());
@@ -92,23 +81,5 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
-    }
-
-    /**
-     * Attempt to authenticate the request's credentials against the admin guard.
-     */
-    protected function authenticateAdmin(): bool
-    {
-        $attempt = Auth::guard('admin')->attempt(
-            $this->only('email', 'password'),
-            $this->boolean('remember')
-        );
-
-        if ($attempt) {
-            Log::info('Auth::guard(\'admin\')->attempt returned true.');
-        } else {
-            Log::info('Auth::guard(\'admin\')->attempt returned false.');
-        }
-        return $attempt;
     }
 }

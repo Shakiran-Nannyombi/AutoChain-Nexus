@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
@@ -14,11 +14,19 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@autochain.com',
-            'password' => Hash::make('admin123'),
-            'status' => 'approved',
-        ]);
+        Admin::firstOrCreate(
+            ['email' => 'admin@autochain.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'),
+                'phone' => '1234567890',
+                'company' => 'Autochain Nexus',
+                'address' => 'Admin Address',
+                'admin_level' => 'super',
+                'permissions' => json_encode(['all']),
+                'department' => 'Administration',
+                'is_active' => true,
+            ]
+        );
     }
 }

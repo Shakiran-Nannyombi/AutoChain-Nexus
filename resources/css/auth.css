@@ -1,15 +1,15 @@
 /* default styles */
 :root {
-    --deep-purple: #230444;
-    --maroon: #90303D;
-    --orange: #ED8240;
-    --light-cyan: #D2EBE9;
+    --deep-purple: #0F2C67;
+    --maroon: #CD1818;
+    --orange: #F3950D;
+    --light-cyan: #F4E185;
     --white: #fff;
     --gray: #f5f7fa;
     --shadow: 0 4px 24px rgba(32,0,58,0.08);
     --blue: #2a6eea; /* Added missing variable */
 }
-body {
+body.auth-page {
     background: var(--deep-purple);
     min-height: 100vh;
     margin: 0;
@@ -74,7 +74,7 @@ body {
     padding: 0.7rem 1rem;
     border-radius: 7px;
     border: 1.5px solid #e0e0e0;
-    background: var(--light-cyan);
+    background: #dceafb;
     font-size: 1rem;
     margin-bottom: 0;
 }
@@ -139,7 +139,7 @@ body {
     border-radius: 12px;
     padding: 2rem 1rem;
     text-align: center;
-    background: var(--light-cyan);
+    background: var(--gray);
     transition: border-color 0.2s;
     cursor: pointer;
     margin-bottom: 1.2rem;
@@ -237,7 +237,7 @@ body {
     border-radius: 7px;
     margin-bottom: 0.7rem;     /* Add some space between fields */
     border: 1.5px solid #e0e0e0;
-    background: var(--light-cyan);
+    background: #dceafb;
     transition: border 0.2s;
 }
 .login-form input:focus {
@@ -255,7 +255,7 @@ body {
     font-size: 1rem;
     border-radius: 7px;
     border: 1.5px solid #e0e0e0;
-    background: var(--light-cyan);
+    background: #dceafb;
     margin-bottom: 0.7rem;
     transition: border 0.2s;
     color: #333;
