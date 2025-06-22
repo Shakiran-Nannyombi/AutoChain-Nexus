@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite(['resources/css/auth.css'])
 </head>
-<body>
+<body bgcolor=#0F2C67> 
     <a href="/" style="display:inline-block;margin:1rem 0 0 1rem;color:#6c63ff;text-decoration:none;font-weight:600;">&#8592; Back to Home</a>
     <div class="login-container">
         @if(session('status'))
@@ -26,9 +26,9 @@
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-            </div>
-        @endif
-        
+        </div>
+            @endif
+
         <form class="login-form" method="POST" action="{{ route('login') }}">
             @csrf
             <div class="input-group">

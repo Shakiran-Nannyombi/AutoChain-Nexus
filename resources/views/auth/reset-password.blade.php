@@ -105,18 +105,7 @@
         <div class="register-logo">
             <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="register-logo-img">
         </div>
-        <br><br>
-        <div class="title">Reset Password</div>
-        <div class="desc">Enter your email to receive a reset token</div>
-        @if(session('status'))
-            <div class="status">{{ session('status') }}</div>
-        @endif
-        <form method="POST" action="{{ route('password.email') }}">
-            @csrf
-            <label for="email">Email Address</label>
-            <input id="email" type="email" name="email" required>
-            <button type="submit" class="btn">Send Reset Link</button>
-        </form>
+    </form>
     </div>
 </body>
 </html>

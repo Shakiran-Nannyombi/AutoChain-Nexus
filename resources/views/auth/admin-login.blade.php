@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Admin Login | Autochain Nexus</title>
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Inventory Management System</title>
     @vite(['resources/css/app.css', 'resources/css/auth.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="auth-page">
     <div class="login-container">
         <div class="register-logo">
             <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="register-logo-img">
@@ -15,6 +16,16 @@
         
         <h1 class="login-title">Admin Login</h1>
         <p class="login-desc">Access the admin control panel</p>
+        
+        @if ($errors->any())
+            <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+                <ul style="margin: 0; padding-left: 1.2rem;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         
         <form method="POST" action="/admin/login" class="login-form">
             @csrf

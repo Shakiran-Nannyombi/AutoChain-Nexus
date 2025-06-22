@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite(['resources/css/auth.css'])
 </head>
-<body>
+<body bgcolor="#0F2C67">
     <a href="/" style="display:inline-block;margin:1rem 0 0 1rem;color:#6c63ff;text-decoration:none;font-weight:600;">&#8592; Back to Home</a>
     <div class="register-container">
         <div class="register-logo">
@@ -25,17 +25,17 @@
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
-                </div>
+        </div>
             @endif
 
             <div class="form-group">
                 <label for="name">Full Name</label>
                 <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus>
-            </div>
+        </div>
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input id="email" type="email" name="email" value="{{ old('email') }}" required>
-            </div>
+        </div>
              <div class="form-group">
                 <label for="phone">Phone Number</label>
                 <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" required>
@@ -87,8 +87,8 @@
             </div>
             <div class="form-group-full">
                 <button type="submit" class="btn-register">Register</button>
-            </div>
-        </form>
+        </div>
+    </form>
     </div>
     <script>
         // Enhance file input click for custom upload box
