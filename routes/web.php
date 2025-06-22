@@ -9,11 +9,13 @@ use App\Services\UserMigrationService;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ValidationCriteriaController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Admin\VisitController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\SearchController;
 
 // Welcome page
 Route::get('/', function () {
@@ -230,10 +232,15 @@ Route::get('/dashboard', function () {
 // Role-specific dashboard routes
 Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/search', [SearchController::class, 'search'])->name('admin.search');
     Route::get('/system-flow', [DashboardController::class, 'systemFlow'])->name('admin.system-flow');
     Route::get('/analytics', [DashboardController::class, 'analytics'])->name('admin.analytics');
     Route::get('/reports', [DashboardController::class, 'reports'])->name('admin.reports');
+    Route::post('/reports', [DashboardController::class, 'scheduleReport'])->name('admin.reports.schedule');
+    Route::delete('/reports/{report}', [DashboardController::class, 'destroyReport'])->name('admin.reports.destroy');
+    Route::get('/inventory-overview', [DashboardController::class, 'inventoryOverview'])->name('admin.inventory.overview');
     Route::get('/settings', [DashboardController::class, 'settings'])->name('admin.settings');
+    Route::put('/settings', [DashboardController::class, 'updateSettings'])->name('admin.settings.update');
     Route::get('/backups', [DashboardController::class, 'backups'])->name('admin.backups');
     Route::post('/backups/create', [DashboardController::class, 'createBackup'])->name('admin.backups.create');
 
@@ -263,6 +270,13 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::post('/visits/{visit}/reject', [VisitController::class, 'reject'])->name('admin.visits.reject');
     Route::post('/visits/{visit}/confirm', [VisitController::class, 'sendConfirmationEmail'])->name('admin.visits.confirm');
     Route::post('/visits/{visit}/reschedule', [VisitController::class, 'reschedule'])->name('admin.visits.reschedule');
+
+    // Backup management routes
+    Route::get('/backups', [BackupController::class, 'index'])->name('admin.backups');
+    Route::post('/backups/create', [BackupController::class, 'create'])->name('admin.backups.create');
+    Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('admin.backups.download');
+    Route::delete('/backups/{filename}', [BackupController::class, 'delete'])->name('admin.backups.delete');
+    Route::post('/backups/{filename}/restore', [BackupController::class, 'restore'])->name('admin.backups.restore');
 });
 
 Route::get('/manufacturer/dashboard', function () {
@@ -356,6 +370,7 @@ Route::post('/admin/login', function (Request $request) {
     ]);
 })->name('admin.login.submit');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

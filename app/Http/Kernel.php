@@ -9,7 +9,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\ValidateSignature;
 use App\Http\Middleware\AdminMiddleware;
-use App\Http\Middleware\CheckApplicationStatus;
+use App\Http\Middleware\EnsureUserIsAuthenticated;
 
 class Kernel extends HttpKernel
 {
@@ -37,7 +37,6 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \App\Http\Middleware\CheckApplicationStatus::class,
         ],
 
         'api' => [
@@ -66,6 +65,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'auth.shared' => \App\Http\Middleware\EnsureUserIsAuthenticated::class,
     ];
 
     /**

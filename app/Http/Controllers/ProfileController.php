@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Admin;
+use App\Http\Requests\AdminProfileUpdateRequest;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -16,6 +19,11 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        if (session('user_role') === 'admin') {
+            $user = Admin::find(session('user_id'));
+            return view('profile.admin-edit', ['user' => $user]);
+        }
+
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
@@ -24,9 +32,23 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        if (session('user_role') === 'admin') {
+            $adminRequest = new AdminProfileUpdateRequest();
+            $validated = $request->validate($adminRequest->rules());
+
+            $user = Admin::find(session('user_id'));
+            $user->fill($validated);
+            $user->save();
+            
+            session(['user_name' => $user->name]);
+            return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        }
+
+        // The following part is for non-admin users, so we use ProfileUpdateRequest
+        $userRequest = ProfileUpdateRequest::createFrom($request);
+        $request->user()->fill($userRequest->validated());
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;

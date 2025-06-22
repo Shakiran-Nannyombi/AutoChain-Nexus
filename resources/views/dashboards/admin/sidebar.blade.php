@@ -1,10 +1,10 @@
 <a href="/admin/dashboard" class="nav-item {{ request()->is('admin/dashboard') ? 'active' : '' }}">
     <i class="fas fa-home"></i> Admin Dashboard
 </a>
-<a href="/admin/user-management" class="nav-item {{ request()->is('admin/user-management') ? 'active' : '' }}">
+<a href="{{ route('admin.user-management') }}" class="nav-item {{ request()->is('admin/user-management*') ? 'active' : '' }}">
     <i class="fas fa-users-cog"></i> User Management
 </a>
-<a href="/admin/user-validation" class="nav-item {{ request()->is('admin/user-validation') ? 'active' : '' }}">
+<a href="{{ route('admin.user-validation') }}" class="nav-item {{ request()->is('admin/user-validation*') ? 'active' : '' }}">
     <i class="fas fa-user-check"></i> User Validation
 </a>
 <a href="/admin/visit-scheduling" class="nav-item {{ request()->is('admin/visit-scheduling*') ? 'active' : '' }}">
@@ -12,6 +12,9 @@
 </a>
 <a href="/admin/validation-criteria" class="nav-item {{ request()->is('admin/validation-criteria') ? 'active' : '' }}">
     <i class="fas fa-check-square"></i> Validation Criteria
+</a>
+<a href="{{ route('admin.inventory.overview') }}" class="nav-item {{ request()->is('admin/inventory-overview*') ? 'active' : '' }}">
+    <i class="fas fa-boxes"></i> Inventory Overview
 </a>
 <a href="/admin/system-flow" class="nav-item {{ request()->is('admin/system-flow') ? 'active' : '' }}">
     <i class="fas fa-project-diagram"></i> System Flow
