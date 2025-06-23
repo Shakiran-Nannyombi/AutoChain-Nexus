@@ -1,3 +1,4 @@
+@section('title', 'Login')
 <x-guest-layout>
     <div class="login-container">
         @if(session('status'))

@@ -1,3 +1,4 @@
+@section('title', 'Admin Login')
 <x-guest-layout>
     <div class="login-container">
         <div class="register-logo">
