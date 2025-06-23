@@ -413,3 +413,14 @@ Route::prefix('supplier')->group(function () {
     Route::get('/notifications', function () { return view('dashboards.supplier.notifications'); })->name('supplier.notifications');
     Route::get('/settings', function () { return view('dashboards.supplier.settings'); })->name('supplier.settings');
 });
+
+// Vendor dashboard routes
+Route::prefix('vendor')->group(function () {
+    Route::get('/dashboard', function () { return view('dashboards.vendor.index'); })->name('vendor.dashboard');
+    Route::get('/warehouse', function () { return view('dashboards.vendor.warehouse'); })->name('vendor.warehouse');
+    Route::get('/delivery', function () { return view('dashboards.vendor.delivery'); })->name('vendor.delivery');
+    Route::get('/tracking', function () { return view('dashboards.vendor.tracking'); })->name('vendor.tracking');
+    Route::get('/chat', function () { return view('dashboards.vendor.chat'); })->name('vendor.chat');
+    Route::get('/notifications', function () { return view('dashboards.vendor.notifications'); })->name('vendor.notifications');
+    Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
+});

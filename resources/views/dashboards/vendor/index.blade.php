@@ -1,54 +1,9 @@
 @extends('layouts.dashboard')
 
+@section('title', 'Vendor Dashboard')
+
 @section('sidebar-content')
-    <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="/vendor/dashboard" class="nav-item active">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a>
-        <a href="/vendor/products" class="nav-item">
-            <i class="fas fa-box"></i> Products
-        </a>
-        <a href="/vendor/orders" class="nav-item">
-            <i class="fas fa-shopping-cart"></i> Orders
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Sales</div>
-        <a href="/vendor/customers" class="nav-item">
-            <i class="fas fa-users"></i> Customers
-        </a>
-        <a href="/vendor/sales" class="nav-item">
-            <i class="fas fa-chart-line"></i> Sales
-        </a>
-        <a href="/vendor/marketing" class="nav-item">
-            <i class="fas fa-bullhorn"></i> Marketing
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Reports</div>
-        <a href="/vendor/reports/sales" class="nav-item">
-            <i class="fas fa-chart-bar"></i> Sales Reports
-        </a>
-        <a href="/vendor/reports/inventory" class="nav-item">
-            <i class="fas fa-chart-line"></i> Inventory Reports
-        </a>
-        <a href="/vendor/reports/customers" class="nav-item">
-            <i class="fas fa-chart-pie"></i> Customer Reports
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Settings</div>
-        <a href="/vendor/profile" class="nav-item">
-            <i class="fas fa-user"></i> Profile
-        </a>
-        <a href="/vendor/settings" class="nav-item">
-            <i class="fas fa-cog"></i> Settings
-        </a>
-    </div>
+    @include('dashboards.vendor.sidebar')
 @endsection
 
 @section('content')
