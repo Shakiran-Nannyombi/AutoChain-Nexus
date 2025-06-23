@@ -1,54 +1,9 @@
 @extends('layouts.dashboard')
 
+@section('title', 'Supplier Dashboard')
+
 @section('sidebar-content')
-    <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="/supplier/dashboard" class="nav-item active">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a>
-        <a href="/supplier/inventory" class="nav-item">
-            <i class="fas fa-warehouse"></i> Inventory
-        </a>
-        <a href="/supplier/orders" class="nav-item">
-            <i class="fas fa-shopping-cart"></i> Orders
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Supply Chain</div>
-        <a href="/supplier/manufacturers" class="nav-item">
-            <i class="fas fa-industry"></i> Manufacturers
-        </a>
-        <a href="/supplier/shipments" class="nav-item">
-            <i class="fas fa-shipping-fast"></i> Shipments
-        </a>
-        <a href="/supplier/supplies" class="nav-item">
-            <i class="fas fa-boxes"></i> Supplies
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Reports</div>
-        <a href="/supplier/reports/inventory" class="nav-item">
-            <i class="fas fa-chart-bar"></i> Inventory Reports
-        </a>
-        <a href="/supplier/reports/sales" class="nav-item">
-            <i class="fas fa-chart-line"></i> Sales Reports
-        </a>
-        <a href="/supplier/reports/supply" class="nav-item">
-            <i class="fas fa-chart-pie"></i> Supply Reports
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Settings</div>
-        <a href="/supplier/profile" class="nav-item">
-            <i class="fas fa-user"></i> Profile
-        </a>
-        <a href="/supplier/settings" class="nav-item">
-            <i class="fas fa-cog"></i> Settings
-        </a>
-    </div>
+    @include('dashboards.supplier.sidebar')
 @endsection
 
 @section('content')

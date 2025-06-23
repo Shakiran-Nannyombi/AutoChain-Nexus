@@ -326,7 +326,7 @@ Route::get('/analyst/dashboard', function () {
 Route::get('/logout', function () {
     session()->flush();
     return redirect('/login');
-});
+})->name('logout');
 
 // Admin login page
 Route::get('/admin/login', function () {
@@ -401,4 +401,15 @@ Route::prefix('manufacturer')->group(function () {
     Route::get('/demand-prediction', function () { return view('dashboards.manufacturer.demand-prediction'); })->name('manufacturer.demand-prediction');
     Route::get('/chat', function () { return view('dashboards.manufacturer.chat'); })->name('manufacturer.chat');
     Route::get('/settings', function () { return view('dashboards.manufacturer.settings'); })->name('manufacturer.settings');
+});
+
+// Supplier dashboard routes
+Route::prefix('supplier')->group(function () {
+    Route::get('/dashboard', function () { return view('dashboards.supplier.index'); })->name('supplier.dashboard');
+    Route::get('/stock-management', function () { return view('dashboards.supplier.stock-management'); })->name('supplier.stock-management');
+    Route::get('/checklist-receipt', function () { return view('dashboards.supplier.checklist-receipt'); })->name('supplier.checklist-receipt');
+    Route::get('/delivery-history', function () { return view('dashboards.supplier.delivery-history'); })->name('supplier.delivery-history');
+    Route::get('/chat', function () { return view('dashboards.supplier.chat'); })->name('supplier.chat');
+    Route::get('/notifications', function () { return view('dashboards.supplier.notifications'); })->name('supplier.notifications');
+    Route::get('/settings', function () { return view('dashboards.supplier.settings'); })->name('supplier.settings');
 });

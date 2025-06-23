@@ -114,27 +114,67 @@ class UserMigrationService
         switch ($role) {
             case 'manufacturer':
                 if (!$user->manufacturer) {
-                    $user->manufacturer()->create([]);
+                    $user->manufacturer()->create([
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'password' => $user->password,
+                        'company' => $user->company,
+                        'address' => $user->address,
+                        'profile_picture' => $user->profile_photo,
+                    ]);
                 }
                 break;
             case 'supplier':
                 if (!$user->supplier) {
-                    $user->supplier()->create([]);
+                    $user->supplier()->create([
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'password' => $user->password,
+                        'company' => $user->company,
+                        'address' => $user->address,
+                        'profile_picture' => $user->profile_photo,
+                    ]);
                 }
                 break;
             case 'vendor':
                 if (!$user->vendor) {
-                    $user->vendor()->create([]);
+                    $user->vendor()->create([
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'password' => $user->password,
+                        'company' => $user->company,
+                        'address' => $user->address,
+                        'profile_picture' => $user->profile_photo,
+                    ]);
                 }
                 break;
             case 'retailer':
                 if (!$user->retailer) {
-                    $user->retailer()->create([]);
+                    $user->retailer()->create([
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'password' => $user->password,
+                        'company' => $user->company,
+                        'address' => $user->address,
+                        'profile_picture' => $user->profile_photo,
+                    ]);
                 }
                 break;
             case 'analyst':
                 if (!$user->analyst) {
-                    $user->analyst()->create([]);
+                    $user->analyst()->create([
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'password' => $user->password,
+                        'company' => $user->company,
+                        'address' => $user->address,
+                        'profile_picture' => $user->profile_photo,
+                    ]);
                 }
                 break;
             case 'admin':

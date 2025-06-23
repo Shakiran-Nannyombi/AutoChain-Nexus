@@ -103,6 +103,16 @@
                     <h1 class="page-title">
                         @if (request()->is('admin/*'))
                             Admin Dashboard
+                        @elseif (request()->is('supplier/*'))
+                            Supplier Dashboard
+                        @elseif (request()->is('manufacturer/*'))
+                            Manufacturer Dashboard
+                        @elseif (request()->is('vendor/*'))
+                            Vendor Dashboard
+                        @elseif (request()->is('retailer/*'))
+                            Retailer Dashboard
+                        @elseif (request()->is('analyst/*'))
+                            Analyst Dashboard
                         @else
                             {{ $title ?? 'Dashboard' }}
                         @endif
@@ -140,9 +150,23 @@
                             <a href="{{ route('profile.edit') }}" class="dropdown-item">
                                 <i class="fas fa-user-edit"></i> Profile
                             </a>
-                            <a href="/admin/settings" class="dropdown-item">
-                                <i class="fas fa-cog"></i> Settings
-                            </a>
+                            @if (request()->is('admin/*'))
+                                <a href="/admin/settings" class="dropdown-item">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            @elseif (request()->is('supplier/*'))
+                                <a href="{{ route('supplier.settings') }}" class="dropdown-item">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            @elseif (request()->is('manufacturer/*'))
+                                <a href="{{ route('manufacturer.settings') }}" class="dropdown-item">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            @else
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                            @endif
                             <a href="/logout" class="dropdown-item">
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </a>
