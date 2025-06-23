@@ -6,7 +6,7 @@
         </h3>
     </header>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
 
@@ -36,6 +36,18 @@
             <div class="form-group">
                 <label for="department">Department</label>
                 <input id="department" name="department" type="text" value="{{ old('department', $user->department) }}" />
+            </div>
+            <div class="form-group">
+                <label for="profile_photo">Profile Photo</label>
+                <input type="file" name="profile_photo" id="profile_photo" accept="image/*">
+                @if($user->profile_photo)
+                    <div class="mt-2">
+                        <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="Profile Photo" width="100" class="rounded-full border">
+                    </div>
+                @endif
+                @error('profile_photo')
+                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                @enderror
             </div>
         </div>
 

@@ -11,7 +11,6 @@ import org.apache.tika.sax.BodyContentHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class PDFProcessor {
     
-    private final Tika tika = new Tika();
+    private final Tika tika = new Tika(); // Tika is a library for detecting the type of a file
     
     /**
      * Extracts text content from a PDF file.

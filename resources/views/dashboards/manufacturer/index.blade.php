@@ -1,56 +1,8 @@
 @extends('layouts.dashboard')
 
 @section('sidebar-content')
-    <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="/manufacturer/dashboard" class="nav-item active">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a>
-        <a href="/manufacturer/products" class="nav-item">
-            <i class="fas fa-box"></i> Products
-        </a>
-        <a href="/manufacturer/inventory" class="nav-item">
-            <i class="fas fa-warehouse"></i> Inventory
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Production</div>
-        <a href="/manufacturer/production" class="nav-item">
-            <i class="fas fa-industry"></i> Production Lines
-        </a>
-        <a href="/manufacturer/orders" class="nav-item">
-            <i class="fas fa-shopping-cart"></i> Orders
-        </a>
-        <a href="/manufacturer/suppliers" class="nav-item">
-            <i class="fas fa-truck"></i> Suppliers
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Reports</div>
-        <a href="/manufacturer/reports/production" class="nav-item">
-            <i class="fas fa-chart-bar"></i> Production Reports
-        </a>
-        <a href="/manufacturer/reports/inventory" class="nav-item">
-            <i class="fas fa-chart-line"></i> Inventory Reports
-        </a>
-        <a href="/manufacturer/reports/quality" class="nav-item">
-            <i class="fas fa-award"></i> Quality Reports
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Settings</div>
-        <a href="/manufacturer/profile" class="nav-item">
-            <i class="fas fa-user"></i> Profile
-        </a>
-        <a href="/manufacturer/settings" class="nav-item">
-            <i class="fas fa-cog"></i> Settings
-        </a>
-    </div>
+    @include('dashboards.manufacturer.sidebar')
 @endsection
-
 @section('content')
     @php
         $title = 'Manufacturer Dashboard';

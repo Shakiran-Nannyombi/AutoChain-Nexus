@@ -28,48 +28,32 @@ Route::get('/login', function () {
 })->name('login');
 
 // Handle login
-Route::post('/login', function (Request $request) {
+Route::post('/login', function (Illuminate\Http\Request $request) {
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
-        'role' => 'required|in:manufacturer,supplier,vendor,retailer,analyst'
+        'role' => 'required|in:admin,manufacturer,supplier,vendor,retailer,analyst',
     ]);
 
     $email = $request->email;
     $password = $request->password;
     $role = $request->role;
 
-    // Check for user in the main users table first
-    $unmigratedUser = User::where('email', $email)->first();
-
-    if ($unmigratedUser && password_verify($password, $unmigratedUser->password)) {
-        // Ensure the selected role matches the registered role
-        if ($unmigratedUser->role !== $role) {
-            return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
-        }
-
-        // Redirect to status page if pending or rejected
-        if ($unmigratedUser->status === 'pending' || $unmigratedUser->status === 'rejected') {
-            return redirect()->route('application.status', ['email' => $unmigratedUser->email]);
-        }
-
-        // If approved, migrate user on first login
-        if ($unmigratedUser->status === 'approved') {
-            $userMigrationService = new UserMigrationService();
-            try {
-                $userMigrationService->migrateUserToRoleTable($unmigratedUser);
-            } catch (\Exception $e) {
-                Log::error("Migration failed for {$email} on login: " . $e->getMessage());
-                return back()->withErrors(['email' => 'An error occurred during account setup. Please contact support.']);
-            }
-        }
-    }
-
     // Use the UserMigrationService to authenticate
     $userMigrationService = new UserMigrationService();
     $user = $userMigrationService->authenticateUser($email, $password, $role);
 
     if ($user) {
+        // For non-admin users, ensure they are migrated to role table
+        if ($role !== 'admin' && $user instanceof User) {
+            try {
+                $userMigrationService->migrateUserToRoleTable($user);
+            } catch (\Exception $e) {
+                Log::error("Migration failed for {$email} on login: " . $e->getMessage());
+                return back()->withErrors(['email' => 'An error occurred during account setup. Please contact support.']);
+            }
+        }
+
         // Store user info in session
         session([
             'user_id' => $user->id,
@@ -270,6 +254,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::post('/visits/{visit}/reject', [VisitController::class, 'reject'])->name('admin.visits.reject');
     Route::post('/visits/{visit}/confirm', [VisitController::class, 'sendConfirmationEmail'])->name('admin.visits.confirm');
     Route::post('/visits/{visit}/reschedule', [VisitController::class, 'reschedule'])->name('admin.visits.reschedule');
+    Route::post('/visits/{visit}/complete', [VisitController::class, 'complete'])->name('admin.visits.complete');
 
     // Backup management routes
     Route::get('/backups', [BackupController::class, 'index'])->name('admin.backups');
@@ -373,4 +358,23 @@ Route::post('/admin/login', function (Request $request) {
 Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// Manufacturer dashboard routes
+Route::prefix('manufacturer')->group(function () {
+    Route::get('/dashboard', function () { return view('dashboards.manufacturer.dashboard'); })->name('manufacturer.dashboard');
+    Route::get('/production-lines', function () { return view('dashboards.manufacturer.production-lines'); })->name('manufacturer.production-lines');
+    Route::get('/machine-health', function () { return view('dashboards.manufacturer.machine-health'); })->name('manufacturer.machine-health');
+    Route::get('/quality-control', function () { return view('dashboards.manufacturer.quality-control'); })->name('manufacturer.quality-control');
+    Route::get('/maintenance', function () { return view('dashboards.manufacturer.maintenance'); })->name('manufacturer.maintenance');
+    Route::get('/inventory-status', function () { return view('dashboards.manufacturer.inventory-status'); })->name('manufacturer.inventory-status');
+    Route::get('/scheduling', function () { return view('dashboards.manufacturer.scheduling'); })->name('manufacturer.scheduling');
+    Route::get('/checklists', function () { return view('dashboards.manufacturer.checklists'); })->name('manufacturer.checklists');
+    Route::get('/material-receipt', function () { return view('dashboards.manufacturer.material-receipt'); })->name('manufacturer.material-receipt');
+    Route::get('/workflow', function () { return view('dashboards.manufacturer.workflow'); })->name('manufacturer.workflow');
+    Route::get('/production-analytics', function () { return view('dashboards.manufacturer.production-analytics'); })->name('manufacturer.production-analytics');
+    Route::get('/production-reports', function () { return view('dashboards.manufacturer.production-reports'); })->name('manufacturer.production-reports');
+    Route::get('/demand-prediction', function () { return view('dashboards.manufacturer.demand-prediction'); })->name('manufacturer.demand-prediction');
+    Route::get('/chat', function () { return view('dashboards.manufacturer.chat'); })->name('manufacturer.chat');
+    Route::get('/settings', function () { return view('dashboards.manufacturer.settings'); })->name('manufacturer.settings');
 });
