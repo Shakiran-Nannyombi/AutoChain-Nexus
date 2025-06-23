@@ -40,21 +40,32 @@ class ProfileController extends Controller
 
             $user = Admin::find(session('user_id'));
             $user->fill($validated);
+
+            if ($request->hasFile('profile_photo')) {
+                $path = $request->file('profile_photo')->store('profile_photos', 'public');
+                $user->profile_photo = $path;
+            }
+
             $user->save();
-            
             session(['user_name' => $user->name]);
             return Redirect::route('profile.edit')->with('status', 'profile-updated');
         }
 
         // The following part is for non-admin users, so we use ProfileUpdateRequest
         $userRequest = ProfileUpdateRequest::createFrom($request);
-        $request->user()->fill($userRequest->validated());
+        $user = $request->user();
+        $user->fill($userRequest->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profile_photos', 'public');
+            $user->profile_photo = $path;
         }
 
-        $request->user()->save();
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

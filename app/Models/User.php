@@ -80,6 +80,41 @@ class User extends Authenticatable
         return $this->hasMany(FacilityVisit::class);
     }
 
+    public function manufacturer()
+    {
+        return $this->hasOne(Manufacturer::class);
+    }
+
+    public function supplier()
+    {
+        return $this->hasOne(Supplier::class);
+    }
+
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
+    public function retailer()
+    {
+        return $this->hasOne(Retailer::class);
+    }
+
+    public function analyst()
+    {
+        return $this->hasOne(Analyst::class);
+    }
+
+    public function sentCommunications()
+    {
+        return $this->hasMany(Communication::class, 'sender_id');
+    }
+
+    public function receivedCommunications()
+    {
+        return $this->hasMany(Communication::class, 'receiver_id');
+    }
+
     /**
      * Send the password reset notification.
      *

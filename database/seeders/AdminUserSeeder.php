@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AdminUserSeeder extends Seeder
 {
@@ -26,6 +27,19 @@ class AdminUserSeeder extends Seeder
                 'permissions' => json_encode(['all']),
                 'department' => 'Administration',
                 'is_active' => true,
+            ]
+        );
+        // Also create a user record for admin
+        User::updateOrCreate(
+            ['email' => 'admin@autochain.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'status' => 'approved',
+                'company' => 'Autochain Nexus',
+                'phone' => '1234567890',
+                'address' => 'Admin Address',
             ]
         );
     }

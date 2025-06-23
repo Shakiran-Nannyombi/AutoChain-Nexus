@@ -18,6 +18,7 @@ class Admin extends Authenticatable
         'company',
         'address',
         'profile_picture',
+        'profile_photo',
         'supporting_documents',
         'admin_level',
         'permissions',

@@ -36,4 +36,9 @@ class Vendor extends Authenticatable
             'supporting_documents' => 'array',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -4,6 +4,107 @@
 @push('styles')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/admin.css'])
+    <style>
+    .system-components-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .component-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .component-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    .component-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #22223b;
+    }
+    .component-card-desc {
+        color: #555;
+        font-size: 1rem;
+    }
+    .badge-green-flow {
+        background: #d1fae5;
+        color: #059669;
+        font-weight: 500;
+        border-radius: 16px;
+        padding: 0.25em 1em;
+        font-size: 0.95em;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .flow-performance-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .perf-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .perf-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.15rem;
+        font-weight: 600;
+    }
+    .perf-title {
+        flex: 1;
+        color: #22223b;
+    }
+    .perf-icon.success {
+        color: #059669;
+        font-size: 1.3em;
+    }
+    .perf-icon.warning {
+        color: #f59e42;
+        font-size: 1.3em;
+    }
+    .badge {
+        font-weight: 500;
+        border-radius: 16px;
+        padding: 0.25em 1em;
+        font-size: 0.95em;
+        margin-left: 0.5em;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .badge-yellow {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    .badge-red {
+        background: #fecaca;
+        color: #b91c1c;
+        margin-left: 0.5em;
+    }
+    .perf-failures {
+        margin-top: 0.5em;
+        color: #b91c1c;
+        font-size: 0.98em;
+    }
+    .failure-reason {
+        display: inline-block;
+        margin-right: 1em;
+    }
+    </style>
 @endpush
 
 @section('sidebar-content')
@@ -54,67 +155,50 @@
         </div>
     </div>
 
-    <!-- Side by side row for System Components and Flow Performance -->
-    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-        <!-- System Components (Left) -->
-        <div class="card-flow" style="flex: 1; min-width: 300px;">
-            <h2 class="card-title mb-4">System Components</h2>
-            <div class="flow-list">
-                @foreach($componentData as $role => $data)
-                <div class="flow-item clickable" onclick="openComponentModal('{{ $role }}')">
-                    <div>
-                        <div class="font-semibold">{{ ucfirst($role) }}</div>
-                        <div class="text-sm" style="color: #6c757d;">Connected to: {{ $data['connections'] }}</div>
-                    </div>
+    <!-- System Components (Full Width, Card Style) -->
+    <div class="card-flow mb-8" style="width: 100%;">
+        <h2 class="card-title mb-4">System Components</h2>
+        <div class="system-components-list">
+            @foreach($componentData as $role => $data)
+            <div class="component-card">
+                <div class="component-card-header">
+                    <span class="component-title">{{ ucfirst($role) }}</span>
                     <span class="badge badge-green-flow">{{ $data['count'] }} Active</span>
                 </div>
-                @endforeach
+                <div class="component-card-desc">Connected to: {{ $data['connections'] }}</div>
             </div>
+            @endforeach
         </div>
-
-        <!-- Flow Performance (Right) -->
-        <div class="card-flow" style="flex: 1; min-width: 300px;">
-            <h2 class="card-title mb-4">Flow Performance <span class="badge-yellow-flow" style="font-size: 0.7rem; vertical-align: middle;">Demo Data</span></h2>
-            <div class="flow-list">
-                <div class="flow-item clickable" onclick="openPerformanceModal('raw-materials')">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle" style="color: #38a169; margin-right: 0.75rem;"></i>
-                        <span>Raw Materials</span>
-                    </div>
-                    <span class="badge badge-green-flow">95%</span>
+    </div>
+    <!-- Flow Performance (Full Width, Card Style) -->
+    <div class="card-flow mb-8" style="width: 100%;">
+        <h2 class="card-title mb-4">Flow Performance</h2>
+        <div class="flow-performance-list">
+            @foreach($flowPerformance as $stage => $perf)
+            @php
+                $util = $perf['utilization'];
+                $isBottleneck = ($util < 80) || (!empty($perf['failures']));
+                $utilBadgeClass = $isBottleneck ? 'badge-yellow' : 'badge-green-flow';
+                $icon = $isBottleneck ? '<span class="perf-icon warning"><i class="fas fa-exclamation-triangle"></i></span>' : '<span class="perf-icon success"><i class="fas fa-check-circle"></i></span>';
+            @endphp
+            <div class="perf-card">
+                <div class="perf-card-header">
+                    {!! $icon !!}
+                    <span class="perf-title">{{ str_replace('_', ' ', ucfirst($stage)) }}</span>
+                    <span class="badge {{ $utilBadgeClass }}">{{ $util }}%</span>
+                    @if($isBottleneck)
+                        <span class="badge badge-red">Bottleneck</span>
+                    @endif
                 </div>
-                <div class="flow-item clickable" onclick="openPerformanceModal('manufacturing')">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-triangle" style="color: #d97706; margin-right: 0.75rem;"></i>
-                        <span>Manufacturing</span>
+                @if(!empty($perf['failures']))
+                    <div class="perf-failures">
+                        @foreach($perf['failures'] as $reason)
+                            <span class="failure-reason">{{ $reason }}</span>
+                        @endforeach
                     </div>
-                    <div>
-                        <span class="badge badge-yellow-flow" style="margin-right: 0.5rem;">78%</span>
-                        <span class="badge badge-red-flow">Bottleneck</span>
-                    </div>
-                </div>
-                <div class="flow-item clickable" onclick="openPerformanceModal('quality-control')">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle" style="color: #38a169; margin-right: 0.75rem;"></i>
-                        <span>Quality Control</span>
-                    </div>
-                    <span class="badge badge-green-flow">92%</span>
-                </div>
-                <div class="flow-item clickable" onclick="openPerformanceModal('distribution')">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle" style="color: #38a169; margin-right: 0.75rem;"></i>
-                        <span>Distribution</span>
-                    </div>
-                    <span class="badge badge-green-flow">88%</span>
-                </div>
-                <div class="flow-item clickable" onclick="openPerformanceModal('retail')">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle" style="color: #38a169; margin-right: 0.75rem;"></i>
-                        <span>Retail</span>
-                    </div>
-                    <span class="badge badge-green-flow">91%</span>
-                </div>
+                @endif
             </div>
+            @endforeach
         </div>
     </div>
 </div>
@@ -253,6 +337,8 @@ function openComponentModal(component) {
     const title = document.getElementById('componentModalTitle');
     const content = document.getElementById('componentModalContent');
     
+    // Use Blade-passed data for active connections
+    const activeConnectionsPerRole = @json($activeConnectionsPerRole);
     const componentData = {
         manufacturers: {
             title: 'Manufacturers Overview',
@@ -261,23 +347,17 @@ function openComponentModal(component) {
                     <div class="component-stats">
                         <div class="stat-item">
                             <span class="stat-label">Total Manufacturers</span>
-                            <span class="stat-value">3</span>
+                            <span class="stat-value">{{ $componentData['manufacturers']['count'] }}</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Active</span>
-                            <span class="stat-value">3</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Pending Approval</span>
-                            <span class="stat-value">0</span>
+                            <span class="stat-label">Active Connections</span>
+                            <span class="stat-value">${activeConnectionsPerRole.manufacturers ?? 0}</span>
                         </div>
                     </div>
                     <div class="component-connections">
                         <h4>Connected Components</h4>
                         <ul>
-                            <li>Suppliers (12 active connections)</li>
-                            <li>Vendors (8 active connections)</li>
-                            <li>Analysts (4 active connections)</li>
+                            <li>Suppliers, Vendors, Analysts</li>
                         </ul>
                     </div>
                     <div class="component-actions">
@@ -294,22 +374,17 @@ function openComponentModal(component) {
                     <div class="component-stats">
                         <div class="stat-item">
                             <span class="stat-label">Total Suppliers</span>
-                            <span class="stat-value">12</span>
+                            <span class="stat-value">{{ $componentData['suppliers']['count'] }}</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Active</span>
-                            <span class="stat-value">12</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Pending Approval</span>
-                            <span class="stat-value">0</span>
+                            <span class="stat-label">Active Connections</span>
+                            <span class="stat-value">${activeConnectionsPerRole.suppliers ?? 0}</span>
                         </div>
                     </div>
                     <div class="component-connections">
                         <h4>Connected Components</h4>
                         <ul>
-                            <li>Manufacturers (3 active connections)</li>
-                            <li>Analysts (4 active connections)</li>
+                            <li>Manufacturers</li>
                         </ul>
                     </div>
                     <div class="component-actions">
@@ -326,23 +401,17 @@ function openComponentModal(component) {
                     <div class="component-stats">
                         <div class="stat-item">
                             <span class="stat-label">Total Vendors</span>
-                            <span class="stat-value">8</span>
+                            <span class="stat-value">{{ $componentData['vendors']['count'] }}</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Active</span>
-                            <span class="stat-value">8</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Pending Approval</span>
-                            <span class="stat-value">0</span>
+                            <span class="stat-label">Active Connections</span>
+                            <span class="stat-value">${activeConnectionsPerRole.vendors ?? 0}</span>
                         </div>
                     </div>
                     <div class="component-connections">
                         <h4>Connected Components</h4>
                         <ul>
-                            <li>Manufacturers (3 active connections)</li>
-                            <li>Retailers (25 active connections)</li>
-                            <li>Analysts (4 active connections)</li>
+                            <li>Manufacturers, Retailers, Analysts</li>
                         </ul>
                     </div>
                     <div class="component-actions">
@@ -359,22 +428,17 @@ function openComponentModal(component) {
                     <div class="component-stats">
                         <div class="stat-item">
                             <span class="stat-label">Total Retailers</span>
-                            <span class="stat-value">25</span>
+                            <span class="stat-value">{{ $componentData['retailers']['count'] }}</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Active</span>
-                            <span class="stat-value">25</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Pending Approval</span>
-                            <span class="stat-value">0</span>
+                            <span class="stat-label">Active Connections</span>
+                            <span class="stat-value">${activeConnectionsPerRole.retailers ?? 0}</span>
                         </div>
                     </div>
                     <div class="component-connections">
                         <h4>Connected Components</h4>
                         <ul>
-                            <li>Vendors (8 active connections)</li>
-                            <li>Analysts (4 active connections)</li>
+                            <li>Vendors, Analysts</li>
                         </ul>
                     </div>
                     <div class="component-actions">
@@ -391,15 +455,11 @@ function openComponentModal(component) {
                     <div class="component-stats">
                         <div class="stat-item">
                             <span class="stat-label">Total Analysts</span>
-                            <span class="stat-value">4</span>
+                            <span class="stat-value">{{ $componentData['analysts']['count'] }}</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Active</span>
-                            <span class="stat-value">4</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Pending Approval</span>
-                            <span class="stat-value">0</span>
+                            <span class="stat-label">Active Connections</span>
+                            <span class="stat-value">${activeConnectionsPerRole.analysts ?? 0}</span>
                         </div>
                     </div>
                     <div class="component-connections">

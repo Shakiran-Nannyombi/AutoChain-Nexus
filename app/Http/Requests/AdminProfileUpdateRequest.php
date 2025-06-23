@@ -33,6 +33,7 @@ class AdminProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(Admin::class)->ignore(session('user_id')),
             ],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ];
     }
 }

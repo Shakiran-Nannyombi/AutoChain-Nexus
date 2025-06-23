@@ -124,4 +124,32 @@ class VisitController extends Controller
 
         return back()->with('success', 'Visit has been rescheduled and notification email sent.');
     }
+
+    public function complete(FacilityVisit $visit)
+    {
+        $visit->status = 'completed';
+        $visit->save();
+
+        // If the visit is for a vendor, approve the user
+        $user = $visit->user;
+        if ($user && $user->role === 'vendor' && $user->status !== 'approved') {
+            $user->status = 'approved';
+            $user->save();
+            // Send approval email
+            try {
+                $subject = "Your Application has been Approved!";
+                $loginUrl = url('/login');
+                $body = "Dear {$user->name},\n\nCongratulations! Your account for the Autochain Nexus platform has been approved after a successful facility visit.\n\nYou can now log in and access all the features available to you.\n\nLogin here: {$loginUrl}\n\nBest Regards,\nThe Autochain Nexus Team";
+                Http::post('http://localhost:8082/api/v1/send-email', [
+                    'to' => $user->email,
+                    'subject' => $subject,
+                    'body' => $body,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Failed to send approval email to vendor after visit completion: " . $e->getMessage());
+            }
+        }
+
+        return back()->with('success', 'Visit marked as completed. Vendor has been approved.');
+    }
 }

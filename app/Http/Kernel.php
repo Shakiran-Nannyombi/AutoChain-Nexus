@@ -10,6 +10,7 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\ValidateSignature;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\EnsureUserIsAuthenticated;
+use App\Http\Middleware\UpdateLastSeen;
 
 class Kernel extends HttpKernel
 {
@@ -37,6 +38,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            UpdateLastSeen::class,
         ],
 
         'api' => [

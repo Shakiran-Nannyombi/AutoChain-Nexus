@@ -51,6 +51,18 @@
         </div>
     </div>
 
+    <!-- User Sessions Bar Graphs -->
+    <div class="chart-row">
+        <div class="chart-container" style="width: 100%; max-width: 700px;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">User Sessions Per Month (Last 12 Months)</h3>
+            <canvas id="monthlySessionsChart"></canvas>
+        </div>
+        <div class="chart-container" style="width: 100%; max-width: 400px;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">User Sessions Per Year (Last 5 Years)</h3>
+            <canvas id="annualSessionsChart"></canvas>
+        </div>
+    </div>
+
     <!-- Recent Activity -->
     <div class="activity-feed">
         <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">Recent Activity</h3>
@@ -81,7 +93,7 @@
             data: {
                 labels: Object.keys(userRolesData).map(role => role.charAt(0).toUpperCase() + role.slice(1)),
                 datasets: [{
-                    label: 'User Roles',
+                    label: 'User Count',
                     data: Object.values(userRolesData),
                     backgroundColor: [
                         '#3490dc', '#f6993f', '#38c172', '#e3342f', '#6574cd'
@@ -93,6 +105,17 @@
                 plugins: {
                     legend: {
                         position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'User Distribution by Role'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + ' users';
+                            }
+                        }
                     }
                 }
             }
@@ -120,9 +143,107 @@
             },
             options: {
                 responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'New Users Registered Per Day'
+                    }
+                },
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date (Day)'
+                        }
+                    },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Users'
+                        }
+                    }
+                }
+            }
+        });
+
+        // User Sessions Per Month (Bar)
+        const monthlySessionsCtx = document.getElementById('monthlySessionsChart').getContext('2d');
+        const monthlySessionsData = @json($monthlySessions);
+        const monthlyLabels = monthlySessionsData.map(d => d.month);
+        const monthlyCounts = monthlySessionsData.map(d => d.sessions);
+        new Chart(monthlySessionsCtx, {
+            type: 'bar',
+            data: {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Sessions',
+                    data: monthlyCounts,
+                    backgroundColor: '#38c172',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'User Sessions Per Month'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month (YYYY-MM)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Sessions'
+                        }
+                    }
+                }
+            }
+        });
+
+        // User Sessions Per Year (Bar)
+        const annualSessionsCtx = document.getElementById('annualSessionsChart').getContext('2d');
+        const annualSessionsData = @json($annualSessions);
+        const annualLabels = annualSessionsData.map(d => d.year);
+        const annualCounts = annualSessionsData.map(d => d.sessions);
+        new Chart(annualSessionsCtx, {
+            type: 'bar',
+            data: {
+                labels: annualLabels,
+                datasets: [{
+                    label: 'Sessions',
+                    data: annualCounts,
+                    backgroundColor: '#3490dc',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'User Sessions Per Year'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year (YYYY)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Sessions'
+                        }
                     }
                 }
             }

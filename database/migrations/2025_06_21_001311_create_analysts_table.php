@@ -13,14 +13,7 @@ return new class extends Migration
     {
         Schema::create('analysts', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone');
-            $table->string('password');
-            $table->string('company');
-            $table->text('address');
-            $table->string('profile_picture')->nullable();
-            $table->json('supporting_documents')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('analyst_certification')->nullable();
             $table->text('specialization_areas')->nullable();
             $table->text('research_methodologies')->nullable();

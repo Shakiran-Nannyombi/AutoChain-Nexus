@@ -51,34 +51,221 @@ class DashboardController extends Controller
     {
         // --- System Components Data ---
         $componentData = [
-            'manufacturers' => ['count' => User::where('role', 'manufacturer')->where('status', 'approved')->count(), 'connections' => 'suppliers, vendors'],
-            'suppliers' => ['count' => User::where('role', 'supplier')->where('status', 'approved')->count(), 'connections' => 'manufacturers'],
-            'vendors' => ['count' => User::where('role', 'vendor')->where('status', 'approved')->count(), 'connections' => 'manufacturers, retailers'],
-            'retailers' => ['count' => User::where('role', 'retailer')->where('status', 'approved')->count(), 'connections' => 'vendors, customers'],
-            'analysts' => ['count' => User::where('role', 'analyst')->where('status', 'approved')->count(), 'connections' => 'all'],
+            'manufacturers' => [
+                'count' => User::where('role', 'manufacturer')->where('status', 'approved')->count(),
+                'connections' => 'suppliers, vendors, analysts'
+            ],
+            'suppliers' => [
+                'count' => User::where('role', 'supplier')->where('status', 'approved')->count(),
+                'connections' => 'manufacturers'
+            ],
+            'vendors' => [
+                'count' => User::where('role', 'vendor')->where('status', 'approved')->count(),
+                'connections' => 'manufacturers, retailers, analysts'
+            ],
+            'retailers' => [
+                'count' => User::where('role', 'retailer')->where('status', 'approved')->count(),
+                'connections' => 'vendors, analysts'
+            ],
+            'analysts' => [
+                'count' => User::where('role', 'analyst')->where('status', 'approved')->count(),
+                'connections' => 'all'
+            ],
         ];
-        $totalActiveUsers = array_sum(array_column($componentData, 'count'));
+
+        // --- Active Connections Calculation (based on communications table) ---
+        $rolePairs = [
+            'manufacturers' => ['supplier', 'vendor', 'analyst'],
+            'suppliers' => ['manufacturer'],
+            'vendors' => ['manufacturer', 'retailer', 'analyst'],
+            'retailers' => ['vendor', 'analyst'],
+            'analysts' => ['manufacturer', 'supplier', 'vendor', 'retailer'],
+        ];
+        $activeConnections = 0;
+        $activeConnectionsPerRole = [];
+        foreach ($rolePairs as $role => $targets) {
+            $users = User::where('role', rtrim($role, 's'))->pluck('id');
+            $roleConnectionCount = 0;
+            foreach ($targets as $targetRole) {
+                $targetUsers = User::where('role', $targetRole)->pluck('id');
+                $count = \App\Models\Communication::whereIn('sender_id', $users)
+                    ->whereIn('receiver_id', $targetUsers)
+                    ->distinct('sender_id', 'receiver_id')
+                    ->count();
+                $roleConnectionCount += $count;
+            }
+            $activeConnections += $roleConnectionCount;
+            $activeConnectionsPerRole[$role] = $roleConnectionCount;
+        }
 
         // --- Stats Cards Data ---
-        // Check API health for a more dynamic "System Health"
         $validationApiHealthy = $this->checkApiHealth('http://localhost:8080/api/v1/health');
         $emailApiHealthy = $this->checkApiHealth('http://localhost:8082/api/v1/health');
         $systemHealth = ($validationApiHealthy && $emailApiHealthy) ? 98 : 50;
 
-        // Placeholder for active connections
-        $activeConnections = $totalActiveUsers * 3 + rand(-10, 10);
-
-        // Check for bottlenecks (e.g., pending visits older than a week)
         $bottlenecksCount = FacilityVisit::where('status', 'pending')->where('created_at', '<', now()->subWeek())->count();
 
         $stats = [
-            'activeUsers' => $totalActiveUsers,
+            'activeUsers' => $componentData['manufacturers']['count'] + $componentData['suppliers']['count'] + $componentData['vendors']['count'] + $componentData['retailers']['count'] + $componentData['analysts']['count'],
             'systemHealth' => $systemHealth,
-            'activeConnections' => $activeConnections,
+            'activeConnections' => max(0, $activeConnections),
             'bottlenecks' => $bottlenecksCount,
         ];
 
-        return view('dashboards.admin.system-flow', compact('stats', 'componentData'));
+        // --- Flow Performance Metrics ---
+        $stages = ['raw_materials', 'manufacturing', 'quality_control', 'distribution', 'retail'];
+        $flowPerformance = [];
+        $bottlenecks = [];
+        foreach ($stages as $stage) {
+            $stageItems = \App\Models\ProcessFlow::where('current_stage', $stage)->get();
+            $completed = $stageItems->where('status', 'completed');
+            $failed = $stageItems->where('status', 'failed');
+            $inProgress = $stageItems->where('status', 'in_progress');
+            $avgTime = $completed->count() > 0
+                ? $completed->map(function($item) {
+                    return $item->completed_stage_at && $item->entered_stage_at ? strtotime($item->completed_stage_at) - strtotime($item->entered_stage_at) : null;
+                })->filter()->avg() : null;
+            $avgTime = $avgTime ? round($avgTime / 3600, 1) : null; // in hours
+            $utilization = rand(50, 100); // Simulated for now
+            // Bottleneck: any in_progress item in this stage for >2 days
+            $bottleneckItems = $inProgress->filter(function($item) {
+                return $item->entered_stage_at && now()->diffInHours($item->entered_stage_at) > 48;
+            });
+            foreach ($bottleneckItems as $bItem) {
+                $bottlenecks[] = [
+                    'stage' => $stage,
+                    'item' => $bItem->item_name,
+                    'entered_stage_at' => $bItem->entered_stage_at,
+                ];
+            }
+            $flowPerformance[$stage] = [
+                'avg_time_hours' => $avgTime,
+                'processed' => $completed->count(),
+                'in_progress' => $inProgress->count(),
+                'failed' => $failed->count(),
+                'failures' => $failed->pluck('failure_reason')->filter()->values()->all(),
+                'utilization' => $utilization,
+            ];
+        }
+
+        // --- Quick Stats ---
+        $pendingUsers = User::where('status', 'pending')->count();
+        $scheduledVisitsCount = FacilityVisit::where('status', 'pending')->orWhere('status', 'approved')->count();
+        $scheduledVisits = FacilityVisit::orderBy('visit_date', 'asc')->take(5)->get();
+
+        // --- System Flow Stages for Visualization ---
+        $flowStages = [
+            [
+                'name' => 'User Registration',
+                'active' => User::where('status', 'pending')->count(),
+                'status' => $pendingUsers > 0 ? 'warning' : 'normal',
+            ],
+            [
+                'name' => 'Validation',
+                'active' => User::where('status', 'approved')->count(),
+                'status' => 'normal',
+            ],
+            [
+                'name' => 'Inventory',
+                'active' => 0, // Placeholder, update if you have inventory data
+                'status' => 'normal',
+            ],
+            [
+                'name' => 'Manufacturing',
+                'active' => \App\Models\ProcessFlow::where('current_stage', 'manufacturing')->where('status', 'in_progress')->count(),
+                'status' => 'normal',
+            ],
+            [
+                'name' => 'Warehouse',
+                'active' => 0, // Placeholder
+                'status' => 'normal',
+            ],
+            [
+                'name' => 'Delivery',
+                'active' => 0, // Placeholder
+                'status' => 'normal',
+            ],
+            [
+                'name' => 'Retail',
+                'active' => \App\Models\ProcessFlow::where('current_stage', 'retail')->where('status', 'in_progress')->count(),
+                'status' => 'normal',
+            ],
+        ];
+
+        // --- Recent Activity Feed ---
+        $recentActivities = collect();
+        $recentActivities = $recentActivities->merge(
+            User::where('status', 'approved')->latest()->take(3)->get()->map(function($u) {
+                return [
+                    'type' => 'user_approved',
+                    'message' => "{$u->name} approved as {$u->role}",
+                    'time' => $u->updated_at,
+                ];
+            })
+        );
+        $recentActivities = $recentActivities->merge(
+            User::where('status', 'pending')->latest()->take(2)->get()->map(function($u) {
+                return [
+                    'type' => 'user_registered',
+                    'message' => "{$u->name} registered as {$u->role}",
+                    'time' => $u->created_at,
+                ];
+            })
+        );
+        $recentActivities = $recentActivities->merge(
+            FacilityVisit::latest()->take(2)->get()->map(function($v) {
+                return [
+                    'type' => 'visit_scheduled',
+                    'message' => "Scheduled visit to {$v->facility_name} confirmed",
+                    'time' => $v->visit_date,
+                ];
+            })
+        );
+        $recentActivities = $recentActivities->sortByDesc('time')->take(5)->values();
+
+        // --- Notifications & Alerts ---
+        $notifications = [];
+        if ($systemHealth < 90) {
+            $notifications[] = [
+                'type' => 'system_health',
+                'message' => 'System health is below optimal!',
+                'level' => 'warning',
+            ];
+        } else {
+            $notifications[] = [
+                'type' => 'system_health',
+                'message' => 'All services running smoothly.',
+                'level' => 'success',
+            ];
+        }
+        if ($pendingUsers > 0) {
+            $notifications[] = [
+                'type' => 'pending_users',
+                'message' => "$pendingUsers users pending approval.",
+                'level' => 'info',
+            ];
+        }
+        if ($bottlenecksCount > 0) {
+            $notifications[] = [
+                'type' => 'bottleneck',
+                'message' => "$bottlenecksCount bottleneck(s) detected.",
+                'level' => 'warning',
+            ];
+        }
+
+        return view('dashboards.admin.system-flow', compact(
+            'stats',
+            'componentData',
+            'activeConnectionsPerRole',
+            'flowPerformance',
+            'bottlenecks',
+            'pendingUsers',
+            'scheduledVisitsCount',
+            'scheduledVisits',
+            'flowStages',
+            'recentActivities',
+            'notifications'
+        ));
     }
 
     private function checkApiHealth(string $url): bool
@@ -111,13 +298,32 @@ class DashboardController extends Controller
             
         $recentActivities = User::latest()->take(5)->get();
 
+        // User session analytics (bar graph)
+        // Monthly sessions for the last 12 months
+        $monthlySessions = DB::table('user_logins')
+            ->selectRaw('DATE_FORMAT(logged_in_at, "%Y-%m") as month, COUNT(*) as sessions')
+            ->where('logged_in_at', '>=', now()->subMonths(12)->startOfMonth())
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        // Annual sessions for the last 5 years
+        $annualSessions = DB::table('user_logins')
+            ->selectRaw('YEAR(logged_in_at) as year, COUNT(*) as sessions')
+            ->where('logged_in_at', '>=', now()->subYears(5)->startOfYear())
+            ->groupBy('year')
+            ->orderBy('year', 'asc')
+            ->get();
+
         return view('dashboards.admin.analytics', compact(
             'totalUsers',
             'pendingUsers',
             'approvedUsers',
             'usersByRole',
             'userRegistrationData',
-            'recentActivities'
+            'recentActivities',
+            'monthlySessions',
+            'annualSessions'
         ));
     }
 

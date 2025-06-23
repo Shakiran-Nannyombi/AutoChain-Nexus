@@ -36,4 +36,9 @@ class Supplier extends Authenticatable
             'supporting_documents' => 'array',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

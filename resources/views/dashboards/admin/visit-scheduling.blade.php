@@ -110,6 +110,12 @@
                                     @csrf
                                     <button type="submit" class="btn-action-visit btn-send-email">Confirm & Send Details</button>
                                 </form>
+                                @if ($visit->user && $visit->user->role === 'vendor')
+                                <form action="{{ route('admin.visits.complete', $visit) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <button type="submit" class="btn-action-visit btn-complete-visit" onclick="return confirm('Mark this visit as completed? This will approve the vendor.')">Mark as Completed</button>
+                                </form>
+                                @endif
                             @endif
                         </div>
                     </div>
