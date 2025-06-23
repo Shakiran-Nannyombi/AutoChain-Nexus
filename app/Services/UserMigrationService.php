@@ -28,27 +28,73 @@ class UserMigrationService
             switch ($user->role) {
                 case 'manufacturer':
                     if (!$user->manufacturer) {
-                        $user->manufacturer()->create($roleSpecificData);
+                        $user->manufacturer()->create([
+                            'manufacturing_license' => 'LIC-2024-001',
+                            'quality_certification' => 'ISO 9001:2015',
+                            'production_capacity' => '5000 units per month',
+                            'specializations' => 'Automotive Manufacturing, Quality Control',
+                        ]);
                     }
                     break;
                 case 'supplier':
                     if (!$user->supplier) {
-                        $user->supplier()->create($roleSpecificData);
+                        $user->supplier()->create([
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'phone' => $user->phone,
+                            'password' => $user->password,
+                            'company' => $user->company,
+                            'address' => $user->address,
+                            'profile_picture' => $user->profile_photo,
+                            'supplier_license' => 'SUP-2024-001',
+                            'supply_categories' => 'Raw Materials, Components',
+                            'delivery_capabilities' => 'Next Day Delivery, Express Shipping',
+                            'payment_terms' => 'Net 30',
+                        ]);
                     }
                     break;
                 case 'vendor':
                     if (!$user->vendor) {
-                        $user->vendor()->create($roleSpecificData);
+                        $user->vendor()->create([
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'phone' => $user->phone,
+                            'password' => $user->password,
+                            'company' => $user->company,
+                            'address' => $user->address,
+                            'profile_picture' => $user->profile_photo,
+                            'vendor_license' => 'VEN-2024-001',
+                            'product_categories' => 'Automotive Parts, Accessories',
+                            'service_areas' => 'Local, Regional, National',
+                            'contract_terms' => 'Annual Contract',
+                        ]);
                     }
                     break;
                 case 'retailer':
                     if (!$user->retailer) {
-                        $user->retailer()->create($roleSpecificData);
+                        $user->retailer()->create([
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'phone' => $user->phone,
+                            'password' => $user->password,
+                            'company' => $user->company,
+                            'address' => $user->address,
+                            'profile_picture' => $user->profile_photo,
+                            'retail_license' => 'RET-2024-001',
+                            'store_locations' => 'Multiple locations across the city',
+                            'product_inventory' => 'Automotive parts and accessories',
+                            'business_hours' => 'Mon-Fri: 9AM-6PM, Sat: 10AM-4PM',
+                        ]);
                     }
                     break;
                 case 'analyst':
                     if (!$user->analyst) {
-                        $user->analyst()->create($roleSpecificData);
+                        $user->analyst()->create([
+                            'analyst_certification' => 'Certified Business Analyst',
+                            'specialization_areas' => 'Inventory Management, Supply Chain Analysis',
+                            'research_methodologies' => 'Quantitative Analysis, Market Research',
+                            'reporting_capabilities' => 'Advanced Analytics, Data Visualization',
+                        ]);
                     }
                     break;
                 case 'admin':
@@ -73,14 +119,14 @@ class UserMigrationService
         if ($role === 'admin') {
             // For admin users, authenticate against the Admin model
             $admin = Admin::where('email', $email)->first();
-            
+        
             if (!$admin || !password_verify($password, $admin->password)) {
                 return false;
             }
 
             // Check if admin is active
             if (!$admin->is_active) {
-                return false;
+            return false;
             }
 
             return $admin;
@@ -115,13 +161,10 @@ class UserMigrationService
             case 'manufacturer':
                 if (!$user->manufacturer) {
                     $user->manufacturer()->create([
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'phone' => $user->phone,
-                        'password' => $user->password,
-                        'company' => $user->company,
-                        'address' => $user->address,
-                        'profile_picture' => $user->profile_photo,
+                        'manufacturing_license' => 'LIC-2024-001',
+                        'quality_certification' => 'ISO 9001:2015',
+                        'production_capacity' => '5000 units per month',
+                        'specializations' => 'Automotive Manufacturing, Quality Control',
                     ]);
                 }
                 break;
@@ -135,6 +178,10 @@ class UserMigrationService
                         'company' => $user->company,
                         'address' => $user->address,
                         'profile_picture' => $user->profile_photo,
+                        'supplier_license' => 'SUP-2024-001',
+                        'supply_categories' => 'Raw Materials, Components',
+                        'delivery_capabilities' => 'Next Day Delivery, Express Shipping',
+                        'payment_terms' => 'Net 30',
                     ]);
                 }
                 break;
@@ -148,6 +195,10 @@ class UserMigrationService
                         'company' => $user->company,
                         'address' => $user->address,
                         'profile_picture' => $user->profile_photo,
+                        'vendor_license' => 'VEN-2024-001',
+                        'product_categories' => 'Automotive Parts, Accessories',
+                        'service_areas' => 'Local, Regional, National',
+                        'contract_terms' => 'Annual Contract',
                     ]);
                 }
                 break;
@@ -161,19 +212,20 @@ class UserMigrationService
                         'company' => $user->company,
                         'address' => $user->address,
                         'profile_picture' => $user->profile_photo,
+                        'retail_license' => 'RET-2024-001',
+                        'store_locations' => 'Multiple locations across the city',
+                        'product_inventory' => 'Automotive parts and accessories',
+                        'business_hours' => 'Mon-Fri: 9AM-6PM, Sat: 10AM-4PM',
                     ]);
                 }
                 break;
             case 'analyst':
                 if (!$user->analyst) {
                     $user->analyst()->create([
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'phone' => $user->phone,
-                        'password' => $user->password,
-                        'company' => $user->company,
-                        'address' => $user->address,
-                        'profile_picture' => $user->profile_photo,
+                        'analyst_certification' => 'Certified Business Analyst',
+                        'specialization_areas' => 'Inventory Management, Supply Chain Analysis',
+                        'research_methodologies' => 'Quantitative Analysis, Market Research',
+                        'reporting_capabilities' => 'Advanced Analytics, Data Visualization',
                     ]);
                 }
                 break;

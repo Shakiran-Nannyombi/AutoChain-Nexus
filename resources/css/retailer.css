@@ -1,4 +1,5 @@
-/* Manufacturer-specific styles */
+/* Retailer styles */
+
 :root {
     --deep-purple: #0F2C67;
     --maroon: #CD1818;
@@ -9,6 +10,7 @@
     --shadow: 0 4px 24px rgba(32,0,58,0.08);
     --blue: #2a6eea; /* Added missing variable */
 }
+
 
 .page-header-manufacturer {
     font-size: 2rem;

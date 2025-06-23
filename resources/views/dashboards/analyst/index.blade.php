@@ -1,56 +1,14 @@
 @extends('layouts.dashboard')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/analyst.css') }}">
+@endpush
+
+@section('title', 'Analyst Dashboard')
+
 @section('sidebar-content')
-    <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <a href="/analyst/dashboard" class="nav-item active">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a>
-        <a href="/analyst/reports" class="nav-item">
-            <i class="fas fa-chart-bar"></i> Reports
-        </a>
-        <a href="/analyst/analytics" class="nav-item">
-            <i class="fas fa-chart-line"></i> Analytics
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Data Analysis</div>
-        <a href="/analyst/sales-analysis" class="nav-item">
-            <i class="fas fa-chart-pie"></i> Sales Analysis
-        </a>
-        <a href="/analyst/inventory-analysis" class="nav-item">
-            <i class="fas fa-warehouse"></i> Inventory Analysis
-        </a>
-        <a href="/analyst/trends" class="nav-item">
-            <i class="fas fa-trending-up"></i> Trends
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Reports</div>
-        <a href="/analyst/reports/sales" class="nav-item">
-            <i class="fas fa-file-alt"></i> Sales Reports
-        </a>
-        <a href="/analyst/reports/inventory" class="nav-item">
-            <i class="fas fa-file-alt"></i> Inventory Reports
-        </a>
-        <a href="/analyst/reports/performance" class="nav-item">
-            <i class="fas fa-file-alt"></i> Performance Reports
-        </a>
-    </div>
-
-    <div class="nav-section">
-        <div class="nav-section-title">Settings</div>
-        <a href="/analyst/profile" class="nav-item">
-            <i class="fas fa-user"></i> Profile
-        </a>
-        <a href="/analyst/settings" class="nav-item">
-            <i class="fas fa-cog"></i> Settings
-        </a>
-    </div>
+    @include('dashboards.analyst.sidebar')
 @endsection
-
 @section('content')
     @php
         $title = 'Analyst Dashboard';

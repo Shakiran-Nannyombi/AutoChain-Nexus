@@ -320,6 +320,21 @@ Route::get('/analyst/dashboard', function () {
         return redirect('/login');
     }
     return view('dashboards.analyst.index');
+})->name('analyst.dashboard');
+
+// Analyst dashboard routes
+Route::prefix('analyst')->group(function () {
+    Route::get('/dashboard', function () { return view('dashboards.analyst.index'); })->name('analyst.dashboard');
+    Route::get('/reports', function () { return view('dashboards.analyst.reports'); })->name('analyst.reports');
+    Route::get('/analytics', function () { return view('dashboards.analyst.analytics'); })->name('analyst.analytics');
+    Route::get('/sales-analysis', function () { return view('dashboards.analyst.sales-analysis'); })->name('analyst.sales-analysis');
+    Route::get('/inventory-analysis', function () { return view('dashboards.analyst.inventory-analysis'); })->name('analyst.inventory-analysis');
+    Route::get('/trends', function () { return view('dashboards.analyst.trends'); })->name('analyst.trends');
+    Route::get('/reports/sales', function () { return view('dashboards.analyst.sales-reports'); })->name('analyst.sales-reports');
+    Route::get('/reports/inventory', function () { return view('dashboards.analyst.inventory-reports'); })->name('analyst.inventory-reports');
+    Route::get('/reports/performance', function () { return view('dashboards.analyst.performance-reports'); })->name('analyst.performance-reports');
+    Route::get('/profile', function () { return view('dashboards.analyst.profile'); })->name('analyst.profile');
+    Route::get('/settings', function () { return view('dashboards.analyst.settings'); })->name('analyst.settings');
 });
 
 // Logout route

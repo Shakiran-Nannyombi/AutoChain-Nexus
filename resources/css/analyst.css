@@ -1,4 +1,4 @@
-/* Manufacturer-specific styles */
+/* Analysts styles */
 :root {
     --deep-purple: #0F2C67;
     --maroon: #CD1818;
@@ -10,7 +10,8 @@
     --blue: #2a6eea; /* Added missing variable */
 }
 
-.page-header-manufacturer {
+
+.page-header {
     font-size: 2rem;
     font-weight: 700;
     color: #0F2C67; /* deep purple, matches manufacturer theme */
