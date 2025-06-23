@@ -1,44 +1,163 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.dashboard')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
+@section('title', 'Profile')
 
-                        @include('profile.partials.update-profile-information-form')
+@section('sidebar-content')
+    @if(auth()->user()->role === 'manufacturer')
+        @include('dashboards.manufacturer.sidebar')
+    @elseif(auth()->user()->role === 'supplier')
+        @include('dashboards.supplier.sidebar')
+    @elseif(auth()->user()->role === 'vendor')
+        @include('dashboards.vendor.sidebar')
+    @elseif(auth()->user()->role === 'retailer')
+        @include('dashboards.retailer.sidebar')
+    @elseif(auth()->user()->role === 'analyst')
+        @include('dashboards.analyst.sidebar')
+    @endif
+@endsection
 
-                        <div class="mb-4">
-                            <label for="profile_photo" class="block font-medium text-sm text-gray-700">Profile Photo</label>
-                            <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="mt-1 block w-full">
-                            @if(auth()->user()->profile_photo)
-                                <div class="mt-2">
-                                    <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" alt="Profile Photo" width="100" class="rounded-full border">
-                                </div>
-                            @endif
-                            @error('profile_photo')
-                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+@section('content')
+<h1 class='page-title' style='margin-bottom: 1.5rem;'>Edit Profile</h1>
 
-                        @include('profile.partials.update-password-form')
-                        @include('profile.partials.delete-user-form')
+<div class="admin-profile-grid">
+    <!-- Left Column: User Info Card -->
+    <div class="profile-user-card">
+        @php
+            $nameParts = explode(' ', auth()->user()->name);
+            $initials = count($nameParts) > 1 
+                ? strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1))
+                : strtoupper(substr(auth()->user()->name, 0, 2));
+        @endphp
+        <div class="profile-avatar">{{ $initials }}</div>
+        <h2 class="user-name">{{ auth()->user()->name }}</h2>
+        <div class="user-role">{{ ucfirst(auth()->user()->role) }}</div>
+        <hr style="margin: 1.5rem 0;">
+        <ul class="profile-user-details">
+            <li><i class="fas fa-envelope"></i>{{ auth()->user()->email }}</li>
+            <li><i class="fas fa-phone"></i>{{ auth()->user()->phone ?? 'N/A' }}</li>
+            <li><i class="fas fa-building"></i>{{ auth()->user()->company ?? 'N/A' }}</li>
+            <li><i class="fas fa-map-marker-alt"></i>{{ auth()->user()->address ?? 'N/A' }}</li>
+            <li><i class="fas fa-calendar-alt"></i>Joined {{ auth()->user()->created_at->format('F Y') }}</li>
+            <li><i class="fas fa-check-circle"></i>Status: {{ ucfirst(auth()->user()->status) }}</li>
+        </ul>
+    </div>
 
-                        <div class="mt-4">
-                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">
-                                {{ __('Update Profile') }}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <!-- Right Column: Settings Forms -->
+    <div class="profile-settings-forms">
+        <div class="profile-settings-card">
+            <h3><i class="fas fa-user-edit"></i>Profile Information</h3>
+            @include('profile.partials.update-profile-information-form')
+        </div>
+        <div class="password-settings-card" style="margin-top: 2rem;">
+            <h3><i class="fas fa-lock"></i>Update Password</h3>
+            @include('profile.partials.update-password-form')
+        </div>
+        <div class="password-settings-card" style="margin-top: 2rem;">
+            <h3><i class="fas fa-trash-alt"></i>Delete Account</h3>
+            @include('profile.partials.delete-user-form')
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection
+
+@push('styles')
+<style>
+    .admin-profile-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .profile-user-card, .profile-settings-card, .password-settings-card {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .profile-user-card {
+        text-align: center;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #eef2ff;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin: 0 auto 1rem;
+    }
+
+    .profile-user-card .user-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .profile-user-card .user-role {
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-user-details {
+        text-align: left;
+        list-style: none;
+        padding: 0;
+    }
+
+    .profile-user-details li {
+        display: flex;
+        align-items: center;
+        color: #4b5563;
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .profile-user-details li i {
+        width: 24px;
+        text-align: center;
+        margin-right: 0.75rem;
+        color: #9ca3af;
+    }
+
+    .profile-settings-card h3, .password-settings-card h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .profile-settings-card h3 i, .password-settings-card h3 i {
+        margin-right: 0.75rem;
+        color: #9ca3af;
+    }
+
+    .settings-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .settings-form-grid .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group-full {
+        grid-column: 1 / -1;
+    }
+
+    .form-actions-alt .link-cancel {
+        font-size: 14px;
+        color: #6c757d;
+        text-decoration: none;
+        margin-left: 15px;
+    }
+</style>
+@endpush

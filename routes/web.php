@@ -52,6 +52,8 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
                 Log::error("Migration failed for {$email} on login: " . $e->getMessage());
                 return back()->withErrors(['email' => 'An error occurred during account setup. Please contact support.']);
             }
+            // Log in the user with Laravel Auth
+            Auth::login($user);
         }
 
         // Store user info in session
@@ -204,6 +206,27 @@ Route::post('/password/verify-token', [ForgotPasswordController::class, 'verifyT
 
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+// Email verification routes
+Route::middleware('auth')->group(function () {
+    Route::get('verify-email', \App\Http\Controllers\Auth\EmailVerificationPromptController::class)
+        ->name('verification.notice');
+
+    Route::get('verify-email/{id}/{hash}', \App\Http\Controllers\Auth\VerifyEmailController::class)
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+
+    Route::get('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'show'])
+        ->name('password.confirm');
+
+    Route::post('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'store']);
+
+    Route::put('password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('password.update');
+});
 
 // Dashboard (for testing)
 Route::get('/dashboard', function () {
@@ -358,11 +381,12 @@ Route::post('/admin/login', function (Request $request) {
 Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // Manufacturer dashboard routes
 Route::prefix('manufacturer')->group(function () {
-    Route::get('/dashboard', function () { return view('dashboards.manufacturer.dashboard'); })->name('manufacturer.dashboard');
+    Route::get('/dashboard', function () { return view('dashboards.manufacturer.index'); })->name('manufacturer.dashboard');
     Route::get('/production-lines', function () { return view('dashboards.manufacturer.production-lines'); })->name('manufacturer.production-lines');
     Route::get('/machine-health', function () { return view('dashboards.manufacturer.machine-health'); })->name('manufacturer.machine-health');
     Route::get('/quality-control', function () { return view('dashboards.manufacturer.quality-control'); })->name('manufacturer.quality-control');

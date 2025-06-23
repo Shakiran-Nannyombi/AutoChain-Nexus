@@ -1,11 +1,17 @@
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/manufacturer.css') }}">
+@endpush
+
 @extends('layouts.dashboard')
+
+@section('title', 'Manufacturer Dashboard')
 
 @section('sidebar-content')
     @include('dashboards.manufacturer.sidebar')
 @endsection
 @section('content')
     @php
-        $title = 'Manufacturer Dashboard';
+        $title = 'Manufacturer Control Panel';
     @endphp
 
     <div class="content-card">

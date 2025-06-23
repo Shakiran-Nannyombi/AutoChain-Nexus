@@ -1,0 +1,11 @@
+/* Manufacturer-specific styles */
+
+.page-header-manufacturer {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0F2C67; /* deep purple, matches manufacturer theme */
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+    padding-left: 1rem;
+    background: linear-gradient(90deg, #f4e18510 0%, #fff 100%);
+} 
