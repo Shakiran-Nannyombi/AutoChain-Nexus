@@ -1,3 +1,4 @@
+@section('title', 'Enter Token')
 <x-guest-layout>
     <div class="login-container">
         <div class="register-logo">

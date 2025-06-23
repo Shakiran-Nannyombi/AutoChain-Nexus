@@ -1,3 +1,4 @@
+@section('title', 'Application Status')
 <x-guest-layout>
     <div class="status-container">
         <div class="status-card">
