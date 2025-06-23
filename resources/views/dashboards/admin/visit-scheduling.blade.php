@@ -2,6 +2,11 @@
 
 @section('title', 'Visit Scheduling & Management')
 
+@push('head')
+    <link rel="icon" type="image/png" href="{{ asset('images/logo2.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo2.png') }}">
+@endpush
+
 @push('styles')
     @vite(['resources/css/admin.css'])
 @endpush
