@@ -138,10 +138,12 @@
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-run-validation">Run Validation</button>
                             </form>
+                            @if($user->role !== 'vendor')
                             <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-approve">Approve & Send Email</button>
                             </form>
+                            @endif
                             <form action="{{ route('admin.users.reject', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-reject">Reject</button>

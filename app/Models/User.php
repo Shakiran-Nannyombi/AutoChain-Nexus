@@ -125,4 +125,13 @@ class User extends Authenticatable
     {
         $this->notify(new UserResetPasswordNotification($token));
     }
+
+    public function getProfilePhotoPathAttribute()
+    {
+        $doc = $this->documents()->where('document_type', 'profile_picture')->latest()->first();
+        if ($doc) {
+            return $doc->file_path;
+        }
+        return $this->profile_photo ?? null;
+    }
 }

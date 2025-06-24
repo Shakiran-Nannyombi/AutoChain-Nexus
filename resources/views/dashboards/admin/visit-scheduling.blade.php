@@ -96,6 +96,7 @@
                         <div class="visit-actions">
                              @if ($visit->status == 'pending')
                                 <button type="button" class="btn-action-visit btn-reschedule" onclick="openRescheduleModal({{ $visit->id }}, '{{ $visit->visit_date->format('Y-m-d') }}', '{{ $visit->visit_date->format('H:i') }}')">Reschedule</button>
+                                <button type="button" class="btn-action-visit btn-edit-visit" onclick="openEditVisitModal({{ $visit->id }})">Edit</button>
                                 <form action="{{ route('admin.visits.approve', $visit) }}" method="POST" style="display:inline;">
                                     @csrf
                                     <button type="submit" class="btn-action-visit btn-approve-visit">Approve</button>

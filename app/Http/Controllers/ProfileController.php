@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use App\Models\Admin;
 use App\Http\Requests\AdminProfileUpdateRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -47,18 +48,34 @@ class ProfileController extends Controller
             }
 
             $user->save();
-            session(['user_name' => $user->name]);
+            session(['user_name' => $user->name, 'user_profile_photo' => $user->profile_photo_path]);
             return Redirect::route('profile.edit')->with('status', 'profile-updated');
         }
 
         // The following part is for non-admin users, so we use ProfileUpdateRequest
-        $userRequest = ProfileUpdateRequest::createFrom($request);
+        Log::info('Profile update request', [
+            'hasFile' => $request->hasFile('profile_photo'),
+            'file' => $request->file('profile_photo'),
+            'file_mime' => $request->hasFile('profile_photo') ? $request->file('profile_photo')->getMimeType() : null,
+            'file_size' => $request->hasFile('profile_photo') ? $request->file('profile_photo')->getSize() : null,
+        ]);
+        $validated = $request->validate((new \App\Http\Requests\ProfileUpdateRequest())->rules());
         $user = $request->user();
-        $user->fill($userRequest->validated());
+        $user->fill($validated);
 
         if ($request->hasFile('profile_photo')) {
             $path = $request->file('profile_photo')->store('profile_photos', 'public');
             $user->profile_photo = $path;
+            // Update or create user_documents entry for profile_picture
+            \App\Models\UserDocument::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'document_type' => 'profile_picture',
+                ],
+                [
+                    'file_path' => $path,
+                ]
+            );
         }
 
         if ($user->isDirty('email')) {
@@ -66,6 +83,7 @@ class ProfileController extends Controller
         }
 
         $user->save();
+        session(['user_name' => $user->name, 'user_profile_photo' => $user->profile_photo_path]);
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

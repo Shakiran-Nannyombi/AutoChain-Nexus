@@ -90,7 +90,8 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
 
 // Register page
 Route::get('/register', function () {
-    return view('auth.register');
+    $approvedManufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->get();
+    return view('auth.register', compact('approvedManufacturers'));
 })->name('register');
 
 // Handle registration
@@ -106,6 +107,7 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         'supporting_documents' => 'required|array|min:1',
         'supporting_documents.*' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
+        'manufacturer_id' => 'nullable|exists:users,id',
     ]);
 
     // Create user with pending status
@@ -118,6 +120,7 @@ Route::post('/register', function (Illuminate\Http\Request $request) {
         'company' => $request->company_name,
         'address' => $request->address,
         'status' => 'pending',
+        'manufacturer_id' => $request->role === 'vendor' ? $request->manufacturer_id : null,
     ]);
 
     // Handle profile picture upload

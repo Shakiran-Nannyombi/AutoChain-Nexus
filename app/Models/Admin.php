@@ -58,4 +58,9 @@ class Admin extends Authenticatable
     {
         return $this->admin_level === 'senior' || $this->admin_level === 'super';
     }
+
+    public function activities()
+    {
+        return $this->hasMany(AdminActivity::class, 'admin_id');
+    }
 }

@@ -82,10 +82,21 @@
             <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
                 <i class="fas fa-history"></i> Recent Activity
             </h3>
-            <div style="text-align: center; color: #6c757d; padding: 2rem 0;">
-                No recent activity to display.
+            @if(isset(
+$recentActivities) && $recentActivities->count())
+                @foreach($recentActivities as $activity)
+                    <div style="border-bottom: 1px solid #eee; padding: 0.75rem 0;">
+                        <div style="font-weight: 600; color: #0F2C67;">{{ ucfirst($activity->action) }}</div>
+                        <div style="color: #555; font-size: 0.97em;">{{ $activity->details }}</div>
+                        <div style="color: #888; font-size: 0.9em;">{{ $activity->created_at->diffForHumans() }}</div>
                     </div>
+                @endforeach
+            @else
+                <div style="text-align: center; color: #6c757d; padding: 2rem 0;">
+                    No recent activity to display.
                 </div>
+            @endif
+        </div>
                 
         <!-- User Distribution by Role -->
         <div style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow);">

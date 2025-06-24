@@ -8,6 +8,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\AdminActivity;
 
 class UserController extends Controller
 {
@@ -86,6 +87,13 @@ class UserController extends Controller
             return back()->with('error', 'User approved, but failed to send notification email.');
         }
         
+        // Log admin activity
+        AdminActivity::create([
+            'admin_id' => session('user_id'),
+            'action' => 'approved user',
+            'details' => 'Approved user ID: ' . $user->id . ' (' . $user->name . ')',
+        ]);
+        
         return back()->with('success', "User '{$user->name}' has been approved and notified.");
     }
 
@@ -107,6 +115,13 @@ class UserController extends Controller
             Log::error("Failed to call email service for rejection of {$user->email}: " . $e->getMessage());
             return back()->with('error', 'User rejected, but failed to send notification email.');
         }
+        
+        // Log admin activity
+        AdminActivity::create([
+            'admin_id' => session('user_id'),
+            'action' => 'rejected user',
+            'details' => 'Rejected user ID: ' . $user->id . ' (' . $user->name . ')',
+        ]);
         
         return back()->with('success', "User '{$user->name}' has been rejected and notified.");
     }
@@ -184,10 +199,12 @@ class UserController extends Controller
                 $visitScheduled = false;
                 
                 if ($user->role === 'vendor' && $user->validation_score >= $validationThreshold && !$user->auto_visit_scheduled) {
-                    // Automatically schedule a facility visit for vendors
-                    $visitScheduled = $this->scheduleAutomaticVisit($user);
+                    // Set vendor status to pending_visit (not approved)
+                    $user->status = 'pending_visit';
                     $user->auto_visit_scheduled = true;
                     $user->save();
+                    // Automatically schedule a facility visit for vendors
+                    $visitScheduled = $this->scheduleAutomaticVisit($user);
                 }
                 
                 $message = "Validation complete for {$user->name}. Score: {$user->validation_score}. ";
@@ -235,10 +252,10 @@ class UserController extends Controller
                 'requested_date' => now(),
             ]);
 
-            // Send notification email about the scheduled visit
+            // Send notification email about the scheduled visit (pending visit email)
             try {
                 $subject = "Facility Visit Scheduled: {$user->company}";
-                $body = "Dear {$user->name},\n\nCongratulations! Your vendor validation has been completed successfully.\n\nA facility visit has been automatically scheduled for {$visit->visit_date->format('Y-m-d \a\t h:i A')}.\n\nPurpose: {$visit->purpose}\nLocation: {$visit->location}\n\nYou will receive further details about the visit shortly.\n\nBest Regards,\nThe Autochain Nexus Team";
+                $body = "Dear {$user->name},\n\nCongratulations! Your vendor validation has been completed successfully.\n\nA facility visit has been automatically scheduled for {$visit->visit_date->format('Y-m-d \\a\\t h:i A')}.\n\nPurpose: {$visit->purpose}\nLocation: {$visit->location}\n\nYou will be approved as a vendor after a successful facility visit.\n\nBest Regards,\nThe Autochain Nexus Team";
                 
                 Http::post('http://localhost:8082/api/v1/send-email', [
                     'to' => $user->email,
@@ -248,6 +265,13 @@ class UserController extends Controller
             } catch (\Exception $e) {
                 Log::error("Failed to send visit scheduling email to {$user->email}: " . $e->getMessage());
             }
+
+            // Log admin activity
+            AdminActivity::create([
+                'admin_id' => session('user_id'),
+                'action' => 'scheduled visit',
+                'details' => 'Scheduled visit for vendor ID: ' . $user->id . ' (' . $user->name . ')',
+            ]);
 
             return true;
         } catch (\Exception $e) {

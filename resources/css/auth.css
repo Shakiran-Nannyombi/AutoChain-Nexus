@@ -330,3 +330,52 @@ body.auth-page {
     .login-container { max-width: 98vw; padding: 1.2rem 0.5rem; }
 }
 
+/* Application Status Page Styles */
+.status-container {
+    max-width: 500px;
+    margin: 3rem auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(32,0,58,0.08);
+    padding: 2rem;
+}
+.status-card {
+    text-align: center;
+}
+.status-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #0F2C67;
+}
+.status-badge {
+    display: inline-block;
+    padding: 0.3em 1em;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-left: 0.5em;
+}
+.status-badge.status-approved { background: #38c172; color: #fff; }
+.status-badge.status-rejected { background: #e3342f; color: #fff; }
+.status-badge.status-pending { background: #ffed4a; color: #222; }
+.status-form {
+    margin-top: 2rem;
+}
+.input-group {
+    margin-bottom: 1rem;
+}
+input[type="email"] {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.btn-primary {
+    background: #0F2C67;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+

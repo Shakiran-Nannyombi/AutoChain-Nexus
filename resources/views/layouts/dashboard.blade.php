@@ -72,9 +72,14 @@
             </div>
 
             <div class="sidebar-user">
-                <div class="user-avatar" style="margin-left: 0.9rem;">
-                    {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}{{ strtoupper(substr(session('user_name', 'er'), strpos(session('user_name', 'er'), ' ')+1, 1)) }}
-                </div>
+                @php $profilePhoto = session('user_profile_photo'); @endphp
+                @if($profilePhoto)
+                    <img src="{{ asset('storage/' . $profilePhoto) }}" alt="Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
+                @else
+                    <div class="user-avatar" style="margin-left: 0.9rem;">
+                        {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}{{ strtoupper(substr(session('user_name', 'er'), strpos(session('user_name', 'er'), ' ')+1, 1)) }}
+                    </div>
+                @endif
                 <div class="user-info" style="display: flex; flex-direction: column; align-items: flex-start;">
                     <div style="font-weight: 600; color: #fff; font-size: 1.05rem; line-height: 1.1;">
                         {{ session('user_name', 'User') }}
@@ -140,7 +145,12 @@
                         <div class="dropdown user-dropdown" id="userDropdown">
                             <div class="dropdown-user-info">
                                  <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                                    {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}
+                                    @php $profilePhoto = session('user_profile_photo'); @endphp
+                                    @if($profilePhoto)
+                                        <img src="{{ asset('storage/' . $profilePhoto) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                                    @else
+                                        {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}
+                                    @endif
                                 </div>
                                 <div>
                                     <div style="font-weight: 600;">{{ session('user_name', 'User') }}</div>

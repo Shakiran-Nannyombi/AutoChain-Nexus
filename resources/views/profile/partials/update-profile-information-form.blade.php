@@ -2,14 +2,14 @@
     @csrf
 </form>
 
-<form method="post" action="{{ route('profile.update') }}" class="space-y-6">
+<form method="post" action="{{ route('profile.update') }}" class="space-y-6" enctype="multipart/form-data">
     @csrf
     @method('patch')
 
     <div class="settings-form-grid">
         <div class="form-group">
             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Name') }}</label>
-            <input id="name" name="name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <input id="name" name="name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" />
             @error('name')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -17,7 +17,7 @@
 
         <div class="form-group">
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Email') }}</label>
-            <input id="email" name="email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" :value="old('email', $user->email)" required autocomplete="username" />
+            <input id="email" name="email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('email', $user->email) }}" required autocomplete="username" />
             @error('email')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -25,7 +25,7 @@
 
         <div class="form-group">
             <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Phone') }}</label>
-            <input id="phone" name="phone" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" :value="old('phone', $user->phone)" autocomplete="tel" />
+            <input id="phone" name="phone" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('phone', $user->phone) }}" autocomplete="tel" />
             @error('phone')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -33,7 +33,7 @@
 
         <div class="form-group">
             <label for="company" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Company') }}</label>
-            <input id="company" name="company" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" :value="old('company', $user->company)" />
+            <input id="company" name="company" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('company', $user->company) }}" />
             @error('company')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -50,11 +50,6 @@
         <div class="form-group-full">
             <label for="profile_photo" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Profile Photo') }}</label>
             <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-            @if($user->profile_photo)
-                <div class="mt-2">
-                    <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="Profile Photo" width="100" class="rounded-full border">
-                </div>
-            @endif
             @error('profile_photo')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror

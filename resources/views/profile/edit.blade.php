@@ -23,22 +23,27 @@
     <!-- Left Column: User Info Card -->
     <div class="profile-user-card">
         @php
-            $nameParts = explode(' ', auth()->user()->name);
+            $userProfilePhoto = $user->profile_photo_path;
+            $nameParts = explode(' ', $user->name);
             $initials = count($nameParts) > 1 
                 ? strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1))
-                : strtoupper(substr(auth()->user()->name, 0, 2));
+                : strtoupper(substr($user->name, 0, 2));
         @endphp
-        <div class="profile-avatar">{{ $initials }}</div>
-        <h2 class="user-name">{{ auth()->user()->name }}</h2>
-        <div class="user-role">{{ ucfirst(auth()->user()->role) }}</div>
+        @if($userProfilePhoto)
+            <img src="{{ asset('storage/' . $userProfilePhoto) }}" alt="Profile Photo" class="profile-avatar" style="object-fit:cover; width:100px; height:100px; border-radius:50%; border:2px solid #e0e0e0; margin-bottom:1rem;">
+        @else
+            <div class="profile-avatar">{{ $initials }}</div>
+        @endif
+        <h2 class="user-name">{{ $user->name }}</h2>
+        <div class="user-role">{{ ucfirst($user->role) }}</div>
         <hr style="margin: 1.5rem 0;">
         <ul class="profile-user-details">
-            <li><i class="fas fa-envelope"></i>{{ auth()->user()->email }}</li>
-            <li><i class="fas fa-phone"></i>{{ auth()->user()->phone ?? 'N/A' }}</li>
-            <li><i class="fas fa-building"></i>{{ auth()->user()->company ?? 'N/A' }}</li>
-            <li><i class="fas fa-map-marker-alt"></i>{{ auth()->user()->address ?? 'N/A' }}</li>
-            <li><i class="fas fa-calendar-alt"></i>Joined {{ auth()->user()->created_at->format('F Y') }}</li>
-            <li><i class="fas fa-check-circle"></i>Status: {{ ucfirst(auth()->user()->status) }}</li>
+            <li><i class="fas fa-envelope"></i>{{ $user->email }}</li>
+            <li><i class="fas fa-phone"></i>{{ $user->phone ?? 'N/A' }}</li>
+            <li><i class="fas fa-building"></i>{{ $user->company ?? 'N/A' }}</li>
+            <li><i class="fas fa-map-marker-alt"></i>{{ $user->address ?? 'N/A' }}</li>
+            <li><i class="fas fa-calendar-alt"></i>Joined {{ $user->created_at->format('F Y') }}</li>
+            <li><i class="fas fa-check-circle"></i>Status: {{ ucfirst($user->status) }}</li>
         </ul>
     </div>
 

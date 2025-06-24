@@ -21,6 +21,7 @@ use Spatie\Backup\BackupDestination\BackupCollection;
 use Spatie\Backup\Helpers\Format;
 use App\Models\ScheduledReport;
 use App\Models\Setting;
+use App\Models\AdminActivity;
 
 class DashboardController extends Controller
 {
@@ -39,11 +40,14 @@ class DashboardController extends Controller
 
         $activeUsers = User::where('status', 'approved')->where('role', '!=', 'admin')->count();
 
+        $recentActivities = AdminActivity::latest()->take(5)->get();
+
         return view('dashboards.admin.index', [
             'pendingUsers' => $pendingUsers,
             'totalUsers' => $totalUsers,
             'activeUsers' => $activeUsers,
             'roleCounts' => $roleCounts,
+            'recentActivities' => $recentActivities,
         ]);
     }
 

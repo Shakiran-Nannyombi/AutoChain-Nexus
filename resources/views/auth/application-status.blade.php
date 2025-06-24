@@ -33,7 +33,7 @@
                 </div>
             @endif
 
-            <form method="GET" action="{{ route('application.status') }}" class="status-form">
+            <form method="GET" action="/application-status" class="status-form">
                 <div class="input-group">
                     <label for="email">Check another application</label>
                     <input type="email" id="email" name="email" placeholder="Enter email address" required value="{{ request('email') }}">

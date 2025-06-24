@@ -50,19 +50,28 @@
                     <option value="analyst">Analyst</option>
                 </select>
             </div>
+            <div class="form-group" id="manufacturer-select-group" style="display:none;">
+                <label for="manufacturer_id">Select Manufacturer to Visit</label>
+                <select name="manufacturer_id" id="manufacturer_id">
+                    <option value="">Select Manufacturer</option>
+                    @foreach($approvedManufacturers as $manufacturer)
+                        <option value="{{ $manufacturer->id }}">{{ $manufacturer->company ?? $manufacturer->name }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="form-group">
-                <label for="company">Company Name</label>
-                <input id="company" type="text" name="company" value="{{ old('company') }}" required>
+                <label for="company_name">Company Name</label>
+                <input id="company_name" type="text" name="company_name" value="{{ old('company_name') }}" required>
             </div>
             <div class="form-group">
                 <label for="address">Company Address</label>
                 <input id="address" type="text" name="address" value="{{ old('address') }}" required>
             </div>
-            <!-- Supporting Documents Upload -->
+            <!-- Supporting Documents Upload (Modern, with preview and remove) -->
             <div class="form-group-full">
                 <label style="font-weight:700; color:var(--deep-purple); margin-bottom:0.5rem;">Supporting Documents</label>
                 <div class="custom-upload-box">
-                    <input type="file" id="supporting_documents" name="supporting_documents[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required style="display:none;">
+                    <input type="file" id="supporting_documents" name="supporting_documents[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none;">
                     <label for="supporting_documents" class="upload-label">
                         <div class="upload-icon">&#8679;</div>
                         <div class="upload-text">Upload documents</div>
@@ -70,6 +79,7 @@
                             Please upload certifications, Business License, Identification Card, and financial records, or other relevant documents (PDF, DOC format, jpg, png).
                         </div>
                     </label>
+                    <ul class="selected-files-list" style="margin-top: 0.5rem; color: #333; font-size: 0.95em; list-style: none; padding: 0;"></ul>
                 </div>
             </div>
             <div class="form-group profile-picture-group">
@@ -81,39 +91,96 @@
             </div>
         </form>
     </div>
-    @push('scripts')
     <script>
-        // Enhance file input click for custom upload box
-        document.querySelectorAll('.custom-upload-box').forEach(box => {
-            const input = box.querySelector('input[type="file"]');
-            const label = box.querySelector('label.upload-label');
-            if (label && input) {
-                label.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    input.click();
-                });
-            }
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[DEBUG] DOMContentLoaded: Script is running');
+            // Modern multi-file upload with preview and remove
+            const uploadBox = document.querySelector('.custom-upload-box');
+            const fileInput = uploadBox.querySelector('input[type="file"]');
+            const fileListUl = uploadBox.querySelector('.selected-files-list');
+            let selectedFiles = [];
 
-        // Prevent form submission if any required field is empty
-        document.querySelector('.register-form').addEventListener('submit', function(e) {
-            let valid = true;
-            this.querySelectorAll('input[required], select[required]').forEach(field => {
-                if (
-                    (field.type === 'file' && field.files.length === 0) ||
-                    (field.type !== 'file' && !field.value)
-                ) {
-                    valid = false;
-                    field.classList.add('input-error');
-                } else {
-                    field.classList.remove('input-error');
+            // Open file dialog on label click
+            uploadBox.querySelector('label.upload-label').addEventListener('click', function(e) {
+                e.stopPropagation();
+                fileInput.click();
+                console.log('[DEBUG] Upload label clicked, file input triggered');
+            });
+
+            // Handle file selection
+            fileInput.addEventListener('change', function(e) {
+                console.log('[DEBUG] File input changed');
+                let added = false;
+                // Add new files, avoiding duplicates
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    if (!selectedFiles.some(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified)) {
+                        selectedFiles.push(file);
+                        added = true;
+                        console.log('[DEBUG] File added:', file.name);
+                    }
+                }
+                renderFileList();
+                // Only reset file input if at least one new file was added
+                if (added) {
+                    fileInput.value = '';
+                }
+                console.log('[DEBUG] Current selectedFiles:', selectedFiles.map(f => f.name));
+            });
+
+            // Render the file list with remove buttons
+            function renderFileList() {
+                fileListUl.innerHTML = '';
+                selectedFiles.forEach((file, idx) => {
+                    const li = document.createElement('li');
+                    li.style.display = 'flex';
+                    li.style.alignItems = 'center';
+                    li.style.marginBottom = '0.25rem';
+                    li.innerHTML = `<span>${file.name}</span> <button type="button" class="remove-file-btn" data-idx="${idx}" style="margin-left: 0.5rem; color: #fff; background: #e3342f; border: none; border-radius: 3px; padding: 0 8px; cursor: pointer; font-size: 0.9em;">Remove</button>`;
+                    fileListUl.appendChild(li);
+                });
+                console.log('[DEBUG] File list rendered:', selectedFiles.map(f => f.name));
+            }
+
+            // Remove file from list
+            fileListUl.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-file-btn')) {
+                    const idx = parseInt(e.target.getAttribute('data-idx'));
+                    console.log('[DEBUG] Removing file at index:', idx, selectedFiles[idx]?.name);
+                    selectedFiles.splice(idx, 1);
+                    renderFileList();
                 }
             });
-            if (!valid) {
-                e.preventDefault();
-                alert('Please fill in all required fields.');
+
+            // On form submit, create a new DataTransfer and append files
+            document.querySelector('.register-form').addEventListener('submit', function(e) {
+                // If no files, prevent submit
+                if (selectedFiles.length === 0) {
+                    e.preventDefault();
+                    alert('Please upload at least one supporting document.');
+                    return;
+                }
+                // Create a new DataTransfer to set files for the input
+                const dt = new DataTransfer();
+                selectedFiles.forEach(file => dt.items.add(file));
+                fileInput.files = dt.files;
+                console.log('[DEBUG] Form submit: files set for upload:', selectedFiles.map(f => f.name));
+            });
+
+            // Show/hide manufacturer dropdown based on role
+            const roleSelect = document.getElementById('role');
+            const manufacturerGroup = document.getElementById('manufacturer-select-group');
+            roleSelect.addEventListener('change', function() {
+                if (this.value === 'vendor') {
+                    manufacturerGroup.style.display = '';
+                } else {
+                    manufacturerGroup.style.display = 'none';
+                }
+            });
+            // On page load, check if vendor is pre-selected
+            if (roleSelect.value === 'vendor') {
+                manufacturerGroup.style.display = '';
             }
         });
     </script>
-    @endpush
 </x-guest-layout>
