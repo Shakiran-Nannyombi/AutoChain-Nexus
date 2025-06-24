@@ -439,3 +439,30 @@ Route::prefix('vendor')->group(function () {
     Route::get('/notifications', function () { return view('dashboards.vendor.notifications'); })->name('vendor.notifications');
     Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
 });
+
+// Retailer dashboard routes
+Route::prefix('retailer')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboards.retailer.index');
+    })->name('retailer.dashboard');
+
+    Route::get('/stock-overview', function () {
+        return view('dashboards.retailer.stock-overview');
+    })->name('retailer.stock-overview');
+
+    Route::get('/sales-update', function () {
+        return view('dashboards.retailer.sales-update');
+    })->name('retailer.sales-update');
+
+    Route::get('/order-placement', function () {
+        return view('dashboards.retailer.order-placement');
+    })->name('retailer.order-placement');
+
+    Route::get('/chat', function () {
+        return view('dashboards.retailer.chat');
+    })->name('retailer.chat');
+
+    Route::get('/notifications', function () {
+        return view('dashboards.retailer.notifications');
+    })->name('retailer.notifications');
+});
