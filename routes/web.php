@@ -16,11 +16,17 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\SearchController;
+use App\Http\Controllers\Manufacturer\DemandPrediction;
+
 
 // Welcome page
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Demand prediction route
+Route::post('/predict-demand', [DemandPrediction::class, 'getDemandForecast']);
+
 
 // Login page
 Route::get('/login', function () {
