@@ -7,136 +7,67 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header">Retailer Dashboard</h1>
+    @php $title = 'Retailer Dashboard'; @endphp
 
-    <div class="dashboard-grid">
-        <!-- Stock Overview -->
-        <div class="analyst-content">
-            <div class="analyst-section">
-                <h2><i class="fas fa-warehouse"></i> Stock Overview</h2>
-                <table class="analyst-table">
-                    <thead>
-                        <tr>
-                            <th>Car Model</th>
-                            <th>Vendor</th>
-                            <th>Received</th>
-                            <th>In Stock</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Toyota Corolla</td>
-                            <td>Vendor A</td>
-                            <td>10</td>
-                            <td>7</td>
-                        </tr>
-                        <tr>
-                            <td>Honda Civic</td>
-                            <td>Vendor B</td>
-                            <td>8</td>
-                            <td>5</td>
-                        </tr>
-                        <tr>
-                            <td>Ford Focus</td>
-                            <td>Vendor C</td>
-                            <td>12</td>
-                            <td>12</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="content-card">
+        <h2 style="color: var(--deep-purple); margin-bottom: 1.5rem; font-size: 1.8rem;">
+            <i class="fas fa-store"></i> Retailer Dashboard
+        </h2>
 
-        <!-- Sales Update & Order Placement (side by side on large screens) -->
-        <div class="dashboard-flex-row">
-            <div class="analyst-content" style="flex:1; min-width:300px; margin-right:1rem;">
-                <div class="analyst-section">
-                    <h2><i class="fas fa-edit"></i> Sales Update</h2>
-                    <form class="analyst-form" method="POST" action="#">
-                        <div class="analyst-form-group">
-                            <label class="analyst-form-label" for="car_model">Car Model</label>
-                            <select class="analyst-form-input" id="car_model" name="car_model">
-                                <option>Toyota Corolla</option>
-                                <option>Honda Civic</option>
-                                <option>Ford Focus</option>
-                            </select>
-                        </div>
-                        <div class="analyst-form-group">
-                            <label class="analyst-form-label" for="quantity">Quantity Sold</label>
-                            <input class="analyst-form-input" type="number" id="quantity" name="quantity" min="1" required>
-                        </div>
-                        <button class="analyst-btn" type="submit">Update Stock</button>
-                    </form>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div style="background: linear-gradient(135deg, var(--deep-purple), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $acceptedStock->count() }}</div>
+                        <div style="opacity: 0.9;">Accepted Stock Items</div>
+                    </div>
+                    <i class="fas fa-box-open" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
             </div>
-            <div class="analyst-content" style="flex:1; min-width:300px;">
-                <div class="analyst-section">
-                    <h2><i class="fas fa-shopping-cart"></i> Order Placement</h2>
-                    <form class="analyst-form" method="POST" action="#">
-                        <div class="analyst-form-group">
-                            <label class="analyst-form-label" for="customer_name">Customer Name</label>
-                            <input class="analyst-form-input" type="text" id="customer_name" name="customer_name" required>
-                        </div>
-                        <div class="analyst-form-group">
-                            <label class="analyst-form-label" for="car_model_order">Car Model</label>
-                            <select class="analyst-form-input" id="car_model_order" name="car_model_order">
-                                <option>Toyota Corolla</option>
-                                <option>Honda Civic</option>
-                                <option>Ford Focus</option>
-                            </select>
-                        </div>
-                        <div class="analyst-form-group">
-                            <label class="analyst-form-label" for="order_quantity">Quantity</label>
-                            <input class="analyst-form-input" type="number" id="order_quantity" name="order_quantity" min="1" required>
-                        </div>
-                        <button class="analyst-btn" type="submit">Place Order</button>
-                    </form>
+
+            <div style="background: linear-gradient(135deg, var(--blue), var(--light-cyan)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $sales->count() }}</div>
+                        <div style="opacity: 0.9;">Sales Made</div>
+                    </div>
+                    <i class="fas fa-cash-register" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, var(--maroon), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $orders->count() }}</div>
+                        <div style="opacity: 0.9;">Customer Orders</div>
+                    </div>
+                    <i class="fas fa-shopping-bag" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Chat & Notifications (side by side on large screens) -->
-        <div class="dashboard-flex-row">
-            <div class="analyst-content" style="flex:1; min-width:300px; margin-right:1rem;">
-                <div class="analyst-section">
-                    <h2><i class="fas fa-comments"></i> Chat with Vendors</h2>
-                    <a href="{{ route('retailer.chat') }}" class="analyst-btn analyst-btn-secondary">Open Chat</a>
+        <h3 style="color: var(--deep-purple); font-size: 1.3rem; margin-bottom: 1rem;">
+            <i class="fas fa-clock"></i> Recent Sales
+        </h3>
+        <div style="background: var(--gray); padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+            @foreach($sales as $sale)
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #ddd;">
+                    <div><strong>{{ $sale->car_model }}</strong> - {{ $sale->quantity_sold }} units</div>
+                    <div style="opacity: 0.7; font-size: 0.9rem;">{{ $sale->created_at->diffForHumans() }}</div>
                 </div>
-            </div>
-            <div class="analyst-content" style="flex:1; min-width:300px;">
-                <div class="analyst-section">
-                    <h2><i class="fas fa-bell"></i> Notifications</h2>
-                    <div class="analyst-alert analyst-alert-info">
-                        <i class="fas fa-truck"></i> New delivery received from Vendor A.
-                    </div>
-                    <div class="analyst-alert analyst-alert-success">
-                        <i class="fas fa-check"></i> Sale completed: 2 Honda Civics sold.
-                    </div>
-                    <div class="analyst-alert analyst-alert-warning">
-                        <i class="fas fa-comments"></i> New message from Vendor B.
-                    </div>
+            @endforeach
+        </div>
+
+        <h3 style="color: var(--deep-purple); font-size: 1.3rem; margin-bottom: 1rem;">
+            <i class="fas fa-users"></i> Recent Customer Orders
+        </h3>
+        <div style="background: var(--gray); padding: 1rem; border-radius: 8px;">
+            @foreach($orders as $order)
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #ddd;">
+                    <div><strong>{{ $order->customer_name }}</strong> ordered {{ $order->quantity }} {{ $order->car_model }}</div>
+                    <div style="opacity: 0.7; font-size: 0.9rem;">{{ $order->created_at->diffForHumans() }}</div>
                 </div>
-            </div>
+            @endforeach
         </div>
     </div>
-
-    <style>
-    .dashboard-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-    .dashboard-flex-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-    @media (max-width: 900px) {
-        .dashboard-flex-row {
-            flex-direction: column;
-            gap: 1rem;
-        }
-    }
-    </style>
-@endsection 
+@endsection

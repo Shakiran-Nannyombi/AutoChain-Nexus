@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Manufacturer\DemandPrediction;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\RetailerController;
 
 
 
@@ -464,21 +465,17 @@ Route::prefix('vendor')->group(function () {
 
 // Retailer dashboard routes
 Route::prefix('retailer')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboards.retailer.index');
-    })->name('retailer.dashboard');
+    Route::get('/dashboard', [RetailerController::class, 'dashboard'])->name('retailer.dashboard');
 
-    Route::get('/stock-overview', function () {
-        return view('dashboards.retailer.stock-overview');
-    })->name('retailer.stock-overview');
+    Route::get('/stock-overview', [RetailerController::class, 'stockOverview'])->name('retailer.stock-overview');
+    Route::post('/stock/accept/{id}', [RetailerController::class, 'acceptStock'])->name('retailer.stock.accept');
+    Route::post('/stock/reject/{id}', [RetailerController::class, 'rejectStock'])->name('retailer.stock.reject');
 
-    Route::get('/sales-update', function () {
-        return view('dashboards.retailer.sales-update');
-    })->name('retailer.sales-update');
+    Route::get('/sales-update', [RetailerController::class, 'salesForm'])->name('retailer.sales-update');
+    Route::post('/sales-update', [RetailerController::class, 'submitSale'])->name('retailer.sales-update.submit');
 
-    Route::get('/order-placement', function () {
-        return view('dashboards.retailer.order-placement');
-    })->name('retailer.order-placement');
+    Route::get('/orders', [RetailerController::class, 'orderForm'])->name('retailer.order-placement');
+    Route::post('/orders', [RetailerController::class, 'submitOrder'])->name('retailer.orders.submit');
 
     Route::get('/chat', function () {
         return view('dashboards.retailer.chat');
