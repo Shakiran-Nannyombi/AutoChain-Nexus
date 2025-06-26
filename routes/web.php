@@ -18,6 +18,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Manufacturer\DemandPrediction;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\CustomerController;
+
 
 
 // Welcome page
@@ -403,6 +405,10 @@ Route::post('/admin/login', function (Request $request) {
     ]);
 })->name('admin.login.submit');
 
+Route::get('/customer/dashboard', function () {
+    return view('dashboards.customer.index');
+})->name('customer.dashboard');
+
 Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -451,6 +457,10 @@ Route::prefix('vendor')->group(function () {
     Route::get('/notifications', function () { return view('dashboards.vendor.notifications'); })->name('vendor.notifications');
     Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
 });
+
+    Route::get('/customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
+    Route::get('/chat', function () { return view('dashboards.customer.chat'); })->name('customer.chat');
+    Route::get('/settings', function () { return view('dashboards.customer.settings'); })->name('customer.settings');
 
 // Retailer dashboard routes
 Route::prefix('retailer')->group(function () {
