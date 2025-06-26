@@ -1,3 +1,7 @@
+// welcome.js for the welcome page
+// You can add your custom JS here
+console.log('Welcome page JS loaded.');
+
 let slideIndex = 0;
 const slides = document.querySelectorAll('.slide');
 let autoSlideInterval;

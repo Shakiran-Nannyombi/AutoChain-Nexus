@@ -30,4 +30,7 @@
 </a>
 <a href="/admin/backups" class="nav-item {{ request()->is('admin/backups') ? 'active' : '' }}">
     <i class="fas fa-database"></i> Backup
+</a>
+<a href="{{ route('chats.index') }}" class="nav-item {{ request()->routeIs('chats.*') ? 'active' : '' }}">
+    <i class="fas fa-comments"></i> Chat
 </a> 

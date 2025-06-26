@@ -20,6 +20,7 @@ use App\Http\Controllers\Manufacturer\DemandPrediction;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\RetailerController;
+use App\Http\Controllers\ChatController;
 
 
 
@@ -383,6 +384,7 @@ Route::post('/admin/login', function (Request $request) {
             'user_email' => $user->email,
             'user_role' => 'admin'
         ]);
+        Auth::login($user);
 
         // Debug: Log the session data
         Log::info('Admin login successful', [
@@ -443,7 +445,6 @@ Route::prefix('supplier')->group(function () {
     Route::get('/checklist-receipt',[SupplierController::class, 'checklistReceipt'])->name('supplier.checklist-receipt');
     Route::post('/checklist-receipt/fulfill/{id}', [SupplierController::class, 'fulfillChecklist'])->name('supplier.checklist.fulfill');
     Route::get('/delivery-history', [SupplierController::class, 'deliveryHistory'])->name('supplier.delivery-history');
-    Route::get('/chat', function () { return view('dashboards.supplier.chat'); })->name('supplier.chat');
     Route::get('/notifications', function () { return view('dashboards.supplier.notifications'); })->name('supplier.notifications');
     Route::get('/settings', function () { return view('dashboards.supplier.settings'); })->name('supplier.settings');
 });
@@ -454,13 +455,11 @@ Route::prefix('vendor')->group(function () {
     Route::get('/warehouse', function () { return view('dashboards.vendor.warehouse'); })->name('vendor.warehouse');
     Route::get('/delivery', function () { return view('dashboards.vendor.delivery'); })->name('vendor.delivery');
     Route::get('/tracking', function () { return view('dashboards.vendor.tracking'); })->name('vendor.tracking');
-    Route::get('/chat', function () { return view('dashboards.vendor.chat'); })->name('vendor.chat');
     Route::get('/notifications', function () { return view('dashboards.vendor.notifications'); })->name('vendor.notifications');
     Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
 });
 
     Route::get('/customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
-    Route::get('/chat', function () { return view('dashboards.customer.chat'); })->name('customer.chat');
     Route::get('/settings', function () { return view('dashboards.customer.settings'); })->name('customer.settings');
 
 // Retailer dashboard routes
@@ -477,11 +476,19 @@ Route::prefix('retailer')->group(function () {
     Route::get('/orders', [RetailerController::class, 'orderForm'])->name('retailer.order-placement');
     Route::post('/orders', [RetailerController::class, 'submitOrder'])->name('retailer.orders.submit');
 
-    Route::get('/chat', function () {
-        return view('dashboards.retailer.chat');
-    })->name('retailer.chat');
-
     Route::get('/notifications', function () {
         return view('dashboards.retailer.notifications');
     })->name('retailer.notifications');
+});
+
+// Chat routes
+Route::middleware(['auth'])->group(function () {
+    Route::resource('chats', ChatController::class);
+    Route::post('chats/{chat}/messages', [ChatController::class, 'storeMessage'])->name('chats.storeMessage');
+    Route::get('chats/order/{orderId}', [ChatController::class, 'getOrderChats'])->name('chats.getOrderChats');
+    Route::get('chats/unread', [ChatController::class, 'getUnreadMessages'])->name('chats.getUnreadMessages');
+    Route::post('chats/{chatId}/read', [ChatController::class, 'markAsRead'])->name('chats.markAsRead');
+    Route::get('chats/messages/{message}/edit', [ChatController::class, 'editMessage'])->name('chats.editMessage');
+    Route::put('chats/messages/{message}', [ChatController::class, 'updateMessage'])->name('chats.updateMessage');
+    Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
 });
