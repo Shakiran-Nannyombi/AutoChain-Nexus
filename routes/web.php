@@ -26,10 +26,6 @@ Route::get('/', function () {
 //
 
 
-Route::get('/privacy-policy', [PrivacyController::class, 'index'])->name('privacy');
-Route::get('/terms-of-service', [TermsController::class, 'index'])->name('terms');
-Route::get('/contact-us', [ContactController::class, 'index'])->name('contact');
-
 //
 // Demand prediction route
 Route::post('/predict-demand', [DemandPrediction::class, 'getDemandForecast']);
