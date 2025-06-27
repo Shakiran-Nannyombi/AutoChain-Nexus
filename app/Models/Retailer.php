@@ -41,4 +41,8 @@ class Retailer extends Authenticatable
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $casts = [
+    'product_inventory' => 'array',
+];
 }

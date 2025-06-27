@@ -17,6 +17,11 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Manufacturer\DemandPrediction;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\RetailerController;
+use App\Http\Controllers\ChatController;
+
 
 
 // Welcome page
@@ -597,6 +602,7 @@ Route::post('/admin/login', function (Request $request) {
             'user_email' => $user->email,
             'user_role' => 'admin'
         ]);
+        Auth::login($user);
 
         // Debug: Log the session data
         Log::info('Admin login successful', [
@@ -619,6 +625,10 @@ Route::post('/admin/login', function (Request $request) {
         'email' => 'The provided credentials do not match our records.',
     ]);
 })->name('admin.login.submit');
+
+Route::get('/customer/dashboard', function () {
+    return view('dashboards.customer.index');
+})->name('customer.dashboard');
 
 Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -648,10 +658,11 @@ Route::prefix('manufacturer')->group(function () {
 // Supplier dashboard routes
 Route::prefix('supplier')->group(function () {
     Route::get('/dashboard', function () { return view('dashboards.supplier.index'); })->name('supplier.dashboard');
-    Route::get('/stock-management', function () { return view('dashboards.supplier.stock-management'); })->name('supplier.stock-management');
-    Route::get('/checklist-receipt', function () { return view('dashboards.supplier.checklist-receipt'); })->name('supplier.checklist-receipt');
-    Route::get('/delivery-history', function () { return view('dashboards.supplier.delivery-history'); })->name('supplier.delivery-history');
-    Route::get('/chat', function () { return view('dashboards.supplier.chat'); })->name('supplier.chat');
+    Route::get('/stock-management', [SupplierController::class, 'stockManagement'])->name('supplier.stock-management');
+    Route::post('/stock-management/add', [SupplierController::class, 'addStock'])->name('supplier.stock.add');
+    Route::get('/checklist-receipt',[SupplierController::class, 'checklistReceipt'])->name('supplier.checklist-receipt');
+    Route::post('/checklist-receipt/fulfill/{id}', [SupplierController::class, 'fulfillChecklist'])->name('supplier.checklist.fulfill');
+    Route::get('/delivery-history', [SupplierController::class, 'deliveryHistory'])->name('supplier.delivery-history');
     Route::get('/notifications', function () { return view('dashboards.supplier.notifications'); })->name('supplier.notifications');
     Route::get('/settings', function () { return view('dashboards.supplier.settings'); })->name('supplier.settings');
 });
@@ -662,34 +673,40 @@ Route::prefix('vendor')->group(function () {
     Route::get('/warehouse', function () { return view('dashboards.vendor.warehouse'); })->name('vendor.warehouse');
     Route::get('/delivery', function () { return view('dashboards.vendor.delivery'); })->name('vendor.delivery');
     Route::get('/tracking', function () { return view('dashboards.vendor.tracking'); })->name('vendor.tracking');
-    Route::get('/chat', function () { return view('dashboards.vendor.chat'); })->name('vendor.chat');
     Route::get('/notifications', function () { return view('dashboards.vendor.notifications'); })->name('vendor.notifications');
     Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
 });
 
+    Route::get('/customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
+    Route::get('/settings', function () { return view('dashboards.customer.settings'); })->name('customer.settings');
+
 // Retailer dashboard routes
 Route::prefix('retailer')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboards.retailer.index');
-    })->name('retailer.dashboard');
+    Route::get('/dashboard', [RetailerController::class, 'dashboard'])->name('retailer.dashboard');
 
-    Route::get('/stock-overview', function () {
-        return view('dashboards.retailer.stock-overview');
-    })->name('retailer.stock-overview');
+    Route::get('/stock-overview', [RetailerController::class, 'stockOverview'])->name('retailer.stock-overview');
+    Route::post('/stock/accept/{id}', [RetailerController::class, 'acceptStock'])->name('retailer.stock.accept');
+    Route::post('/stock/reject/{id}', [RetailerController::class, 'rejectStock'])->name('retailer.stock.reject');
 
-    Route::get('/sales-update', function () {
-        return view('dashboards.retailer.sales-update');
-    })->name('retailer.sales-update');
+    Route::get('/sales-update', [RetailerController::class, 'salesForm'])->name('retailer.sales-update');
+    Route::post('/sales-update', [RetailerController::class, 'submitSale'])->name('retailer.sales-update.submit');
 
-    Route::get('/order-placement', function () {
-        return view('dashboards.retailer.order-placement');
-    })->name('retailer.order-placement');
-
-    Route::get('/chat', function () {
-        return view('dashboards.retailer.chat');
-    })->name('retailer.chat');
+    Route::get('/orders', [RetailerController::class, 'orderForm'])->name('retailer.order-placement');
+    Route::post('/orders', [RetailerController::class, 'submitOrder'])->name('retailer.orders.submit');
 
     Route::get('/notifications', function () {
         return view('dashboards.retailer.notifications');
     })->name('retailer.notifications');
+});
+
+// Chat routes
+Route::middleware(['auth'])->group(function () {
+    Route::resource('chats', ChatController::class);
+    Route::post('chats/{chat}/messages', [ChatController::class, 'storeMessage'])->name('chats.storeMessage');
+    Route::get('chats/order/{orderId}', [ChatController::class, 'getOrderChats'])->name('chats.getOrderChats');
+    Route::get('chats/unread', [ChatController::class, 'getUnreadMessages'])->name('chats.getUnreadMessages');
+    Route::post('chats/{chatId}/read', [ChatController::class, 'markAsRead'])->name('chats.markAsRead');
+    Route::get('chats/messages/{message}/edit', [ChatController::class, 'editMessage'])->name('chats.editMessage');
+    Route::put('chats/messages/{message}', [ChatController::class, 'updateMessage'])->name('chats.updateMessage');
+    Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
 });

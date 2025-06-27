@@ -10,7 +10,7 @@
 <a href="{{ route('supplier.delivery-history') }}" class="nav-item {{ request()->is('supplier/delivery-history*') ? 'active' : '' }}">
     <i class="fas fa-truck"></i> Delivery History
 </a>
-<a href="{{ route('supplier.chat') }}" class="nav-item {{ request()->is('supplier/chat*') ? 'active' : '' }}">
+<a href="{{ route('chats.index') }}" class="nav-item {{ request()->routeIs('chats.*') ? 'active' : '' }}">
     <i class="fas fa-comments"></i> Chat
 </a>
 <a href="{{ route('supplier.notifications') }}" class="nav-item {{ request()->is('supplier/notifications*') ? 'active' : '' }}">

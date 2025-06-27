@@ -14,7 +14,7 @@
     <i class="fas fa-route"></i> Delivery Tracking
 </a>
 
-<a href="{{ route('vendor.chat') }}" class="nav-item {{ request()->is('vendor/chat*') ? 'active' : '' }}">
+<a href="{{ route('chats.index') }}" class="nav-item {{ request()->routeIs('chats.*') ? 'active' : '' }}">
     <i class="fas fa-comments"></i> Chat
 </a>
 

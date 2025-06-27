@@ -37,7 +37,7 @@
 <a href="/manufacturer/demand-prediction" class="nav-item {{ request()->is('manufacturer/demand-prediction*') ? 'active' : '' }}">
     <i class="fas fa-chart-line"></i> Demand Prediction
 </a>
-<a href="/manufacturer/chat" class="nav-item {{ request()->is('manufacturer/chat*') ? 'active' : '' }}">
+<a href="{{ route('chats.index') }}" class="nav-item {{ request()->routeIs('chats.*') ? 'active' : '' }}">
     <i class="fas fa-comments"></i> Chat
 </a>
 <a href="/manufacturer/settings" class="nav-item {{ request()->is('manufacturer/settings*') ? 'active' : '' }}">

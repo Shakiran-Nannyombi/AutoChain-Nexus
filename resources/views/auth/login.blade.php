@@ -69,6 +69,9 @@
             <a href="/admin/login" style="color: var(--maroon); text-decoration: none; margin-top: 0.5rem; display: inline-block;">
                 <i class="fas fa-shield-alt"></i> Admin Login
             </a>
+            <a href="{{ route('customer.dashboard') }}" style="color: var(--deep-purple);">
+    <i class="fas fa-user"></i> Customer Dashboard
+</a>
         </div>
     </div>
     <script>
