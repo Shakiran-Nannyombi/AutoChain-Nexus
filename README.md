@@ -217,7 +217,10 @@ Start all services in separate terminals:
    ```bash
    npm run dev
    ```
+6. **FastAPI
+    uvicorn ml.main:app --reload --port 8001
 
+    
 Access the application at `http://127.0.0.1:8000`
 
 ## 👤 Default Admin Access
