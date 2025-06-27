@@ -1,24 +1,64 @@
-@extends('layouts.layout')
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Welcome | Autochain Nexus</title>
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/welcome.css', 'resources/js/welcome.js'])
+    </head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="logo-img">
+            <span class="brand">Autochain Nexus</span>
+        </div>
+        <div class="nav-actions">
+            <a href="{{ route('login') }}"><button class="btn btn-login">Login</button></a>
+            <a href="{{ route('register') }}"><button class="btn btn-primary">Get Started</button></a>
+        </div>
+                </nav>
 
-@section('title', 'Home - Autochain Nexus')
-
-@section('content')
-    <section class="intro">
-        <div class="media-masthead__media media-masthead__media-overlay">
-        <div class="media-masthead__media-overlay" style="opacity: 0.56;"></div>
-            <div class="picture-container">
-                <div class="picture">
-                <picture>
-                    <img src="/images/t1.jpg" alt="Car" style="width: 100%; height: 100%; object-fit: cover;" />
-                </picture> <!-- Responsive image would go here -->
-                </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="badge">🚗 Revolutionizing Automotive Supply Chains</div>
+        <div class="main-title">
+            Welcome to the Future of <span class="highlight">Automotive Manufacturing</span>
+        </div>
+         <!-- Image Slider -->
+        <div class="slider-container">
+            <div class="slider">
+                <img src="{{ asset('images/car1.jpeg') }}" class="slide active" alt="Car 1">
+                <img src="{{ asset('images/car2.jpeg') }}" class="slide" alt="Car 2">
+                <img src="{{ asset('images/car3.jpeg') }}" class="slide" alt="Car 3">
+                <img src="{{ asset('images/car4.jpeg') }}" class="slide" alt="Car 4">
+                <img src="{{ asset('images/car5.jpeg') }}" class="slide" alt="Car 5">
+                <img src="{{ asset('images/car6.jpeg') }}" class="slide" alt="Car 6">
+                <img src="{{ asset('images/car7.jpeg') }}" class="slide" alt="Car 7">
+                <img src="{{ asset('images/car8.jpeg') }}" class="slide" alt="Car 8">
+                <img src="{{ asset('images/car9.jpeg') }}" class="slide" alt="Car 9">
             </div>
         </div>
-        <div class="media-masthead_content container"> <!-- Flex parent -->
-            <div class="media-masthead_content-box"> <!-- Flex child -->
-                <h1 class="media-masthead__heading">Welcome to Autochain Nexus</h1>
-                <p class="media-masthead__description">Modernize your automotive supply chain with a centralized, role-based platform for seamless management from vendor onboarding to delivery.</p>
-                <div class="media-masthead__buttons"></div>
+        <div class="main-desc">
+            Experience seamless collaboration across your entire supply chain ecosystem. From manufacturers to customers, our platform connects every stakeholder with real-time data, intelligent workflows, and predictive analytics.
+        </div>
+
+        <div class="features-row">
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Secure &amp; Compliant</h3>
+                <p>Enterprise-grade security with role-based access control and comprehensive audit trails.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>AI-Powered Insights</h3>
+                <p>Machine learning algorithms provide demand forecasting and optimize your supply chain.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Real-time Collaboration</h3>
+                <p>Connect all stakeholders with live updates, chat systems, and workflow automation.</p>
             </div>
         </div>
 
@@ -29,38 +69,3 @@
     </div>
     </body>
 </html>
-
-        </div>
-        <div class="hero">
-            
-           
-        </div>
-    </section>
-    <section class="features-wrapper">
-    <div class="features">
-        <div class="features">
-    <section class="feature-card">
-        <h3>Vendor Onboarding</h3>
-        <p>Register and validate vendors with automated financial and compliance checks, ensuring secure and efficient onboarding.</p>
-    </section>
-    <section class="feature-card">
-        <h3>Manufacturing Workflows</h3>
-        <p>Track production stages with real-time updates and demand-driven forecasts powered by machine learning.</p>
-    </section>
-    <section class="feature-card">
-        <h3>Inventory Tracking</h3>
-        <p>Monitor warehouse inventory, prioritize high-demand models, and manage stock replenishment seamlessly.</p>
-    </section>
-    <section class="feature-card">
-        <h3>Order Fulfillment</h3>
-        <p>Streamline order processing with real-time alerts and integrated communication for retailers and manufacturers.</p>
-    </section>
-    <section class="feature-card">
-        <h3>Intelligent Analytics</h3>
-        <p>Gain insights with custom reports and demand forecasts to optimize supply chain performance.</p>
-    </section>
-</div>
-
-    </div>
-    </section>
-@endsection
