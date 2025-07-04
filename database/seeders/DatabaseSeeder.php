@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+    
         // User::factory(10)->create();
 
         $this->call([
@@ -97,5 +98,8 @@ class DatabaseSeeder extends Seeder
         foreach ($items as $item) {
             \App\Models\ProcessFlow::create($item);
         }
+
+        $this->call(AnalystSampleDataSeeder::class);
+
     }
 }

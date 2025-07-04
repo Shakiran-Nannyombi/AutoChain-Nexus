@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SupplierStock extends Model
 {
@@ -12,4 +13,7 @@ class SupplierStock extends Model
     {
         return $this->belongsTo(User::class, 'supplier_id');
     }
+
+use HasFactory;
+
 }

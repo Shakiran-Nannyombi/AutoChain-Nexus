@@ -21,7 +21,8 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\ChatController;
-
+use App\Http\Controllers\AnalystController;
+use App\Http\Controllers\AnalystReportController;
 
 
 // Welcome page
@@ -349,6 +350,14 @@ Route::prefix('analyst')->group(function () {
     Route::get('/reports/performance', function () { return view('dashboards.analyst.performance-reports'); })->name('analyst.performance-reports');
     Route::get('/profile', function () { return view('dashboards.analyst.profile'); })->name('analyst.profile');
     Route::get('/settings', function () { return view('dashboards.analyst.settings'); })->name('analyst.settings');
+    Route::get('/analyst/sales-analysis', [AnalystController::class, 'salesAnalysis'])->name('analyst.sales-analysis');
+    Route::get('/analyst/inventory-analysis', [AnalystController::class, 'inventoryAnalysis'])->name('analyst.inventory-analysis');
+    Route::get('/analyst/trends', [AnalystController::class, 'trends'])->name('analyst.trends');
+    Route::get('/analyst/reports', [AnalystReportController::class, 'index'])->name('analyst.reports');
+    Route::get('/analyst/reports/generate', [AnalystReportController::class, 'create'])->name('analyst.reports.create');
+    Route::post('/analyst/reports/generate', [AnalystReportController::class, 'store'])->name('analyst.reports.store');
+
+
 });
 
 // Logout route
