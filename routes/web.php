@@ -718,4 +718,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('chats/messages/{message}/edit', [ChatController::class, 'editMessage'])->name('chats.editMessage');
     Route::put('chats/messages/{message}', [ChatController::class, 'updateMessage'])->name('chats.updateMessage');
     Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
+    });
+
+    Route::middleware(['auth'])->group(function () {
+    Route::get('/user/reports', [AnalystReportController::class, 'userReports'])->name('user.reports');
 });

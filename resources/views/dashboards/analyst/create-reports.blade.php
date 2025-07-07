@@ -21,12 +21,11 @@
             <option value="performance">Performance</option>
         </select>
 
-        <label>Target Role:</label>
-        <select name="target_role" class="form-control" required>
-            <option value="retailer">Retailer</option>
-            <option value="supplier">Supplier</option>
-            <option value="vendor">Vendor</option>
-            <option value="manufacturer">Manufacturer</option>
+        <label>Target User:</label>
+        <select name="target_user_id" class="form-control" required>
+        @foreach(\App\Models\User::all() as $user)
+        <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->role }})</option>
+        @endforeach
         </select>
 
         <label>Report Summary:</label>
