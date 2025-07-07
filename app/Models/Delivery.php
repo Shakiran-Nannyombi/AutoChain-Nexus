@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Delivery extends Model
 {
@@ -11,4 +12,7 @@ class Delivery extends Model
     protected $casts = [
         'materials_delivered' => 'array',
     ];
+
+use HasFactory;
+
 }

@@ -218,6 +218,8 @@ Start all services in separate terminals:
    npm run dev
    ```
 6. **FastAPI
+   pip install fastapi "uvicorn[standard]"
+
     uvicorn ml.main:app --reload --port 8001
 
     

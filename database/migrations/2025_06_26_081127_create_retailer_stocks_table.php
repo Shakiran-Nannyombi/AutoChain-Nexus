@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('retailer_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('retailer_id')->constrained('retailers')->onDelete('cascade');
+            $table->foreignId('vendor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('car_model');
             $table->string('vendor_name');
             $table->integer('quantity_received');
