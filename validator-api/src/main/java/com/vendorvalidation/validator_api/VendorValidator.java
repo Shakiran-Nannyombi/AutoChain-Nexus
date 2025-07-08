@@ -108,7 +108,7 @@ public class VendorValidator {
             response.put("reputation_score", reputationScore);
             response.put("compliance_score", complianceScore);
             response.put("profile_score", profileScore);
-            response.put("extracted_data", mapper.valueToTree(extractedData));
+            response.set("extracted_data", mapper.valueToTree(extractedData));
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response);
         } catch (Exception e) {
             return "{\"score\": 0, \"message\": \"Error creating JSON response: " + e.getMessage() + "\"}";

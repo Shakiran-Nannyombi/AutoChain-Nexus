@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
  */
 public class PDFProcessor {
     
+    @SuppressWarnings("unused")
     private final Tika tika = new Tika(); // Tika is a library for detecting the type of a file
     
     /**
