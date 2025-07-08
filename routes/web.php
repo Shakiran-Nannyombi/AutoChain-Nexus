@@ -646,22 +646,25 @@ Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(
 });
 
 // Manufacturer dashboard routes
+use App\Http\Controllers\ManufacturerDashboardController;
+
 Route::prefix('manufacturer')->group(function () {
     Route::get('/dashboard', function () { return view('dashboards.manufacturer.index'); })->name('manufacturer.dashboard');
-    Route::get('/production-lines', function () { return view('dashboards.manufacturer.production-lines'); })->name('manufacturer.production-lines');
-    Route::get('/machine-health', function () { return view('dashboards.manufacturer.machine-health'); })->name('manufacturer.machine-health');
-    Route::get('/quality-control', function () { return view('dashboards.manufacturer.quality-control'); })->name('manufacturer.quality-control');
-    Route::get('/maintenance', function () { return view('dashboards.manufacturer.maintenance'); })->name('manufacturer.maintenance');
-    Route::get('/inventory-status', function () { return view('dashboards.manufacturer.inventory-status'); })->name('manufacturer.inventory-status');
-    Route::get('/scheduling', function () { return view('dashboards.manufacturer.scheduling'); })->name('manufacturer.scheduling');
-    Route::get('/checklists', function () { return view('dashboards.manufacturer.checklists'); })->name('manufacturer.checklists');
-    Route::get('/material-receipt', function () { return view('dashboards.manufacturer.material-receipt'); })->name('manufacturer.material-receipt');
-    Route::get('/workflow', function () { return view('dashboards.manufacturer.workflow'); })->name('manufacturer.workflow');
-    Route::get('/production-analytics', function () { return view('dashboards.manufacturer.production-analytics'); })->name('manufacturer.production-analytics');
-    Route::get('/production-reports', function () { return view('dashboards.manufacturer.production-reports'); })->name('manufacturer.production-reports');
+    Route::get('/production-lines', [ManufacturerDashboardController::class, 'production_lines'])->name('manufacturer.production-lines');
+    Route::get('/machine-health', [ManufacturerDashboardController::class, 'machine_health'])->name('manufacturer.machine-health');
+    Route::get('/quality-control', [ManufacturerDashboardController::class, 'quality_control'])->name('manufacturer.quality-control');
+    Route::get('/maintenance', [ManufacturerDashboardController::class, 'maintenance'])->name('manufacturer.maintenance');
+    Route::get('/inventory-status', [ManufacturerDashboardController::class, 'inventory_status'])->name('manufacturer.inventory-status');
+    Route::get('/scheduling', [ManufacturerDashboardController::class, 'scheduling'])->name('manufacturer.scheduling');
+    Route::get('/checklists', [ManufacturerDashboardController::class, 'checklists'])->name('manufacturer.checklists');
+    Route::get('/material-receipt', [ManufacturerDashboardController::class, 'material_receipt'])->name('manufacturer.material-receipt');
+    Route::get('/workflow', [ManufacturerDashboardController::class, 'workflow'])->name('manufacturer.workflow');
+    Route::get('/production-analytics', [ManufacturerDashboardController::class, 'production_analytics'])->name('manufacturer.production-analytics');
+    Route::get('/production-reports', [ManufacturerDashboardController::class, 'production_reports'])->name('manufacturer.production-reports');
     Route::get('/demand-prediction', function () { return view('dashboards.manufacturer.demand-prediction'); })->name('manufacturer.demand-prediction');
-    Route::get('/chat', function () { return view('dashboards.manufacturer.chat'); })->name('manufacturer.chat');
-    Route::get('/settings', function () { return view('dashboards.manufacturer.settings'); })->name('manufacturer.settings');
+    Route::get('/chat', [ManufacturerDashboardController::class, 'chat'])->name('manufacturer.chat');
+    Route::get('/settings', [ManufacturerDashboardController::class, 'settings'])->name('manufacturer.settings');
+    Route::post('/production-lines/update-item', [ManufacturerDashboardController::class, 'updateProcessFlowItem']);
 });
 
 // Supplier dashboard routes
