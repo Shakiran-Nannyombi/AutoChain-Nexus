@@ -1,3 +1,13 @@
+:root {
+    --background: #FFFFFF;
+    --primary: #c551aa;
+    --secondary: #d86573;
+    --accent: #c3a182;
+    --text: #180d1a;
+    --text2: #f7ddda;
+    --shadow: 0 4px 24px rgba(32,0,58,0.08);
+}
+
 /* User Management Page Styles */
 .stats-container {
     display: grid;
@@ -7,7 +17,7 @@
 }
 
 .stat-card {
-    background: var(--white);
+    background: var(--background);
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: var(--shadow);
@@ -25,7 +35,7 @@
 .stat-value {
     font-size: 1.75rem;
     font-weight: 700;
-    color: var(--deep-purple);
+    color: var(--primary);
 }
 
 .stat-icon {
@@ -39,7 +49,7 @@
 }
 
 .filter-card, .user-list-card {
-    background: var(--white);
+    background: var(--background);
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: var(--shadow);
@@ -49,7 +59,7 @@
 .card-title {
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--deep-purple);
+    color: var(--primary);
     margin-bottom: 1rem;
 }
 
@@ -114,7 +124,7 @@
 
 .user-name {
     font-weight: 600;
-    color: var(--deep-purple);
+    color: var(--primary);
 }
 
 .user-email {
@@ -156,7 +166,7 @@
     padding: 0.4rem 0.8rem;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
-    background: var(--white);
+    background: var(--background);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -169,12 +179,12 @@
 }
 
 .btn-delete {
-    color: var(--maroon);
+    color: var(--accent);
 }
 .btn-delete:hover {
-    background: var(--maroon);
-    color: var(--white);
-    border-color: var(--maroon);
+    background: var(--accent);
+    color: var(--background);
+    border-color: var(--accent);
 }
 
 /* User Validation Page Specifics */
@@ -200,7 +210,7 @@
 }
 
 .application-card {
-    background: var(--white);
+    background: var(--background);
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: var(--shadow);
@@ -219,7 +229,7 @@
 .company-info h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--deep-purple);
+    color: var(--primary);
     margin: 0 0 0.25rem 0;
 }
 
@@ -249,7 +259,7 @@
 .card-header {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--maroon);
+    color: var(--accent);
     margin-bottom: 0.5rem;
 }
 
@@ -292,7 +302,7 @@
 
 .validation-score strong {
     font-size: 1.1rem;
-    color: var(--deep-purple);
+    color: var(--primary);
 }
 
 .action-buttons {
@@ -301,7 +311,7 @@
 }
 .btn-action.btn-approve {
     background-color: #28a745;
-    color: var(--white);
+    color: var(--background);
     border: none;
 }
 .btn-action.btn-approve:hover {
@@ -310,7 +320,7 @@
 
 .btn-action.btn-reject {
     background-color: #dc3545;
-    color: var(--white);
+    color: var(--background);
     border: none;
 }
 .btn-action.btn-reject:hover {
@@ -325,7 +335,7 @@
 }
 
 .validation-card {
-    background: var(--white);
+    background: var(--background);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: var(--shadow);
@@ -363,8 +373,8 @@
 }
 
 .btn-primary-full {
-    background: var(--deep-purple);
-    color: var(--white);
+    background: var(--primary);
+    color: var(--background);
 }
 .btn-primary-full:hover {
     background: #0d214c;
@@ -372,7 +382,7 @@
 
 .btn-secondary-full {
     background: #f0f2f5;
-    color: var(--deep-purple);
+    color: var(--primary);
     border: 1px solid #e0e0e0;
 }
 .btn-secondary-full:hover {
@@ -407,7 +417,7 @@
 
 .sync-info span {
     font-weight: 600;
-    color: var(--deep-purple);
+    color: var(--primary);
     display: block;
 }
 
@@ -440,11 +450,11 @@
     padding: 0.3rem 0.6rem;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
-    background: var(--white);
+    background: var(--background);
     cursor: pointer;
     transition: all 0.2s;
 }
-.btn-action-sm.btn-delete { color: var(--maroon); }
+.btn-action-sm.btn-delete { color: var(--accent); }
 .btn-action-sm:hover { background: #f8f9fa; }
 
 /* Modal Styles */
@@ -504,7 +514,7 @@
 .modal-header h3 {
     margin: 0;
     font-size: 1.25rem;
-    color: var(--deep-purple);
+    color: var(--primary);
 }
 
 .close {
@@ -554,7 +564,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: var(--deep-purple);
+    color: var(--primary);
 }
 
 .detail-section p {
@@ -715,14 +725,14 @@
 .edit-user-title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--maroon); /* Using existing variable for consistency */
+    color: var(--accent); /* Using existing variable for consistency */
     margin-bottom: 0.5rem;
 }
 
 .edit-user-section-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--maroon);
+    color: var(--accent);
     margin-bottom: 2rem;
 }
 
@@ -822,7 +832,7 @@
 
 .company-info-new h3 {
     font-size: 1.5rem;
-    color: var(--header-bg);
+    color: var(--background);
     margin: 0 0 0.25rem 0;
 }
 
@@ -899,7 +909,7 @@
 
 .validation-score-new strong {
     font-size: 1.2rem;
-    color: var(--header-bg);
+    color: var(--background);
 }
 
 .action-buttons-new {
@@ -978,7 +988,7 @@
 
 .visit-header .company-name {
     font-size: 1.5rem;
-    color: var(--header-bg);
+    color: var(--background);
     margin: 0;
 }
 

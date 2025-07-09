@@ -15,10 +15,7 @@
         <!-- Scripts -->
         @vite(['resources/css/auth.css', 'resources/js/app.js'])
     </head>
-    <body bgcolor="#0F2C67">
-        <a href="/" style="display:inline-block;margin:1rem 0 0 1rem;color:#6c63ff;text-decoration:none;font-weight:600;">&#8592; Back to Home</a>
-            <div>
-                {{ $slot }}
-        </div>
+    <body>
+        {{ $slot }}
     </body>
 </html>

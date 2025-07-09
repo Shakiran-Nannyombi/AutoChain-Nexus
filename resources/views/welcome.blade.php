@@ -18,7 +18,7 @@
             <a href="{{ route('login') }}"><button class="btn btn-login">Login</button></a>
             <a href="{{ route('register') }}"><button class="btn btn-primary">Get Started</button></a>
         </div>
-                </nav>
+    </nav>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -26,6 +26,7 @@
         <div class="main-title">
             Welcome to the Future of <span class="highlight">Automotive Manufacturing</span>
         </div>
+        <br>
          <!-- Image Slider -->
         <div class="slider-container">
             <div class="slider">
@@ -40,6 +41,7 @@
                 <img src="{{ asset('images/car9.jpeg') }}" class="slide" alt="Car 9">
             </div>
         </div>
+        <br><br>
         <div class="main-desc">
             Experience seamless collaboration across your entire supply chain ecosystem. From manufacturers to customers, our platform connects every stakeholder with real-time data, intelligent workflows, and predictive analytics.
         </div>

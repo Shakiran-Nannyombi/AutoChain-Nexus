@@ -1,14 +1,13 @@
 /* Supplier  styles */
 
 :root {
-    --deep-purple: #0F2C67;
-    --maroon: #CD1818;
-    --orange: #F3950D;
-    --light-cyan: #F4E185;
-    --white: #fff;
-    --gray: #f5f7fa;
+    --background: #FFFFFF;
+    --primary: #c551aa;
+    --secondary: #d86573;
+    --accent: #c3a182;
+    --text: #180d1a;
+    --text2: #f7ddda;
     --shadow: 0 4px 24px rgba(32,0,58,0.08);
-    --blue: #2a6eea; /* Added missing variable */
 }
 
 
