@@ -1,11 +1,17 @@
 :root {
-    --background: #FFFFFF;
-    --primary: #c551aa;
-    --secondary: #d86573;
-    --accent: #c3a182;
-    --text: #180d1a;
-    --text2: #f7ddda;
-    --shadow: 0 4px 24px rgba(32,0,58,0.08);
+    --primary: #16610E;
+    --primary-light: #82d48a;
+    --secondary: #F97A00;
+    --accent: #FED16A;
+    --text-dark: #222;
+    --text-light: #666;
+    --background: #fff;
+    --text: #333333;
+    --text2: #FFF4A4;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --success: #38c172;
+    --danger: #e3342f;
+    --warning: #ffed4a;
 }
 
 /* User Management Page Styles */

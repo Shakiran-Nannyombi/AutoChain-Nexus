@@ -27,27 +27,27 @@
         <!-- Right: Login form -->
         <div class="login-split-right">
             <div class="login-split-right-inner">
-                <div class="login-form-box">
+            <div class="login-form-box">
                     <div class="login-title">Sign into your Account</div>
                     <div class="login-desc">To access your tailored Dashboard just for you</div>
-                    @if(session('status'))
+                @if(session('status'))
                         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('status') }}</div>
-                    @endif
-                    @if ($errors->any())
-                        <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
-                            <ul style="margin: 0; padding-left: 1.2rem;">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    <form class="login-form" method="POST" action="{{ route('login') }}">
-                        @csrf
-                        <div class="input-group">
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+                        <ul style="margin: 0; padding-left: 1.2rem;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form class="login-form" method="POST" action="{{ route('login') }}">
+                    @csrf
+                    <div class="input-group">
                             <label for="email">Email address <span class="required-asterisk">*</span></label>
-                            <input id="email" type="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" required autofocus>
-                        </div>
+                        <input id="email" type="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" required autofocus>
+                    </div>
                         <div class="input-group" style="position: relative;">
                             <label for="password">Password <span class="required-asterisk">*</span></label>
                             <input id="password" type="password" name="password" placeholder="Enter password" required>
@@ -101,8 +101,8 @@
                         <a href="/register">Register</a>
                     </div>
                     <div class="login-dashboard-row">
-                        <a href="/admin/login" class="btn-dashboard btn-admin"><i class="fas fa-shield-alt"></i> Admin Dashboard</a>
-                        <a href="{{ route('customer.dashboard') }}" class="btn-dashboard btn-customer"><i class="fas fa-user"></i> Customer Dashboard</a>
+                    <a href="/admin/login" class="btn-dashboard btn-admin"><i class="fas fa-shield-alt"></i> Admin Dashboard</a>
+                    <a href="{{ route('customer.dashboard') }}" class="btn-dashboard btn-customer"><i class="fas fa-user"></i> Customer Dashboard</a>
                     </div>
                 </div>
                 <br><br><br><br>

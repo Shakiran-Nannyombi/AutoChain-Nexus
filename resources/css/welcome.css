@@ -4,12 +4,19 @@ html, body {
 }
 
 :root {
-    --primary: #155c4a;
-    --primary-light: #1e7c62;
-    --secondary: #fff;
-    --accent: #e5f2ee;
+    --primary: #16610E;
+    --primary-light: #82d48a;
+    --secondary: #F97A00;
+    --accent: #FED16A;
     --text-dark: #222;
-    --text-light: #F97A00;
+    --text-light: #666;
+    --background: #fff;
+    --text: #333333;
+    --text2: #FFF4A4;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --success: #38c172;
+    --danger: #e3342f;
+    --warning: #ffed4a;
 }
 
 body {
