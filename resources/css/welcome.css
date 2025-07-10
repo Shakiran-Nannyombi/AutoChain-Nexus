@@ -1,5 +1,6 @@
 html, body {
     overflow: hidden;
+    height: 100vh;
 }
 
 :root {
@@ -19,6 +20,15 @@ body {
     min-height: 100vh;
     font-family: 'Segoe UI', Arial, sans-serif;
     color: var(--text-dark);
+    /* Remove padding-top and padding-bottom for no scroll */
+}
+
+.main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 70px - 100px); /* Adjust for navbar and footer heights */
+    height: calc(100vh - 70px - 180px);
+    justify-content: center;
 }
 
 .hero-row {
@@ -32,6 +42,7 @@ body {
     box-sizing: border-box;
     margin-top: 0;
     padding-top: 3.2rem; /* Adjust to match navbar height */
+    height: 100%;
 }
 
 .hero-content {

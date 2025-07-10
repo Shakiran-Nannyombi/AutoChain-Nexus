@@ -19,7 +19,7 @@
             <div class="register-illustration-wrapper">
                 <div class="register-illustration">
                     <div class="register-illustration-text">Join the Autochain Nexus network</div>
-                    <img src="{{ asset('images/register.png') }}" alt="Register Illustration" style="max-width: 520px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
+                    <img src="{{ asset('images/register.png') }}" alt="Register Illustration" style="max-width: 450px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
                 </div>
             </div>
         </div>
