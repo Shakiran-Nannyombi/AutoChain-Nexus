@@ -1,8 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
 :root {
     --primary: #16610E;
     --primary-light: #82d48a;
@@ -29,16 +24,18 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background: var(--background);
     min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    overflow: hidden; /* Prevent any overflow issues */
 }
 
 /* Sidebar Styles */
 .sidebar {
-    width: 280px;
+    width: 300px; /* Increased from 280px for more space */
     background: var(--primary);
     color: var(--background);
     position: fixed;
@@ -116,7 +113,10 @@ body {
     text-decoration: none;
     transition: all 0.3s ease;
     border-left: 3px solid transparent;
-    font-size: 0.95rem;
+    font-size: 1.15rem; /* Increased from 0.95rem */
+    white-space: nowrap; /* Prevent word break */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ... if text is too long */
 }
 
 .nav-item:hover,
@@ -139,6 +139,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* Prevent horizontal scroll */
 }
 
 /* Header */
@@ -332,6 +333,8 @@ body {
     flex: 1;
     padding: 2rem;
     overflow-y: auto;
+    height: calc(100vh - 80px); /* Subtract header height */
+    max-height: calc(100vh - 80px);
 }
 
 .content-card {

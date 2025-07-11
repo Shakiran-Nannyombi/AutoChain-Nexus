@@ -17,6 +17,7 @@ export default defineConfig({
                 'resources/css/supplier.css',
                 'resources/css/retailer.css',
                 'resources/css/vendor.css',
+                'resources/css/chat.css',
                 'resources/js/app.js',
                 'resources/js/welcome.js',
                 'resources/js/slider.js',

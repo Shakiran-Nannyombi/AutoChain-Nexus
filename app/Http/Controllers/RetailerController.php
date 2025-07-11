@@ -7,6 +7,7 @@ use App\Models\RetailerStock;
 use App\Models\RetailerSale;
 use App\Models\RetailerOrder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RetailerController extends Controller
 {
@@ -16,7 +17,12 @@ class RetailerController extends Controller
         $sales = RetailerSale::where('retailer_id', $retailerId)->latest()->get();
         $orders = RetailerOrder::where('retailer_id', $retailerId)->latest()->get();
 
-        return view('dashboards.retailer.index', compact('acceptedStock', 'sales', 'orders'));
+        // Fetch notifications for the current user
+        $user = Auth::user();
+        $unreadNotifications = ($user && is_object($user) && method_exists($user, 'unreadNotifications')) ? $user->unreadNotifications()->take(5)->get() : collect();
+        $allNotifications = ($user && is_object($user) && method_exists($user, 'notifications')) ? $user->notifications()->take(10)->get() : collect();
+
+        return view('dashboards.retailer.index', compact('acceptedStock', 'sales', 'orders', 'unreadNotifications', 'allNotifications'));
     }
 
     public function stockOverview() {

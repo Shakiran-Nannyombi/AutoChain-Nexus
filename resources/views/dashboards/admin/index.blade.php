@@ -7,17 +7,13 @@
 @endsection
 
 @section('content')
-    @php
-        $title = 'Admin Dashboard';
-    @endphp
-
-        <h2 style="color: var(--deep-purple); margin-bottom: 1.5rem; font-size: 1.8rem;">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
             <i class="fas fa-shield-alt"></i> Admin Control Panel
         </h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             <!-- Quick Stats -->
-            <div style="background: linear-gradient(135deg, var(--deep-purple), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(37,99,235,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $pendingUsers ?? 0 }}</div>
@@ -27,7 +23,7 @@
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--maroon), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, #f59e42, #b35400); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(245,158,66,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $totalUsers ?? 0 }}</div>
@@ -37,7 +33,7 @@
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--blue), var(--light-cyan)); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, #22c55e, #388e3c); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(34,197,94,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $activeUsers ?? 0 }}</div>
@@ -50,28 +46,25 @@
 
         <!-- Quick Actions -->
         <div style="margin-bottom: 2rem;">
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
+            <h3 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.3rem;">
                 <i class="fas fa-bolt"></i> Quick Actions
             </h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-            <a href="/admin/user-management" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="/admin/user-management" style="display: block; padding: 1rem; background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%); border-radius: 8px; text-decoration: none; color: #fff; text-align: center; font-weight: 600; box-shadow: 0 2px 8px rgba(37,99,235,0.08); transition: transform 0.2s, box-shadow 0.2s;">
                     <i class="fas fa-user-plus" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">Review Pending Users</div>
+                    <div>Review Pending Users</div>
                 </a>
-                
-                <a href="/admin/user-management" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="/admin/user-management" style="display: block; padding: 1rem; background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%); border-radius: 8px; text-decoration: none; color: #fff; text-align: center; font-weight: 600; box-shadow: 0 2px 8px rgba(37,99,235,0.08); transition: transform 0.2s, box-shadow 0.2s;">
                     <i class="fas fa-user-cog" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">Manage Users</div>
+                    <div>Manage Users</div>
                 </a>
-                
-                <a href="/admin/settings" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="/admin/settings" style="display: block; padding: 1rem; background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%); border-radius: 8px; text-decoration: none; color: #fff; text-align: center; font-weight: 600; box-shadow: 0 2px 8px rgba(37,99,235,0.08); transition: transform 0.2s, box-shadow 0.2s;">
                     <i class="fas fa-cog" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">System Settings</div>
+                    <div>System Settings</div>
                 </a>
-                
-                <a href="/admin/reports" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="/admin/reports" style="display: block; padding: 1rem; background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%); border-radius: 8px; text-decoration: none; color: #fff; text-align: center; font-weight: 600; box-shadow: 0 2px 8px rgba(37,99,235,0.08); transition: transform 0.2s, box-shadow 0.2s;">
                     <i class="fas fa-chart-bar" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">View Reports</div>
+                    <div>View Reports</div>
                 </a>
             </div>
         </div>
@@ -79,7 +72,7 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-top: 2rem;">
         <!-- Recent Activity -->
         <div style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow);">
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
+            <h3 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.3rem;">
                 <i class="fas fa-history"></i> Recent Activity
             </h3>
             @if(isset(
@@ -100,7 +93,7 @@ $recentActivities) && $recentActivities->count())
                 
         <!-- User Distribution by Role -->
         <div style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow);">
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
+            <h3 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.3rem;">
                 User Distribution by Role
             </h3>
                     <div>

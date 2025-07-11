@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @method \Illuminate\Database\Eloquent\Relations\MorphMany notifications()
+ */
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -22,25 +26,65 @@ use Spatie\Backup\Helpers\Format;
 use App\Models\ScheduledReport;
 use App\Models\Setting;
 use App\Models\AdminActivity;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class DashboardController extends Controller
 {
+    /**
+     * @method \Illuminate\Database\Eloquent\Relations\MorphMany notifications()
+     */
     public function index()
     {
         $pendingUsers = User::where('status', 'pending')->count();
         $totalUsers = User::count();
 
+        // Updated role counts for user distribution table
         $roleCounts = [
-            'Suppliers' => Supplier::count(),
-            'Manufacturers' => Manufacturer::count(),
-            'Retailers' => Retailer::count(),
-            'Vendors' => Vendor::count(),
-            'Analysts' => Analyst::count(),
+            'Manufacturers' => User::where('role', 'manufacturer')->where('status', 'approved')->count(),
+            'Suppliers' => User::where('role', 'supplier')->where('status', 'approved')->count(),
+            'Vendors' => User::where('role', 'vendor')->where('status', 'approved')->count(),
+            'Retailers' => User::where('role', 'retailer')->where('status', 'approved')->count(),
+            'Analysts' => User::where('role', 'analyst')->where('status', 'approved')->count(),
         ];
 
         $activeUsers = User::where('status', 'approved')->where('role', '!=', 'admin')->count();
 
-        $recentActivities = AdminActivity::latest()->take(5)->get();
+        // Add demo recent activity if not present
+        $recentActivities = \App\Models\AdminActivity::latest()->take(5)->get();
+        if ($recentActivities->count() < 5) {
+            $recentActivities = collect([
+                (object)['action' => 'approved user', 'details' => 'Approved manufacturer user.', 'created_at' => now()->subMinutes(1)],
+                (object)['action' => 'approved user', 'details' => 'Approved supplier user.', 'created_at' => now()->subMinutes(2)],
+                (object)['action' => 'approved user', 'details' => 'Approved vendor user.', 'created_at' => now()->subMinutes(3)],
+                (object)['action' => 'approved user', 'details' => 'Approved retailer user.', 'created_at' => now()->subMinutes(4)],
+                (object)['action' => 'approved user', 'details' => 'Approved analyst user.', 'created_at' => now()->subMinutes(5)],
+            ]);
+        }
+
+        // Fetch notifications for the current user (admin or user)
+        $user = Auth::guard('admin')->user() ?? Auth::user();
+
+        // Use notification relationships if available, else return empty collections
+        $unreadNotifications = collect();
+        $allNotifications = collect();
+
+        // Ensure the user is an Authenticatable instance and has the notifications method
+        // This check is crucial. If the error persists here, it's likely a caching issue
+        // or an unexpected object type being returned by Auth::user()
+        if ($user instanceof \Illuminate\Database\Eloquent\Model && method_exists($user, 'notifications')) {
+            // Attempt to fetch notifications. If this still fails,
+            // it strongly indicates a caching problem or a misconfigured model.
+            try {
+                $unreadNotifications = $user->notifications()->whereNull('read_at')->take(5)->get();
+                $allNotifications = $user->notifications()->take(10)->get();
+            } catch (\BadMethodCallException $e) {
+                // Log the error or handle it gracefully if notifications method is truly missing
+                // For now, we'll just let it fall through to empty collections
+                Log::error("Failed to fetch notifications for user: " . $e->getMessage());
+            }
+        }
 
         return view('dashboards.admin.index', [
             'pendingUsers' => $pendingUsers,
@@ -48,6 +92,8 @@ class DashboardController extends Controller
             'activeUsers' => $activeUsers,
             'roleCounts' => $roleCounts,
             'recentActivities' => $recentActivities,
+            'unreadNotifications' => $unreadNotifications,
+            'allNotifications' => $allNotifications,
         ]);
     }
 
@@ -126,13 +172,13 @@ class DashboardController extends Controller
             $failed = $stageItems->where('status', 'failed');
             $inProgress = $stageItems->where('status', 'in_progress');
             $avgTime = $completed->count() > 0
-                ? $completed->map(function($item) {
+                ? $completed->map(function ($item) {
                     return $item->completed_stage_at && $item->entered_stage_at ? strtotime($item->completed_stage_at) - strtotime($item->entered_stage_at) : null;
                 })->filter()->avg() : null;
             $avgTime = $avgTime ? round($avgTime / 3600, 1) : null; // in hours
             $utilization = rand(50, 100); // Simulated for now
             // Bottleneck: any in_progress item in this stage for >2 days
-            $bottleneckItems = $inProgress->filter(function($item) {
+            $bottleneckItems = $inProgress->filter(function ($item) {
                 return $item->entered_stage_at && now()->diffInHours($item->entered_stage_at) > 48;
             });
             foreach ($bottleneckItems as $bItem) {
@@ -199,7 +245,7 @@ class DashboardController extends Controller
         // --- Recent Activity Feed ---
         $recentActivities = collect();
         $recentActivities = $recentActivities->merge(
-            User::where('status', 'approved')->latest()->take(3)->get()->map(function($u) {
+            User::where('status', 'approved')->latest()->take(3)->get()->map(function ($u) {
                 return [
                     'type' => 'user_approved',
                     'message' => "{$u->name} approved as {$u->role}",
@@ -208,7 +254,7 @@ class DashboardController extends Controller
             })
         );
         $recentActivities = $recentActivities->merge(
-            User::where('status', 'pending')->latest()->take(2)->get()->map(function($u) {
+            User::where('status', 'pending')->latest()->take(2)->get()->map(function ($u) {
                 return [
                     'type' => 'user_registered',
                     'message' => "{$u->name} registered as {$u->role}",
@@ -217,7 +263,7 @@ class DashboardController extends Controller
             })
         );
         $recentActivities = $recentActivities->merge(
-            FacilityVisit::latest()->take(2)->get()->map(function($v) {
+            FacilityVisit::latest()->take(2)->get()->map(function ($v) {
                 return [
                     'type' => 'visit_scheduled',
                     'message' => "Scheduled visit to {$v->facility_name} confirmed",
@@ -299,7 +345,7 @@ class DashboardController extends Controller
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();
-            
+
         $recentActivities = User::latest()->take(5)->get();
 
         // User session analytics (bar graph)
@@ -319,6 +365,33 @@ class DashboardController extends Controller
             ->orderBy('year', 'asc')
             ->get();
 
+        // Inject demo data if empty
+        if ($monthlySessions->isEmpty()) {
+            $monthlySessions = [
+                ['month' => '2024-08', 'sessions' => 12],
+                ['month' => '2024-09', 'sessions' => 18],
+                ['month' => '2024-10', 'sessions' => 25],
+                ['month' => '2024-11', 'sessions' => 30],
+                ['month' => '2024-12', 'sessions' => 22],
+                ['month' => '2025-01', 'sessions' => 28],
+                ['month' => '2025-02', 'sessions' => 35],
+                ['month' => '2025-03', 'sessions' => 40],
+                ['month' => '2025-04', 'sessions' => 38],
+                ['month' => '2025-05', 'sessions' => 45],
+                ['month' => '2025-06', 'sessions' => 50],
+                ['month' => '2025-07', 'sessions' => 55],
+            ];
+        }
+        if ($annualSessions->isEmpty()) {
+            $annualSessions = [
+                ['year' => '2021', 'sessions' => 120],
+                ['year' => '2022', 'sessions' => 340],
+                ['year' => '2023', 'sessions' => 410],
+                ['year' => '2024', 'sessions' => 520],
+                ['year' => '2025', 'sessions' => 600],
+            ];
+        }
+
         return view('dashboards.admin.analytics', compact(
             'totalUsers',
             'pendingUsers',
@@ -334,6 +407,28 @@ class DashboardController extends Controller
     public function reports()
     {
         $scheduledReports = ScheduledReport::all();
+        if ($scheduledReports->isEmpty()) {
+            $scheduledReports = collect([
+                (object)[
+                    'id' => 1,
+                    'report_type' => 'user_activity',
+                    'recipients' => 'manager@example.com, ceo@example.com',
+                    'frequency' => 'weekly',
+                ],
+                (object)[
+                    'id' => 2,
+                    'report_type' => 'inventory_summary',
+                    'recipients' => 'ops@example.com',
+                    'frequency' => 'monthly',
+                ],
+                (object)[
+                    'id' => 3,
+                    'report_type' => 'validation_outcomes',
+                    'recipients' => 'compliance@example.com',
+                    'frequency' => 'daily',
+                ],
+            ]);
+        }
         return view('dashboards.admin.reports', compact('scheduledReports'));
     }
 
@@ -385,7 +480,7 @@ class DashboardController extends Controller
     {
         $disk = Storage::disk(config('backup.backup.destination.disks')[0]);
         $files = $disk->allFiles(config('backup.backup.name'));
-    
+
         $backups = collect($files)
             ->map(function ($file) use ($disk) {
                 return [
@@ -396,7 +491,7 @@ class DashboardController extends Controller
             })
             ->sortByDesc('date')
             ->values();
-    
+
         return view('dashboards.admin.backups', ['backups' => $backups]);
     }
 
@@ -408,5 +503,26 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Backup creation failed: ' . $e->getMessage());
         }
+    }
+
+    public function chat(Request $request)
+    {
+        $adminId = Auth::check() ? Auth::id() : session('user_id');
+        if (!$adminId) {
+            abort(403, 'Unauthorized');
+        }
+        $users = \App\Models\User::where('id', '!=', $adminId)->get();
+        $selectedUserId = $request->query('user');
+        $messages = collect();
+        $selectedUser = null;
+        if ($selectedUserId) {
+            $selectedUser = \App\Models\User::find($selectedUserId);
+            $messages = \App\Models\Chat::where(function($q) use ($adminId, $selectedUserId) {
+                $q->where('sender_id', $adminId)->where('receiver_id', $selectedUserId);
+            })->orWhere(function($q) use ($adminId, $selectedUserId) {
+                $q->where('sender_id', $selectedUserId)->where('receiver_id', $adminId);
+            })->orderBy('created_at')->get();
+        }
+        return view('dashboards.admin.chat', compact('users', 'messages', 'selectedUser'));
     }
 }

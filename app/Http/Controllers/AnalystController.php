@@ -8,6 +8,7 @@ use App\Models\SupplierStock;
 use App\Models\RetailerStock;
 use App\Models\AnalystReport;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AnalystController extends Controller
 {
@@ -25,8 +26,13 @@ class AnalystController extends Controller
 
         $accuracy = '95%'; // Placeholder or calculated from model later
 
+        // Fetch notifications for the current user
+        $user = Auth::user();
+        $unreadNotifications = ($user && is_object($user) && method_exists($user, 'unreadNotifications')) ? $user->unreadNotifications()->take(5)->get() : collect();
+        $allNotifications = ($user && is_object($user) && method_exists($user, 'notifications')) ? $user->notifications()->take(10)->get() : collect();
+
         return view('dashboards.analyst.index', compact(
-            'totalReports', 'dataPoints', 'trends', 'accuracy'
+            'totalReports', 'dataPoints', 'trends', 'accuracy', 'unreadNotifications', 'allNotifications'
         ));
     }
 

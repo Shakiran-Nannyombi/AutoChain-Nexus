@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @method \Illuminate\Database\Eloquent\Relations\MorphMany notifications()
+ * @method \Illuminate\Notifications\DatabaseNotificationCollection unreadNotifications()
+ */
 class Admin extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -17,7 +21,6 @@ class Admin extends Authenticatable
         'password',
         'company',
         'address',
-        'profile_picture',
         'profile_photo',
         'supporting_documents',
         'admin_level',

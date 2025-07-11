@@ -13,14 +13,14 @@
     <!-- Left Column: User Info Card -->
     <div class="profile-user-card">
         @php
-            $adminProfilePhoto = $user->profile_photo_path;
+            $adminProfilePhoto = $user->profile_photo;
             $nameParts = explode(' ', $user->name);
             $initials = count($nameParts) > 1 
                 ? strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1))
                 : strtoupper(substr($user->name, 0, 2));
         @endphp
         @if($adminProfilePhoto)
-            <img src="{{ asset('storage/' . $adminProfilePhoto) }}" alt="Profile Photo" class="profile-avatar" style="object-fit:cover; width:100px; height:100px; border-radius:50%; border:2px solid #e0e0e0; margin-bottom:1rem;">
+            <img src="{{ asset($adminProfilePhoto) }}" alt="Profile Photo" class="profile-avatar" style="object-fit:cover; width:100px; height:100px; border-radius:50%; border:2px solid #e0e0e0; margin-bottom:1rem;">
         @else
             <div class="profile-avatar">{{ $initials }}</div>
         @endif

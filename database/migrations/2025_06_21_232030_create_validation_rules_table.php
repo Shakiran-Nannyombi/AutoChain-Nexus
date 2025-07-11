@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description');
             $table->string('value');
             $table->string('status')->default('draft'); // e.g., active, draft
+            $table->unique(['name', 'category', 'value'], 'unique_rule');
             $table->timestamps();
         });
     }

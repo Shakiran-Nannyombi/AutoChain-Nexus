@@ -6,6 +6,8 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             ValidationRuleSeeder::class,
             FacilityVisitSeeder::class,
+            DemoUsersSeeder::class,
         ]);
 
         $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];
@@ -36,6 +39,7 @@ class DatabaseSeeder extends Seeder
                     'company' => ucfirst($role) . ' Company',
                     'phone' => '123-456-7890',
                     'address' => '123 ' . ucfirst($role) . ' Street',
+                    'profile_photo' => 'images/profile.jpeg',
                 ]
             );
         }
@@ -100,6 +104,46 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call(AnalystSampleDataSeeder::class);
+
+        // Add demo notifications for all user types
+        $roles = ['vendor', 'supplier', 'manufacturer', 'retailer', 'analyst'];
+        foreach ($roles as $role) {
+            $user = \App\Models\User::where('role', $role)->first();
+            if ($user) {
+                DB::table('notifications')->insert([
+                    [
+                        'id' => (string) Str::uuid(),
+                        'type' => 'App\\Notifications\\NewUserNotification',
+                        'notifiable_type' => 'App\\Models\\User',
+                        'notifiable_id' => $user->id,
+                        'data' => json_encode(['message' => ucfirst($role) . ' notification: Welcome to your dashboard!']),
+                        'read_at' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                    [
+                        'id' => (string) Str::uuid(),
+                        'type' => 'App\\Notifications\\NewUserNotification',
+                        'notifiable_type' => 'App\\Models\\User',
+                        'notifiable_id' => $user->id,
+                        'data' => json_encode(['message' => ucfirst($role) . ' notification: You have a new message.']),
+                        'read_at' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                    [
+                        'id' => (string) Str::uuid(),
+                        'type' => 'App\\Notifications\\NewUserNotification',
+                        'notifiable_type' => 'App\\Models\\User',
+                        'notifiable_id' => $user->id,
+                        'data' => json_encode(['message' => ucfirst($role) . ' notification: System update completed.']),
+                        'read_at' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                ]);
+            }
+        }
 
     }
 }

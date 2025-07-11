@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * PDFProcessor class for extracting and analyzing data from PDF documents.
  * This class handles financial statements, compliance documents, and reputation data.
  */
-public class PDFProcessor {
+public class DocProcessor {
     
     @SuppressWarnings("unused")
     private final Tika tika = new Tika(); // Tika is a library for detecting the type of a file

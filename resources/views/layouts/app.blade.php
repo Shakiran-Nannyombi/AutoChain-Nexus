@@ -1,0 +1,1 @@
+    <meta name="user-id" content="{{ auth()->id() ?? session('user_id') }}"> 

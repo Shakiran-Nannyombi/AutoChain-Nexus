@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cookie;
 use App\Models\User;
 use App\Services\UserMigrationService;
 use App\Http\Controllers\Admin\DashboardController;
@@ -470,7 +471,7 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 // Role-specific dashboard routes
-Route::middleware(['admin'])->prefix('admin')->group(function () {
+Route::middleware(['admin', \App\Http\Middleware\PreventBackAfterLogout::class])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/search', [SearchController::class, 'search'])->name('admin.search');
     Route::get('/system-flow', [DashboardController::class, 'systemFlow'])->name('admin.system-flow');
@@ -483,6 +484,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::put('/settings', [DashboardController::class, 'updateSettings'])->name('admin.settings.update');
     Route::get('/backups', [DashboardController::class, 'backups'])->name('admin.backups');
     Route::post('/backups/create', [DashboardController::class, 'createBackup'])->name('admin.backups.create');
+    Route::get('/chat', [DashboardController::class, 'chat'])->name('admin.chat');
 
     // User management specific routes
     Route::get('/user-management', [UserController::class, 'index'])->name('admin.user-management');
@@ -524,36 +526,41 @@ Route::get('/manufacturer/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'manufacturer') {
         return redirect('/login');
     }
+    
     return view('dashboards.manufacturer.index');
-});
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/supplier/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'supplier') {
         return redirect('/login');
     }
+    
     return view('dashboards.supplier.index');
-});
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/vendor/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'vendor') {
         return redirect('/login');
     }
+    
     return view('dashboards.vendor.index');
-});
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/retailer/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'retailer') {
         return redirect('/login');
     }
+    
     return view('dashboards.retailer.index');
-});
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/analyst/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'analyst') {
         return redirect('/login');
     }
+    
     return view('dashboards.analyst.index');
-})->name('analyst.dashboard');
+})->name('analyst.dashboard')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 // Analyst dashboard routes
 Route::prefix('analyst')->group(function () {
@@ -580,14 +587,35 @@ Route::prefix('analyst')->group(function () {
 
 // Logout route
 Route::get('/logout', function () {
+    // Clear all authentication guards
+    Auth::guard('web')->logout();
+    Auth::guard('admin')->logout();
+    
+    // Clear all session data
     session()->flush();
-    return redirect('/login');
+    session()->invalidate();
+    session()->regenerateToken();
+    
+    // Clear any remember me cookies
+    Cookie::queue(Cookie::forget('remember_web'));
+    Cookie::queue(Cookie::forget('remember_admin'));
+    
+    // Add cache-busting headers to prevent browser back button access
+    return redirect('/login')
+        ->withHeaders([
+            'Cache-Control' => 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => 'Thu, 01 Jan 1970 00:00:00 GMT'
+        ]);
 })->name('logout');
 
 // Admin login page
 Route::get('/admin/login', function () {
     return view('auth.admin-login');
 });
+
+// Admin logout route
+Route::get('/admin/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
 // Admin login route (separate from regular user login)
 Route::post('/admin/login', function (Request $request) {
@@ -601,23 +629,25 @@ Route::post('/admin/login', function (Request $request) {
 
     // Use the UserMigrationService to authenticate admin
     $userMigrationService = new \App\Services\UserMigrationService();
-    $user = $userMigrationService->authenticateUser($email, $password, 'admin');
+    $admin = $userMigrationService->authenticateUser($email, $password, 'admin');
 
-    if ($user) {
-        // Store user info in session
+    if ($admin) {
+        // Store admin info in session
         session([
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
+            'user_id' => $admin->id,
+            'user_name' => $admin->name,
+            'user_email' => $admin->email,
             'user_role' => 'admin'
         ]);
-        Auth::login($user);
+        
+        // Use the admin guard for authentication
+        Auth::guard('admin')->login($admin);
 
         // Debug: Log the session data
         Log::info('Admin login successful', [
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
+            'user_id' => $admin->id,
+            'user_name' => $admin->name,
+            'user_email' => $admin->email,
             'session_data' => session()->all()
         ]);
 
@@ -709,7 +739,7 @@ Route::prefix('retailer')->group(function () {
 });
 
 // Chat routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['user_or_admin'])->group(function () {
     Route::resource('chats', ChatController::class);
     Route::post('chats/{chat}/messages', [ChatController::class, 'storeMessage'])->name('chats.storeMessage');
     Route::get('chats/order/{orderId}', [ChatController::class, 'getOrderChats'])->name('chats.getOrderChats');
@@ -718,8 +748,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('chats/messages/{message}/edit', [ChatController::class, 'editMessage'])->name('chats.editMessage');
     Route::put('chats/messages/{message}', [ChatController::class, 'updateMessage'])->name('chats.updateMessage');
     Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
-    });
+});
 
     Route::middleware(['auth'])->group(function () {
     Route::get('/user/reports', [AnalystReportController::class, 'userReports'])->name('user.reports');
+    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('user.chat');
 });

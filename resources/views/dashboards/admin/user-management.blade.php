@@ -13,69 +13,62 @@
 @section('content')
     <h1 class="page-title" style="margin-bottom: 1.5rem;">User Management</h1>
     <!-- Stats Cards -->
-    <div class="stats-container">
-        <div class="stat-card">
-            <div>
-                <div class="stat-title">Total Users</div>
-                <div class="stat-value">{{ $stats['total'] }}</div>
+    <div class="stats-container" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="stat-card" style="background: linear-gradient(135deg, #174ea6 0%, #2563eb 100%); color: #fff; box-shadow: 0 2px 8px rgba(23,78,166,0.12); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">Total Users</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['total'] }}</div>
             </div>
-            <div class="stat-icon" style="color: #2a6eea; background: #e9f0ff;">
+            <div class="stat-icon" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;">
                 <i class="fas fa-users"></i>
             </div>
         </div>
-        <div class="stat-card">
-            <div>
-                <div class="stat-title">Active Users</div>
-                <div class="stat-value" style="color: #28a745;">{{ $stats['active'] }}</div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #15803d 0%, #166534 100%); color: #fff; box-shadow: 0 2px 8px rgba(21,128,61,0.12); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">Active Users</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['active'] }}</div>
             </div>
-            <div class="stat-icon" style="color: #28a745; background: #e9f6ec;">
+            <div class="stat-icon" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;">
                 <i class="fas fa-user-check"></i>
             </div>
         </div>
-        <div class="stat-card">
-            <div>
-                <div class="stat-title">Inactive Users</div>
-                <div class="stat-value" style="color: #dc3545;">{{ $stats['inactive'] }}</div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%); color: #fff; box-shadow: 0 2px 8px rgba(185,28,28,0.12); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">Inactive Users</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['inactive'] }}</div>
             </div>
-            <div class="stat-icon" style="color: #dc3545; background: #f8dfe1;">
+            <div class="stat-icon" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;">
                 <i class="fas fa-user-times"></i>
             </div>
         </div>
-        <div class="stat-card">
-            <div>
-                <div class="stat-title">New This Month</div>
-                <div class="stat-value">{{ $stats['new_this_month'] }}</div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%); color: #fff; box-shadow: 0 2px 8px rgba(109,40,217,0.12); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">New This Month</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['new_this_month'] }}</div>
             </div>
-            <div class="stat-icon" style="color: #6f42c1; background: #f1edff;">
+            <div class="stat-icon" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;">
                 <i class="fas fa-user-plus"></i>
             </div>
         </div>
     </div>
 
     <!-- Search and Filter -->
-    <div class="filter-card">
-        <h2 class="card-title">Search & Filter Users</h2>
-        <form id="filterForm" action="{{ route('admin.user-management') }}" method="GET">
-            <div class="filter-controls">
-                <div class="search-bar" style="flex-grow: 1;">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="search" placeholder="Search by name, email, or company..." value="{{ $filters['search'] ?? '' }}">
-                </div>
-                <div class="filter-role">
-                    <i class="fas fa-filter"></i>
-                    <select name="role">
-                        <option value="">All Roles</option>
-                        @php
-                            $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];
-                        @endphp
-                        @foreach($roles as $role)
-                            <option value="{{ $role }}" {{ ($filters['role'] ?? '') == $role ? 'selected' : '' }}>
-                                {{ ucfirst($role) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+    <div style="background: #e9f0ff; border-radius: 14px; padding: 2rem 1.5rem 1.5rem 1.5rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(37,99,235,0.04);">
+        <h2 style="color: #15803d; font-size: 1.25rem; margin-bottom: 1rem; font-weight: 600;">Search & Filter Users</h2>
+        <form id="filterForm" method="GET" action="" style="display: flex; gap: 1rem; align-items: center;">
+            <input type="text" name="search" class="form-control" placeholder="Search by name, email, or company..." value="{{ request('search') }}" style="flex: 1; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.75rem 1rem; font-size: 1rem;">
+            <div style="position: relative;">
+                <select name="role" class="form-control" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.75rem 2.5rem 0.75rem 1rem; font-size: 1rem; background: #fff;">
+                    <option value="">All Roles</option>
+                    <option value="manufacturer" {{ request('role') == 'manufacturer' ? 'selected' : '' }}>Manufacturer</option>
+                    <option value="supplier" {{ request('role') == 'supplier' ? 'selected' : '' }}>Supplier</option>
+                    <option value="vendor" {{ request('role') == 'vendor' ? 'selected' : '' }}>Vendor</option>
+                    <option value="retailer" {{ request('role') == 'retailer' ? 'selected' : '' }}>Retailer</option>
+                    <option value="analyst" {{ request('role') == 'analyst' ? 'selected' : '' }}>Analyst</option>
+                </select>
+                <span style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #2563eb; pointer-events: none;"><i class="fas fa-filter"></i></span>
             </div>
+            <button type="submit" class="btn btn-primary" style="background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 600; box-shadow: 0 2px 8px rgba(37,99,235,0.08); transition: background 0.2s;">Search</button>
         </form>
     </div>
 

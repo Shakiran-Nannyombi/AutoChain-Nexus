@@ -15,7 +15,13 @@ class SupplierController extends Controller
     public function stockManagement()
     {
         $stocks = SupplierStock::where('supplier_id', Auth::id())->get();
-        return view('dashboards.supplier.stock-management', compact('stocks'));
+        
+        // Fetch notifications for the current user
+        $user = Auth::user();
+        $unreadNotifications = ($user && is_object($user) && method_exists($user, 'unreadNotifications')) ? $user->unreadNotifications()->take(5)->get() : collect();
+        $allNotifications = ($user && is_object($user) && method_exists($user, 'notifications')) ? $user->notifications()->take(10)->get() : collect();
+        
+        return view('dashboards.supplier.stock-management', compact('stocks', 'unreadNotifications', 'allNotifications'));
     }
 
     public function addStock(Request $request)

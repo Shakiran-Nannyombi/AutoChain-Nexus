@@ -49,12 +49,25 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        // Clear all authentication guards
         Auth::guard('admin')->logout();
-
+        Auth::guard('web')->logout();
+        
+        // Clear all session data
+        $request->session()->flush();
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
-        return redirect('/');
+        
+        // Clear any remember me cookies
+        \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('remember_admin'));
+        \Illuminate\Support\Facades\Cookie::queue(\Illuminate\Support\Facades\Cookie::forget('remember_web'));
+        
+        // Add cache-busting headers to prevent browser back button access
+        return redirect('/admin/login')
+            ->withHeaders([
+                'Cache-Control' => 'no-cache, no-store, must-revalidate, max-age=0',
+                'Pragma' => 'no-cache',
+                'Expires' => 'Thu, 01 Jan 1970 00:00:00 GMT'
+            ]);
     }
 }

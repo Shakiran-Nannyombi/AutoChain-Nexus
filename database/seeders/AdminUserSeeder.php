@@ -27,20 +27,9 @@ class AdminUserSeeder extends Seeder
                 'permissions' => json_encode(['all']),
                 'department' => 'Administration',
                 'is_active' => true,
+                'profile_photo' => 'images/profile.jpeg',
             ]
         );
-        // Also create a user record for admin
-        User::updateOrCreate(
-            ['email' => 'admin@autochain.com'],
-            [
-                'name' => 'Admin User',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'status' => 'approved',
-                'company' => 'Autochain Nexus',
-                'phone' => '1234567890',
-                'address' => 'Admin Address',
-            ]
-        );
+        // Removed creation of User record for admin
     }
 }

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Models\Chat;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\NewChatMessage;
 
 class ChatController extends Controller
 {
@@ -195,18 +197,24 @@ class ChatController extends Controller
         ], 403);
     }
 
-    public function storeMessage(Request $request, Chat $chat)
+    public function storeMessage(Request $request, $chatId = null)
     {
         $request->validate([
-            'message' => 'required|string|max:1000',
+            'receiver_id' => 'required|exists:users,id',
+            'message' => 'required|string',
         ]);
-
-        $chat->messages()->create([
-            'sender_id' => auth()->id(),
+        $senderId = auth()->id() ?? session('user_id');
+        $receiverId = $request->receiver_id;
+        $message = \App\Models\Chat::create([
+            'sender_id' => $senderId,
+            'receiver_id' => $receiverId,
             'message' => $request->message,
         ]);
-
-        return redirect()->route('chats.show', $chat);
+        // Broadcast event
+        event(new MessageSent($message, \App\Models\User::find($senderId), \App\Models\User::find($receiverId)));
+        // Send notification
+        \App\Models\User::find($receiverId)->notify(new NewChatMessage($message));
+        return back()->with('success', 'Message sent!');
     }
 
     public function editMessage(\App\Models\ChatMessage $message)
@@ -240,5 +248,50 @@ class ChatController extends Controller
         $chatId = $message->chat_id;
         $message->delete();
         return redirect()->route('chats.show', $chatId)->with('success', 'Message deleted!');
+    }
+
+    public function chat(Request $request)
+    {
+        $userId = auth()->id() ?? session('user_id');
+        $currentUser = \App\Models\User::find($userId);
+        $role = $currentUser->role;
+        $users = collect();
+        switch ($role) {
+            case 'admin':
+                $users = \App\Models\User::where('id', '!=', $userId)->get();
+                break;
+            case 'manufacturer':
+                $users = \App\Models\User::whereIn('role', ['supplier', 'vendor'])->get();
+                break;
+            case 'supplier':
+                $users = \App\Models\User::where('role', 'manufacturer')->get();
+                break;
+            case 'vendor':
+                $users = \App\Models\User::whereIn('role', ['retailer', 'manufacturer'])->get();
+                break;
+            case 'retailer':
+                $users = \App\Models\User::whereIn('role', ['customer', 'vendor'])->get();
+                break;
+            case 'customer':
+                $users = \App\Models\User::where('role', 'retailer')->get();
+                break;
+            case 'analyst':
+                $users = \App\Models\User::where('role', '!=', 'customer')->where('id', '!=', $userId)->get();
+                break;
+            default:
+                $users = collect();
+        }
+        $selectedUserId = $request->query('user');
+        $messages = collect();
+        $selectedUser = null;
+        if ($selectedUserId) {
+            $selectedUser = \App\Models\User::find($selectedUserId);
+            $messages = \App\Models\Chat::where(function($q) use ($userId, $selectedUserId) {
+                $q->where('sender_id', $userId)->where('receiver_id', $selectedUserId);
+            })->orWhere(function($q) use ($userId, $selectedUserId) {
+                $q->where('sender_id', $selectedUserId)->where('receiver_id', $userId);
+            })->orderBy('created_at')->get();
+        }
+        return view('chats.user-chat', compact('users', 'messages', 'selectedUser'));
     }
 } 
