@@ -93,6 +93,7 @@ class DashboardController extends Controller
 
         // Customer segmentation analytics
         $customerSegmentCounts = \App\Models\Customer::select('segment', DB::raw('count(*) as count'))
+            ->whereNotNull('segment')
             ->groupBy('segment')
             ->get();
 
@@ -104,6 +105,7 @@ class DashboardController extends Controller
                 DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
                 DB::raw('COUNT(*) as count')
             )
+            ->whereNotNull('segment')
             ->groupBy('segment')
             ->get();
 
@@ -113,6 +115,8 @@ class DashboardController extends Controller
             'activeUsers' => $activeUsers,
             'roleCounts' => $roleCounts,
             'recentActivities' => $recentActivities,
+            'customerSegmentCounts' => $customerSegmentCounts,
+            'segmentSummaries' => $segmentSummaries,
         ]);
     }
 

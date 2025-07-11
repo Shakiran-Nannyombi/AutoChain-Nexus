@@ -113,19 +113,19 @@ $recentActivities) && $recentActivities->count())
         </div>
     </div>
 
+    @php
+        $segmentNames = [
+            1 => 'Occasional Buyers',
+            2 => 'High Value Customers',
+            3 => 'At Risk Customers',
+        ];
+    @endphp
     <!-- Customer Segment Analytics Section -->
     <div style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow); margin-top: 2rem;">
         <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
             <i class="fas fa-users"></i> Customer Segment Distribution
         </h3>
         <div>
-            @php
-                $segmentNames = [
-                    1 => 'Occasional Buyers',
-                    2 => 'High Value Customers',
-                    3 => 'At Risk Customers',
-                ];
-            @endphp
             @if(isset($customerSegmentCounts) && count($customerSegmentCounts) > 0)
                 <ul style="list-style: none; padding: 0;">
                     @foreach($customerSegmentCounts as $seg)
@@ -152,13 +152,6 @@ $recentActivities) && $recentActivities->count())
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $segmentNames = [
-                            1 => 'Occasional Buyers',
-                            2 => 'High Value Customers',
-                            3 => 'At Risk Customers',
-                        ];
-                    @endphp
                     @foreach($segmentSummaries as $summary)
                     <tr>
                         <td style="padding: 0.5rem;">{{ $segmentNames[$summary->segment] ?? 'Unsegmented' }}</td>

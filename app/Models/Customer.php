@@ -12,7 +12,11 @@ class Customer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'segment' // Field to store the cluster ID
+        'name',
+        'email',
+        'phone',
+        'address',
+        'segment',
     ];
 
     public function purchases()
