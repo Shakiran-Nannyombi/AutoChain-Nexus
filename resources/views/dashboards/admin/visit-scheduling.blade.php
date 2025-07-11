@@ -16,13 +16,14 @@
 @endsection
 
 @section('content')
+  <div class="content-card">
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
     @endif
     @if(session('error'))
         <div class="alert alert-danger" style="margin-bottom: 1rem;">{{ session('error') }}</div>
     @endif
-    <h1 class="page-title">Visit Scheduling & Management</h1>
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">Visit Scheduling & Management</h2>
     <br>
 
     <!-- Stat Cards -->
@@ -126,6 +127,7 @@
             @endforelse
         </div>
     </div>
+  </div>
 @endsection
 
 <!-- Calendar Modal -->

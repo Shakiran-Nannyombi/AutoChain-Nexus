@@ -11,8 +11,8 @@
 @endsection
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <h1 class="page-title" style="margin-bottom: 1.5rem;">Data Backup & Recovery</h1>
+  <div class="content-card">
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-database"></i> Backups</h2>
 
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
@@ -136,7 +136,7 @@
             @endif
         </div>
     </div>
-</div>
+  </div>
 
 <!-- Restore Confirmation Modal -->
 <div id="restoreModal" class="modal">

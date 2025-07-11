@@ -11,8 +11,8 @@
 @endsection
 
 @section('content')
-<div class="analytics-page">
-    <h1 class='page-title' style='margin-bottom: 1.5rem;'>Analytics Dashboard</h1>
+  <div class="content-card analytics-page">
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-chart-line"></i> Analytics</h2>
 
     <!-- Stats Cards -->
     <div class="stat-card-row" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
@@ -78,7 +78,7 @@
             <div class="text-center" style="padding: 2rem;">No recent activity.</div>
         @endforelse
     </div>
-</div>
+  </div>
 @endsection
 
 @push('scripts')

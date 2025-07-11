@@ -11,8 +11,8 @@
 @endsection
 
 @section('content')
-    <div class="edit-user-container-new">
-        <h1 class="edit-user-title-new">Edit User Details: <span>{{ $user->name }}</span></h1>
+    <div class="content-card">
+        <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-user-edit"></i> Edit User</h2>
 
         <form class="edit-user-form-new" action="{{ route('admin.user.update', $user) }}" method="POST">
             @csrf

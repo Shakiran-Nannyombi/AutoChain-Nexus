@@ -10,8 +10,8 @@
 @endsection
 
 @section('content')
-<div class="reports-page">
-    <h1 class='page-title' style='margin-bottom: 1.5rem;'>Reports</h1>
+  <div class="content-card reports-page">
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-file-alt"></i> Reports</h2>
 
     <div class="reports-grid">
         <!-- Schedule a New Report -->
@@ -76,5 +76,5 @@
             </div>
         </div>
     </div>
-</div>
+  </div>
 @endsection

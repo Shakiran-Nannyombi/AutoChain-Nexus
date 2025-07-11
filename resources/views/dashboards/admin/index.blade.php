@@ -7,9 +7,8 @@
 @endsection
 
 @section('content')
-        <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
-            <i class="fas fa-shield-alt"></i> Admin Control Panel
-        </h2>
+    <div class="content-card dashboard-page">
+        <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             <!-- Quick Stats -->

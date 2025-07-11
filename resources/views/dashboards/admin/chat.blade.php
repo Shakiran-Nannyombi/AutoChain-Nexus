@@ -37,6 +37,8 @@ window.showChatNotification = function(event) {
 @endsection
 
 @section('content')
+  <div class="content-card">
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-comments"></i> Admin Chat</h2>
 <div class="chat-outer-card">
     <!-- Sidebar: Users -->
     <div class="chat-sidebar">

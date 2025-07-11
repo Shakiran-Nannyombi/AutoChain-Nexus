@@ -11,7 +11,9 @@
 @endsection
 
 @section('content')
-    <h1 class="page-title" style="margin-bottom: 1.5rem;">User Management</h1>
+  
+  <div class="content-card">
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Management</h2>
     <!-- Stats Cards -->
     <div class="stats-container" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
         <div class="stat-card" style="background: linear-gradient(135deg, #174ea6 0%, #2563eb 100%); color: #fff; box-shadow: 0 2px 8px rgba(23,78,166,0.12); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
@@ -74,7 +76,7 @@
 
     <!-- All Users List -->
     <div class="user-list-card">
-        <h2 class="card-title">All Users ({{ $users->count() }})</h2>
+        <h2 class="card-title" style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-users"></i> All Users ({{ $users->count() }})</h2>
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -135,6 +137,7 @@
             </div>
         </div>
     </div>
+  </div>
 @endsection
 
 @push('scripts')

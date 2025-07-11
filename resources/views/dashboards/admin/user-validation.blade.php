@@ -11,7 +11,8 @@
 @endsection
 
 @section('content')
-    <h1 class="page-title">User Validation Center</h1>
+  <div class="content-card">
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Validation Center</h2>
     <br>
 
     @if(session('success'))
@@ -182,6 +183,7 @@
             </div>
         </div>
     </div>
+  </div>
 @endsection
 
 @push('scripts')

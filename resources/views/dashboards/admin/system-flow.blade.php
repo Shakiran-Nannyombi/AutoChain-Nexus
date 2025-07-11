@@ -112,8 +112,8 @@
 @endsection
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <h1 class="page-title" style="margin-bottom: 1.5rem;">System Flow Visualization</h1>
+  <div class="content-card">
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-project-diagram"></i> System Flow</h2>
 
     <!-- Stats Cards -->
     <div class="stats-container mb-8" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
@@ -193,7 +193,7 @@
             @endforeach
         </div>
     </div>
-</div>
+  </div>
 
 <!-- Component Details Modal -->
 <div id="componentModal" class="modal">

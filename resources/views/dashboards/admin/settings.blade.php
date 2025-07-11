@@ -10,8 +10,8 @@
 @endsection
 
 @section('content')
-<div class="settings-page">
-    <h1 class='page-title' style='margin-bottom: 1.5rem;'>Settings</h1>
+  <div class="content-card settings-page">
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-cogs"></i> Settings</h2>
 
     <!-- Tabs Navigation -->
     <div class="tabs-container">
@@ -72,7 +72,7 @@
         
         <button type="submit" class="btn-primary-full" style="margin-top: 2rem;">Save Settings</button>
     </form>
-</div>
+  </div>
 @endsection
 
 @push('scripts')
