@@ -104,6 +104,7 @@
                         <div>Location: {{ $user->address ?? 'N/A' }}</div>
                         <div>Joined: {{ $user->created_at->format('Y-m-d') }}</div>
                         <div>Last Login: {{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->format('Y-m-d') : 'N/A' }}</div>
+                        <div>Segment: {{ $segmentNames[$user->segment] ?? 'Unsegmented' }}</div>
                     </div>
                     <div class="user-actions">
                         <button class="btn-action btn-view" 

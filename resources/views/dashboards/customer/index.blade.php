@@ -12,6 +12,22 @@
         <i class="fas fa-user"></i> Welcome to the Customer Dashboard
     </h2>
 
+    @if(isset($recommendations) && $recommendations->count())
+        <div style="margin-bottom: 2rem;">
+            <h3 style="color: var(--blue); font-size: 1.2rem;">
+                <i class="fas fa-star"></i> Recommended for You
+            </h3>
+            <ul style="list-style: none; padding: 0;">
+                @foreach($recommendations as $product)
+                    <li style="margin-bottom: 0.5rem;">
+                        <strong>{{ $product->name }}</strong>
+                        @if(isset($product->description))<br><span style="color: #555;">{{ $product->description }}</span>@endif
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <p style="font-size: 1.1rem;">Explore available car models at various retailers.</p>
 
     <div style="margin-top: 2rem;">

@@ -24,6 +24,7 @@ use App\Http\Controllers\ChatController;
 
 
 
+
 // Welcome page
 Route::get('/', function () {
     return view('welcome');
@@ -305,7 +306,51 @@ Route::get('/manufacturer/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'manufacturer') {
         return redirect('/login');
     }
-    return view('dashboards.manufacturer.index');
+    // Customer segmentation analytics
+    $customerSegmentCounts = \App\Models\Customer::select('segment', \DB::raw('count(*) as count'))
+        ->groupBy('segment')
+        ->get();
+    $segmentSummaries = \App\Models\Customer::select(
+            'segment',
+            \DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
+            \DB::raw('AVG((SELECT COUNT(*) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
+            \DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
+            \DB::raw('COUNT(*) as count')
+        )
+        ->groupBy('segment')
+        ->get();
+    $segmentNames = [
+        1 => 'Occasional Buyers',
+        2 => 'High Value Customers',
+        3 => 'At Risk Customers',
+    ];
+    $segmentRecommendations = [];
+    foreach ($segmentNames as $segId => $segName) {
+        $customerIdsInSegment = \App\Models\Customer::where('segment', $segId)->pluck('id');
+        $products = \App\Models\Product::whereHas('purchases', function ($query) use ($customerIdsInSegment) {
+            $query->whereIn('customer_id', $customerIdsInSegment);
+        })
+        ->withCount('purchases')
+        ->orderBy('purchases_count', 'desc')
+        ->take(5)
+        ->get();
+        $segmentRecommendations[$segId] = $products;
+    }
+    // Also pass the other dashboard variables if needed
+    $activeProducts = \App\Models\Product::count();
+    $pendingOrders = 0; // Replace with actual logic if needed
+    $productionLines = 0; // Replace with actual logic if needed
+    $monthlyRevenue = 0; // Replace with actual logic if needed
+    return view('dashboards.manufacturer.index', compact(
+        'customerSegmentCounts',
+        'segmentSummaries',
+        'segmentNames',
+        'segmentRecommendations',
+        'activeProducts',
+        'pendingOrders',
+        'productionLines',
+        'monthlyRevenue'
+    ));
 });
 
 Route::get('/supplier/dashboard', function () {
@@ -333,7 +378,15 @@ Route::get('/analyst/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'analyst') {
         return redirect('/login');
     }
-    return view('dashboards.analyst.index');
+    $users = \App\Models\User::where('role', '!=', 'admin')->get();
+    $segmentCounts = \App\Models\User::where('role', '!=', 'admin')
+        ->select('segment', \DB::raw('count(*) as count'))
+        ->groupBy('segment')
+        ->get();
+    return view('dashboards.analyst.index', [
+        'users' => $users,
+        'segmentCounts' => $segmentCounts,
+    ]);
 })->name('analyst.dashboard');
 
 // Analyst dashboard routes
@@ -411,6 +464,9 @@ Route::post('/admin/login', function (Request $request) {
 Route::get('/customer/dashboard', function () {
     return view('dashboards.customer.index');
 })->name('customer.dashboard');
+
+Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'list'])->name('customer.list');
+Route::get('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'show'])->name('customer.show');
 
 Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
