@@ -1,71 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+<head>
     <meta charset="UTF-8">
-    <title>Welcome | Autochain Nexus</title>
-    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite(['resources/css/welcome.css', 'resources/js/welcome.js'])
-    </head>
+    <title>Welcome</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    @vite(['resources/css/welcome.css'])
+    @vite(['resources/js/slider.js'])
+</head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">
-            <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="logo-img">
-            <span class="brand">Autochain Nexus</span>
+    <nav class="welcome-navbar">
+        <div class="navbar-logo">
+            <a href="/">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 40px;">
+            </a>
+            <span class="navbar-brand">Autochain Nexus</span>
         </div>
-        <div class="nav-actions">
-            <a href="{{ route('login') }}"><button class="btn btn-login">Login</button></a>
-            <a href="{{ route('register') }}"><button class="btn btn-primary">Get Started</button></a>
+        <div class="navbar-links">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
         </div>
-                </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="badge">🚗 Revolutionizing Automotive Supply Chains</div>
-        <div class="main-title">
-            Welcome to the Future of <span class="highlight">Automotive Manufacturing</span>
+    </nav>
+    <div class="main-content-wrapper">
+    <div class="hero-row">
+        <div class="hero-content">
+            <div class="hero-intro">AUTOCHAIN NEXUS PRESENTS</div>
+            <h1 class="hero-title">THE VOICE OF THE MAKER</h1>
+            <div class="hero-subtitle">You Don’t Just Purchase a Car, You Commission It.<br> A Motor Car That Is Yours, And Yours Alone.</div>
+            <div class="hero-buttons">
+                <a href="/login" class="hero-btn primary">LOGIN</a>
+                <a href="/register" class="hero-btn secondary">SIGN UP</a>
+            </div>
         </div>
-         <!-- Image Slider -->
+        <div class="main-car-container">
+            <img src="{{ asset('images/background.png') }}" alt="Main Car" class="main-car-img" id="mainCarImage">
+        </div>
+    </div>
+    <div class="car-features car-features-below">
+        <div class="feature">
+            <div class="feature-title">SMART DASHBOARD</div>
+            <div class="feature-desc">Real-time Analytics</div>
+        </div>
+        <div class="feature">
+            <div class="feature-title">INTEGRATED LIGHTING</div>
+            <div class="feature-desc">Ambient Experience</div>
+        </div>
+    </div>
+    <div class="slider-outer">
         <div class="slider-container">
-            <div class="slider">
-                <img src="{{ asset('images/car1.jpeg') }}" class="slide active" alt="Car 1">
-                <img src="{{ asset('images/car2.jpeg') }}" class="slide" alt="Car 2">
-                <img src="{{ asset('images/car3.jpeg') }}" class="slide" alt="Car 3">
-                <img src="{{ asset('images/car4.jpeg') }}" class="slide" alt="Car 4">
-                <img src="{{ asset('images/car5.jpeg') }}" class="slide" alt="Car 5">
-                <img src="{{ asset('images/car6.jpeg') }}" class="slide" alt="Car 6">
-                <img src="{{ asset('images/car7.jpeg') }}" class="slide" alt="Car 7">
-                <img src="{{ asset('images/car8.jpeg') }}" class="slide" alt="Car 8">
-                <img src="{{ asset('images/car9.jpeg') }}" class="slide" alt="Car 9">
+            <div class="slider-thumbnails" id="sliderThumbnails">
+                <img src="{{ asset('images/car1.png') }}" class="slider-thumb active" data-img="{{ asset('images/car1.png') }}">
+                <img src="{{ asset('images/car2.png') }}" class="slider-thumb" data-img="{{ asset('images/car2.png') }}">
+                <img src="{{ asset('images/car3.png') }}" class="slider-thumb" data-img="{{ asset('images/car3.png') }}">
+                <img src="{{ asset('images/car4.png') }}" class="slider-thumb" data-img="{{ asset('images/car4.png') }}">
+                <img src="{{ asset('images/car5.png') }}" class="slider-thumb" data-img="{{ asset('images/car5.png') }}">
+                <img src="{{ asset('images/car6.png') }}" class="slider-thumb" data-img="{{ asset('images/car6.png') }}">
+                <img src="{{ asset('images/car7.png') }}" class="slider-thumb" data-img="{{ asset('images/car7.png') }}">
+                <img src="{{ asset('images/car8.png') }}" class="slider-thumb" data-img="{{ asset('images/car8.png') }}">
+                <img src="{{ asset('images/car9.png') }}" class="slider-thumb" data-img="{{ asset('images/car9.png') }}">
+                <img src="{{ asset('images/car10.png') }}" class="slider-thumb" data-img="{{ asset('images/car10.png') }}">
+                </div>
             </div>
         </div>
-        <div class="main-desc">
-            Experience seamless collaboration across your entire supply chain ecosystem. From manufacturers to customers, our platform connects every stakeholder with real-time data, intelligent workflows, and predictive analytics.
-        </div>
-
-        <div class="features-row">
-            <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
-                <h3>Secure &amp; Compliant</h3>
-                <p>Enterprise-grade security with role-based access control and comprehensive audit trails.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>AI-Powered Insights</h3>
-                <p>Machine learning algorithms provide demand forecasting and optimize your supply chain.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">💬</div>
-                <h3>Real-time Collaboration</h3>
-                <p>Connect all stakeholders with live updates, chat systems, and workflow automation.</p>
-            </div>
-        </div>
-
     </div>
-
-    <div class="footer">
-        &copy; 2024 Autochain Nexus. Powering the future of automotive manufacturing.
-    </div>
-    </body>
+</body>
+<footer class="welcome-footer">
+    ©2025 Autochain nexus. All rights reserved.
+</footer>
 </html>

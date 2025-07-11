@@ -15,26 +15,26 @@
     <h1 class='page-title' style='margin-bottom: 1.5rem;'>Analytics Dashboard</h1>
 
     <!-- Stats Cards -->
-    <div class="stat-card-row">
-        <div class="stat-card">
-            <div class="icon"><i class="fas fa-users"></i></div>
+    <div class="stat-card-row" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="stat-card" style="background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%); color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,0.08); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="icon" style="color: #fff; background: rgba(255,255,255,0.15); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-users"></i></div>
             <div class="info">
-                <div class="title">Total Users</div>
-                <div class="value">{{ $totalUsers }}</div>
+                <div class="title" style="font-size: 1.1rem; opacity: 0.95;">Total Users</div>
+                <div class="value" style="font-size: 2rem; font-weight: bold;">{{ $totalUsers }}</div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="icon"><i class="fas fa-user-clock"></i></div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #facc15 0%, #fde68a 100%); color: #fff; box-shadow: 0 2px 8px rgba(250,204,21,0.08); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="icon" style="color: #fff; background: rgba(255,255,255,0.15); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-user-clock"></i></div>
             <div class="info">
-                <div class="title">Pending Approvals</div>
-                <div class="value">{{ $pendingUsers }}</div>
+                <div class="title" style="font-size: 1.1rem; opacity: 0.95;">Pending Approvals</div>
+                <div class="value" style="font-size: 2rem; font-weight: bold;">{{ $pendingUsers }}</div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="icon"><i class="fas fa-user-check"></i></div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%); color: #fff; box-shadow: 0 2px 8px rgba(34,197,94,0.08); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="icon" style="color: #fff; background: rgba(255,255,255,0.15); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-user-check"></i></div>
             <div class="info">
-                <div class="title">Active Users</div>
-                <div class="value">{{ $approvedUsers }}</div>
+                <div class="title" style="font-size: 1.1rem; opacity: 0.95;">Active Users</div>
+                <div class="value" style="font-size: 2rem; font-weight: bold;">{{ $approvedUsers }}</div>
             </div>
         </div>
     </div>
@@ -121,7 +121,7 @@
             }
         });
 
-        // User Registration Chart (Line)
+        // User Registration Chart (Bar)
         const userRegistrationCtx = document.getElementById('userRegistrationChart').getContext('2d');
         const userRegistrationData = @json($userRegistrationData);
 
@@ -129,16 +129,13 @@
         const data = userRegistrationData.map(d => d.registrations);
 
         new Chart(userRegistrationCtx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'New Registrations',
                     data: data,
-                    borderColor: '#3490dc',
-                    backgroundColor: 'rgba(52, 144, 220, 0.1)',
-                    fill: true,
-                    tension: 0.3
+                    backgroundColor: '#3490dc',
                 }]
             },
             options: {

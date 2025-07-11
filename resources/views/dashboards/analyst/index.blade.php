@@ -24,51 +24,46 @@
             <i class="fas fa-chart-line"></i> Analytics Dashboard
         </h2>
         
-        <!-- Segment Analytics Section -->
-        <div style="margin-bottom: 2rem;">
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
-                <i class="fas fa-users"></i> Customer Segment Distribution
-            </h3>
-            <div style="background: var(--gray); padding: 1rem; border-radius: 8px;">
-                @if(isset($segmentCounts) && count($segmentCounts) > 0)
-                    <ul style="list-style: none; padding: 0;">
-                        @foreach($segmentCounts as $seg)
-                            <li style="margin-bottom: 0.5rem;">
-                                <strong>{{ $segmentNames[$seg->segment] ?? 'Unsegmented' }}:</strong> {{ $seg->count }} users
-                            </li>
-                        @endforeach
-                    </ul>
-                @else
-                    <p>No segmentation data available.</p>
-                @endif
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Quick Stats -->
+            <div style="background: linear-gradient(135deg, var(--deep-purple), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $totalReports ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Generated Reports</div>
+                    </div>
+                    <i class="fas fa-chart-bar" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
             </div>
-        </div>
-        <!-- User List Section -->
-        <div style="margin-bottom: 2rem;">
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
-                <i class="fas fa-user"></i> All Users
-            </h3>
-            <div style="background: var(--gray); padding: 1rem; border-radius: 8px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: #f5f5f5;">
-                            <th style="padding: 0.5rem; text-align: left;">Name</th>
-                            <th style="padding: 0.5rem; text-align: left;">Email</th>
-                            <th style="padding: 0.5rem; text-align: left;">Role</th>
-                            <th style="padding: 0.5rem; text-align: left;">Segment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($users as $user)
-                        <tr>
-                            <td style="padding: 0.5rem;">{{ $user->name }}</td>
-                            <td style="padding: 0.5rem;">{{ $user->email }}</td>
-                            <td style="padding: 0.5rem;">{{ ucfirst($user->role) }}</td>
-                            <td style="padding: 0.5rem;">{{ $segmentNames[$user->segment] ?? 'Unsegmented' }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+
+            <div style="background: linear-gradient(135deg, var(--maroon), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $dataPoints ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Data Points Analyzed</div>
+                    </div>
+                    <i class="fas fa-database" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, var(--blue), var(--light-cyan)); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $trends ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Trends Identified</div>
+                    </div>
+                    <i class="fas fa-trending-up" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $accuracy ?? '95%' }}</div>
+                        <div style="opacity: 0.9;">Prediction Accuracy</div>
+                    </div>
+                    <i class="fas fa-bullseye" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                </div>
             </div>
         </div>
 

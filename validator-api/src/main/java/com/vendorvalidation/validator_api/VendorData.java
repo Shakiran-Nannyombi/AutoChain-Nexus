@@ -15,6 +15,7 @@ public class VendorData {
     private String company;
     private String phone;
     private String address;
+    private String currency; // Currency for financial data
     private List<String> documentPaths;
     private Map<String, String> financialData;
     private Map<String, String> reputationData;
@@ -135,6 +136,24 @@ public class VendorData {
      */
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    /**
+     * Gets the currency.
+     * 
+     * @return The currency
+     */
+    public String getCurrency() {
+        return currency;
+    }
+    
+    /**
+     * Sets the currency.
+     * 
+     * @param currency The currency to set
+     */
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
     
     /**

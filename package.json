@@ -21,6 +21,8 @@
     },
     "dependencies": {
         "clsx": "^2.1.1",
+        "laravel-echo": "^2.1.6",
+        "pusher-js": "^8.4.0",
         "tailwind-merge": "^3.3.0"
     }
 }

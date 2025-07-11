@@ -1,0 +1,42 @@
+/* Features container overlay */
+.features-container {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4rem 2rem;
+    margin-top: -100px; /* Pulls features up into the hero space */
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Updated features grid */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: #7f8c8d;
+    line-height: 1.6;
+}

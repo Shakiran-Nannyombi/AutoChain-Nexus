@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RetailerOrder extends Model
 {
@@ -14,4 +15,7 @@ class RetailerOrder extends Model
     {
         return $this->belongsTo(Retailer::class);
     }
+
+use HasFactory;
+
 }

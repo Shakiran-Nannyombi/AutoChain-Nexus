@@ -4,6 +4,9 @@
 <a href="{{ route('analyst.reports') }}" class="nav-item{{ request()->is('analyst/reports') ? ' active' : '' }}">
     <i class="fas fa-chart-bar"></i> Reports
 </a>
+<a href="{{ route('analyst.reports.store') }}" class="nav-item{{ request()->is('analyst/reports') ? ' active' : '' }}">
+    <i class="fas fa-chart-bar"></i> Create Reports
+</a>
 <a href="{{ route('analyst.analytics') }}" class="nav-item{{ request()->is('analyst/analytics') ? ' active' : '' }}">
     <i class="fas fa-chart-line"></i> Analytics
 </a>

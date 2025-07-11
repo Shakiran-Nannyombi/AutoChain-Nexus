@@ -11,6 +11,7 @@ use App\Http\Middleware\ValidateSignature;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\EnsureUserIsAuthenticated;
 use App\Http\Middleware\UpdateLastSeen;
+use App\Http\Middleware\PreventBackAfterLogout;
 
 class Kernel extends HttpKernel
 {
@@ -68,6 +69,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'auth.shared' => \App\Http\Middleware\EnsureUserIsAuthenticated::class,
+        'prevent.back' => \App\Http\Middleware\PreventBackAfterLogout::class,
+        'user_or_admin' => \App\Http\Middleware\UserOrAdmin::class,
     ];
 
     /**

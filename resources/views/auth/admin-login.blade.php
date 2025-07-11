@@ -1,73 +1,108 @@
 @section('title', 'Admin Login')
 <x-guest-layout>
-    <div class="login-container">
-        <div class="register-logo">
-            <img src="{{ asset('images/logo.png') }}" alt="Autochain Nexus Logo" class="register-logo-img">
-        </div>
-        <div class="login-title">Admin Access</div>
-        <div class="login-desc">Enter your administrator credentials</div>
-
-        @if(session('status'))
-            <div class="alert alert-success">{{ session('status') }}</div>
-        @endif
-        @if ($errors->any())
-            <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
-                <ul style="margin: 0; padding-left: 1.2rem;">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        
-        <form class="login-form" method="POST" action="{{ route('admin.login.submit') }}">
-            @csrf
-            <div class="input-group">
-                <label for="email">Email Address</label>
-                <input id="email" type="email" name="email" placeholder="Enter your admin email" value="{{ old('email') }}" required autofocus>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input id="password" type="password" name="password" placeholder="Enter your password" required>
-                 <button type="button" class="toggle-password" onclick="togglePassword()" tabindex="-1" aria-label="Show/Hide password">
-                    <span id="eye" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
-                        <!-- Eye SVG (visible by default) -->
-                        <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
-                            <circle cx="12" cy="12" r="3" stroke-width="2"/>
-                        </svg>
-                        <!-- Eye-off SVG (hidden by default) -->
-                        <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;">
-                            <path stroke-width="2" d="M17.94 17.94A10.97 10.97 0 0112 19c-7 0-11-7-11-7a21.77 21.77 0 014.22-5.94M1 1l22 22"/>
-                            <path stroke-width="2" d="M9.53 9.53A3 3 0 0112 9c1.66 0 3 1.34 3 3 0 .47-.11.91-.29 1.29"/>
-                        </svg>
-                    </span>
-                </button>
-            </div>
-            <button type="submit" class="btn-login">Sign In</button>
-        </form>
-        <div class="login-footer" style="margin-top: 1rem; text-align: center;">
-            <a href="{{ route('login') }}" style="color: var(--blue); text-decoration: none;">
-                <i class="fas fa-arrow-left"></i> Back to User Login
+    <nav class="login-navbar">
+        <div class="navbar-logo">
+            <a href="/">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 40px;">
             </a>
+            <span class="navbar-brand">Autochain Nexus</span>
+        </div>
+        <div class="navbar-links">
+            <a href="/">Home</a>
+            <a href="/login">User Login</a>
+            <a href="/register">Register</a>
+        </div>
+    </nav>
+    <div class="login-split-container">
+        <!-- Left: Illustration -->
+        <div class="login-split-left">
+            <div class="login-illustration-wrapper">
+                <div class="login-illustration-text">Admin Access</div>
+                <div class="login-split-illustration">
+                    <img src="{{ asset('images/admin.png') }}" alt="Admin Login Illustration" style="max-width: 420px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
+                </div>
+            </div>
+        </div>
+        <!-- Right: Admin login form -->
+        <div class="login-split-right">
+            <div class="login-split-right-inner">
+                <div class="login-form-box">
+                    <div class="login-title">Login to gain Access</div>
+                    <div class="login-desc">Enter your administrator credentials</div>
+                    @if(session('status'))
+                        <div class="alert alert-success">{{ session('status') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+                            <ul style="margin: 0; padding-left: 1.2rem;">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <form class="login-form" method="POST" action="{{ route('admin.login.submit') }}">
+                        @csrf
+                        <div class="input-group">
+                            <label for="email">Email Address <span class="required-asterisk">*</span></label>
+                            <input id="email" type="email" name="email" placeholder="Enter your admin email" value="{{ old('email') }}" required autofocus>
+                        </div>
+                        <div class="input-group" style="position: relative;">
+                            <label for="password">Password <span class="required-asterisk">*</span></label>
+                            <input id="password" type="password" name="password" placeholder="Enter your password" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword()" tabindex="-1" aria-label="Show/Hide password">
+                                <span id="eye" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                                    <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3" stroke-width="2"/>
+                                    </svg>
+                                    <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;">
+                                        <path stroke-width="2" d="M17.94 17.94A10.97 10.97 0 0112 19c-7 0-11-7-11-7a21.77 21.77 0 014.22-5.94M1 1l22 22"/>
+                                        <path stroke-width="2" d="M9.53 9.53A3 3 0 0112 9c1.66 0 3 1.34 3 3 0 .47-.11.91-.29 1.29"/>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                        <button type="submit" class="btn-login">Sign In</button>
+                    </form>
+                    <div class="login-footer" style="margin-top: 1rem; text-align: center;">
+                        <a href="{{ route('login') }}" style="color: var(--primary); text-decoration: none;">
+                            <i class="fas fa-arrow-left"></i> Back to User Login
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </x-guest-layout>
-
-    <script>
-        // Password toggle functionality
-        const passwordInput = document.getElementById('password');
-        const togglePassword = document.createElement('button');
-        togglePassword.type = 'button';
-        togglePassword.className = 'toggle-password';
-        togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
-        
-        passwordInput.parentNode.style.position = 'relative';
-        passwordInput.parentNode.appendChild(togglePassword);
-        
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-        });
-    </script>
+<footer class="login-footer">
+    ©2024 Autochain Nexus. All rights reserved.
+</footer>
+<script>
+    // Password toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        var pwd = document.getElementById('password');
+        var toggleBtn = document.querySelector('.toggle-password');
+        var eyeOpen = document.getElementById('eye-open');
+        var eyeClosed = document.getElementById('eye-closed');
+        // Always start with password hidden and closed eye visible
+        pwd.type = 'password';
+        eyeOpen.style.display = 'none';
+        eyeClosed.style.display = 'inline';
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', togglePassword, false);
+            toggleBtn.addEventListener('touchstart', function(e) { e.preventDefault(); togglePassword(); }, false);
+        }
+        function togglePassword() {
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                eyeOpen.style.display = 'inline';
+                eyeClosed.style.display = 'none';
+            } else {
+                pwd.type = 'password';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'inline';
+            }
+        }
+    });
+</script>

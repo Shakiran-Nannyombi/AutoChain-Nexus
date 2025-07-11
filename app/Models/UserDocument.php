@@ -19,4 +19,11 @@ class UserDocument extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Set the storage disk/folder for uploaded documents
+    public static function storeDocument($file)
+    {
+        // Store in 'public/sample_documents' and return the path
+        return $file->store('sample_documents', 'public');
+    }
 }

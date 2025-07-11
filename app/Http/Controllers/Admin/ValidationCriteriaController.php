@@ -26,6 +26,15 @@ class ValidationCriteriaController extends Controller
             'value' => 'required|string|max:255',
         ]);
 
+        // Prevent duplicate rule creation
+        $exists = ValidationRule::where('name', $request->name)
+            ->where('category', $request->category)
+            ->where('value', $request->value)
+            ->exists();
+        if ($exists) {
+            return back()->with('error', 'A validation rule with the same name, category, and value already exists.');
+        }
+
         ValidationRule::create([
             'name' => $request->name,
             'category' => $request->category,

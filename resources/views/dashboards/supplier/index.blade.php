@@ -18,7 +18,7 @@
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             <!-- Quick Stats -->
-            <div style="background: linear-gradient(135deg, var(--deep-purple), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, var(--primary), #0d3a07); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $activeSupplies ?? 0 }}</div>
@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--maroon), var(--orange)); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, var(--secondary), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $pendingOrders ?? 0 }}</div>
@@ -38,7 +38,7 @@
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--blue), var(--light-cyan)); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, var(--primary-light), #388e3c); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $activeShipments ?? 0 }}</div>
@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, var(--accent), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $monthlyRevenue ?? '$0' }}</div>

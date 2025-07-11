@@ -8,9 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\UserResetPasswordNotification;
 
+/**
+ * @method \Illuminate\Database\Eloquent\Relations\MorphMany notifications()
+ * @method \Illuminate\Notifications\DatabaseNotificationCollection unreadNotifications()
+ */
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**

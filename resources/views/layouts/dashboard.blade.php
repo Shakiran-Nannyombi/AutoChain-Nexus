@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>@yield('title', 'Autochain Nexus')</title>
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/css/manufacturer.css','resources/css/analyst.css','resources/css/supplier.css','resources/css/retailer.css', 'resources/css/vendor.css','resources/js/app.js', 'resources/css/auth.css'])
@@ -58,6 +61,136 @@
             text-align: center;
             color: #6c757d;
         }
+        
+        /* Notification Styles */
+        .notification-icon {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .notification-dropdown {
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+        }
+        
+        .unread-count {
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        
+        .notification-item:hover {
+            background-color: #f9fafb;
+        }
+        
+        .notification-item.unread {
+            background-color: #eff6ff;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .notification-icon {
+            margin-right: 0.75rem;
+            margin-top: 0.125rem;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-message {
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+        
+        .notification-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        
+        .no-notifications {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            color: #6b7280;
+        }
+        
+        .no-notifications i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+        
+        .dropdown-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border-top: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+        }
+        
+        .dropdown-footer a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .dropdown-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .notification-dropdown {
+                width: 300px;
+                right: -50px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -72,20 +205,24 @@
             </div>
 
             <div class="sidebar-user">
-                @php $profilePhoto = session('user_profile_photo'); @endphp
-                @if($profilePhoto)
-                    <img src="{{ asset('storage/' . $profilePhoto) }}" alt="Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
+                @php $user = auth('admin')->user() ?? auth()->user(); @endphp
+                @if($user && isset($user->profile_photo) && $user->profile_photo)
+                    <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
                 @else
                     <div class="user-avatar" style="margin-left: 0.9rem;">
-                        {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}{{ strtoupper(substr(session('user_name', 'er'), strpos(session('user_name', 'er'), ' ')+1, 1)) }}
+                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}{{ strtoupper(substr($user->name ?? 'er', strpos($user->name ?? 'er', ' ')+1, 1)) }}
                     </div>
                 @endif
                 <div class="user-info" style="display: flex; flex-direction: column; align-items: flex-start;">
                     <div style="font-weight: 600; color: #fff; font-size: 1.05rem; line-height: 1.1;">
-                        {{ session('user_name', 'User') }}
+                        {{ $user->name ?? 'User' }}
                     </div>
                     <div style="font-size: 0.85rem; color: #2a6eea">
-                        {{ strtolower(session('user_role', 'user')) }}
+                        @if($user && get_class($user) === 'App\\Models\\Admin')
+                            admin
+                        @else
+                            {{ strtolower($user->role ?? 'user') }}
+                        @endif
                     </div>
                 </div>
             </div>
@@ -132,11 +269,58 @@
                     </div>
                     <div class="header-icon notification-icon" id="notificationIcon">
                         <i class="fas fa-bell"></i>
+                        @if(isset($unreadNotifications) && $unreadNotifications->count() > 0)
+                            <span class="notification-badge">{{ $unreadNotifications->count() }}</span>
+                        @endif
                         <div class="dropdown notification-dropdown" id="notificationDropdown">
-                            <div class="dropdown-header">Notifications</div>
-                            <div style="padding: 1rem; text-align: center; color: #6c757d;">
-                                No new notifications.
+                            <div class="dropdown-header">
+                                <span>Notifications</span>
+                                @if(isset($unreadNotifications) && $unreadNotifications->count() > 0)
+                                    <span class="unread-count">{{ $unreadNotifications->count() }} new</span>
+                                @endif
                             </div>
+                            <div class="notification-list">
+                                @if(isset($allNotifications) && $allNotifications->count() > 0)
+                                    @foreach($allNotifications as $notification)
+                                        <div class="notification-item {{ $notification->read_at ? '' : 'unread' }}" data-notification-id="{{ $notification->id }}">
+                                            <div class="notification-icon">
+                                                @if($notification->type === 'App\\Notifications\\NewUserNotification')
+                                                    <i class="fas fa-user-plus text-blue-500"></i>
+                                                @elseif($notification->type === 'App\\Notifications\\UserApproved')
+                                                    <i class="fas fa-check-circle text-green-500"></i>
+                                                @elseif($notification->type === 'App\\Notifications\\UserRejected')
+                                                    <i class="fas fa-times-circle text-red-500"></i>
+                                                @else
+                                                    <i class="fas fa-bell text-gray-500"></i>
+                                                @endif
+                                            </div>
+                                            <div class="notification-content">
+                                                <div class="notification-message">
+                                                    @php
+                                                        $data = is_string($notification->data) ? json_decode($notification->data, true) : $notification->data;
+                                                        $message = $data['message'] ?? 'New notification';
+                                                    @endphp
+                                                    {{ $message }}
+                                                </div>
+                                                <div class="notification-time">
+                                                    {{ $notification->created_at->diffForHumans() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="no-notifications">
+                                        <i class="fas fa-bell-slash"></i>
+                                        <span>No notifications</span>
+                                    </div>
+                                @endif
+                            </div>
+                            @if(isset($allNotifications) && $allNotifications->count() > 0)
+                                <div class="dropdown-footer">
+                                    <a href="#" class="mark-all-read">Mark all as read</a>
+                                    <a href="#" class="view-all">View all</a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                     
@@ -145,16 +329,21 @@
                         <div class="dropdown user-dropdown" id="userDropdown">
                             <div class="dropdown-user-info">
                                  <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                                    @php $profilePhoto = session('user_profile_photo'); @endphp
-                                    @if($profilePhoto)
-                                        <img src="{{ asset('storage/' . $profilePhoto) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                                    @if($user && isset($user->profile_photo) && $user->profile_photo)
+                                        <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                                     @else
-                                        {{ strtoupper(substr(session('user_name', 'U'), 0, 1)) }}
+                                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                                     @endif
                                 </div>
                                 <div>
-                                    <div style="font-weight: 600;">{{ session('user_name', 'User') }}</div>
-                                    <div style="font-size: 0.8rem; opacity: 0.8;">{{ ucfirst(session('user_role', 'User')) }}</div>
+                                    <div style="font-weight: 600;">{{ $user->name ?? 'User' }}</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.8;">
+                                        @if($user && get_class($user) === 'App\\Models\\Admin')
+                                            Admin
+                                        @else
+                                            {{ ucfirst($user->role ?? 'User') }}
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                             <a href="{{ route('profile.edit') }}" class="dropdown-item">
@@ -177,9 +366,15 @@
                                     <i class="fas fa-cog"></i> Settings
                                 </a>
                             @endif
-                            <a href="/logout" class="dropdown-item">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
+                            @if (request()->is('admin/*'))
+                                <a href="{{ route('admin.logout') }}" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            @else
+                                <a href="{{ route('logout') }}" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -193,6 +388,12 @@
     </div>
 
     <script>
+        // Prevent browser back button after logout
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            window.history.pushState(null, null, window.location.href);
+        };
+        
         // Mobile sidebar toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const sidebar = document.getElementById('sidebar');
@@ -267,39 +468,91 @@
                 if (data.users.length === 0 && data.pages.length === 0) {
                     html = '<div class="no-results">No results found.</div>';
                 } else {
-                    if (data.pages.length > 0) {
-                         data.pages.forEach(page => {
-                            html += `
-                                <a href="${page.url}" class="result-item">
-                                    <div class="icon"><i class="fas ${page.icon}"></i></div>
-                                    <div class="details">
-                                        <div class="name">${page.name}</div>
-                                    </div>
-                                </a>`;
-                        });
-                    }
-                    if (data.users.length > 0) {
-                        data.users.forEach(user => {
-                            html += `
-                                <a href="/admin/user-management/user/${user.id}/edit" class="result-item">
-                                    <div class="icon"><i class="fas fa-user"></i></div>
-                                    <div class="details">
-                                        <div class="name">${user.name}</div>
-                                        <div class="info">${user.email} - ${user.role}</div>
-                                    </div>
-                                </a>`;
-                        });
-                    }
+                    data.users.forEach(user => {
+                        html += `
+                            <a href="/admin/user-management" class="result-item">
+                                <div class="icon"><i class="fas fa-user"></i></div>
+                                <div class="details">
+                                    <div class="name">${user.name}</div>
+                                    <div class="info">${user.role} • ${user.status}</div>
+                                </div>
+                            </a>
+                        `;
+                    });
+                    data.pages.forEach(page => {
+                        html += `
+                            <a href="${page.url}" class="result-item">
+                                <div class="icon"><i class="fas fa-file-alt"></i></div>
+                                <div class="details">
+                                    <div class="name">${page.title}</div>
+                                    <div class="info">${page.description}</div>
+                                </div>
+                            </a>
+                        `;
+                    });
                 }
                 searchResults.innerHTML = html;
                 searchResults.style.display = 'block';
             } catch (error) {
                 console.error('Search error:', error);
-                searchResults.innerHTML = '<div class="no-results">Error performing search.</div>';
-                searchResults.style.display = 'block';
             }
         });
 
+        // Notification functionality
+        const notificationItems = document.querySelectorAll('.notification-item');
+        const markAllReadBtn = document.querySelector('.mark-all-read');
+        
+        // Mark individual notification as read
+        notificationItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const notificationId = this.dataset.notificationId;
+                if (notificationId) {
+                    // Mark as read by removing unread class
+                    this.classList.remove('unread');
+                    
+                    // Update badge count
+                    const badge = document.querySelector('.notification-badge');
+                    if (badge) {
+                        const currentCount = parseInt(badge.textContent);
+                        if (currentCount > 1) {
+                            badge.textContent = currentCount - 1;
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                    
+                    // Update unread count in header
+                    const unreadCount = document.querySelector('.unread-count');
+                    if (unreadCount) {
+                        const currentUnread = parseInt(unreadCount.textContent.split(' ')[0]);
+                        if (currentUnread > 1) {
+                            unreadCount.textContent = `${currentUnread - 1} new`;
+                        } else {
+                            unreadCount.style.display = 'none';
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Mark all notifications as read
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove unread class from all notifications
+                notificationItems.forEach(item => {
+                    item.classList.remove('unread');
+                });
+                
+                // Hide badge and unread count
+                const badge = document.querySelector('.notification-badge');
+                if (badge) badge.style.display = 'none';
+                
+                const unreadCount = document.querySelector('.unread-count');
+                if (unreadCount) unreadCount.style.display = 'none';
+            });
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @stack('scripts')

@@ -64,7 +64,7 @@ class ProfileController extends Controller
         $user->fill($validated);
 
         if ($request->hasFile('profile_photo')) {
-            $path = $request->file('profile_photo')->store('profile_photos', 'public');
+            $path = \App\Models\UserDocument::storeDocument($request->file('profile_photo'));
             $user->profile_photo = $path;
             // Update or create user_documents entry for profile_picture
             \App\Models\UserDocument::updateOrCreate(

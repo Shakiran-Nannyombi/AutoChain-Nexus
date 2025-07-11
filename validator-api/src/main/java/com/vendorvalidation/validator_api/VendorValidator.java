@@ -14,8 +14,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class VendorValidator {
     
-    private final PDFProcessor pdfProcessor = new PDFProcessor();
+    private final DocProcessor docProcessor = new DocProcessor();
     
+    // Static currency conversion rates to 'shs' (for demonstration)
+    private static final Map<String, Double> CURRENCY_RATES = new HashMap<>();
+    static {
+        CURRENCY_RATES.put("shs", 1.0);
+        CURRENCY_RATES.put("usd", 3800.0); // 1 USD = 3800 shs
+        CURRENCY_RATES.put("eur", 4200.0); // 1 EUR = 4200 shs
+        // Add more as needed
+    }
+
     /**
      * Helper method to find a specific rule's value from the list.
      * @param rules The list of validation rules
@@ -60,7 +69,7 @@ public class VendorValidator {
                     break; 
                 } else {
                     // Process document and extract data
-                    Map<String, Object> docData = pdfProcessor.processDocument(docPath);
+                    Map<String, Object> docData = docProcessor.processDocument(docPath);
                     if (!docData.isEmpty()) {
                         extractedData.putAll(docData);
                         validationLog.append("Successfully processed '").append(docPath).append("'. ");
@@ -108,7 +117,7 @@ public class VendorValidator {
             response.put("reputation_score", reputationScore);
             response.put("compliance_score", complianceScore);
             response.put("profile_score", profileScore);
-            response.put("extracted_data", mapper.valueToTree(extractedData));
+            response.set("extracted_data", mapper.valueToTree(extractedData));
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response);
         } catch (Exception e) {
             return "{\"score\": 0, \"message\": \"Error creating JSON response: " + e.getMessage() + "\"}";
@@ -130,6 +139,10 @@ public class VendorValidator {
             return 0;
         }
         
+        // Determine vendor currency (default to shs)
+        String vendorCurrency = financialData.getOrDefault("currency", "shs");
+        double rate = CURRENCY_RATES.getOrDefault(vendorCurrency.toLowerCase(), 1.0);
+        
         // Years in business analysis
         String yearsInBusiness = financialData.get("years_in_business");
         if (yearsInBusiness != null) {
@@ -140,15 +153,18 @@ public class VendorValidator {
             else if (years >= 1) score += 10;
         }
         
-        // Revenue analysis
+        // Revenue analysis (convert to shs)
         String revenue = financialData.get("revenue");
         if (revenue != null) {
             try {
                 double revenueValue = Double.parseDouble(revenue);
-                if (revenueValue >= 10000000) score += 25; // $10M+
-                else if (revenueValue >= 1000000) score += 20; // $1M+
-                else if (revenueValue >= 100000) score += 15; // $100K+
-                else if (revenueValue >= 10000) score += 10; // $10K+
+                double revenueShs = revenueValue * rate;
+                // Log original and converted revenue
+                System.out.println("Revenue: " + revenueValue + " " + vendorCurrency + " (" + revenueShs + " shs)");
+                if (revenueShs >= 10000000) score += 25; // 10M shs+
+                else if (revenueShs >= 1000000) score += 20; // 1M shs+
+                else if (revenueShs >= 100000) score += 15; // 100K shs+
+                else if (revenueShs >= 10000) score += 10; // 10K shs+
             } catch (NumberFormatException e) {
                 // Ignore parsing errors
             }

@@ -26,40 +26,40 @@
     <br>
 
     <!-- Stat Cards -->
-    <div class="stat-cards-grid">
-        <div class="stat-card">
-            <div class="stat-icon yellow"><i class="fas fa-clock"></i></div>
-            <div class="stat-info">
-                <p>Pending Requests</p>
-                <span>{{ $stats['pending'] }}</span>
+    <div class="stat-cards-grid" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="stat-card" style="background: linear-gradient(135deg, #174ea6 0%, #2563eb 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="stat-icon yellow" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-clock"></i></div>
+            <div class="stat-info" style="color: #fff;">
+                <p style="color: #fff; font-size: 1.1rem; opacity: 0.95;">Pending Requests</p>
+                <span style="color: #fff; font-size: 2rem; font-weight: bold;">{{ $stats['pending'] }}</span>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
-            <div class="stat-info">
-                <p>Approved Visits</p>
-                <span>{{ $stats['approved'] }}</span>
+        <div class="stat-card" style="background: linear-gradient(135deg, #15803d 0%, #166534 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="stat-icon green" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info" style="color: #fff;">
+                <p style="color: #fff; font-size: 1.1rem; opacity: 0.95;">Approved Visits</p>
+                <span style="color: #fff; font-size: 2rem; font-weight: bold;">{{ $stats['approved'] }}</span>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
-            <div class="stat-info">
-                <p>Rejected Visits</p>
-                <span>{{ $stats['rejected'] }}</span>
+        <div class="stat-card" style="background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="stat-icon red" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-times-circle"></i></div>
+            <div class="stat-info" style="color: #fff;">
+                <p style="color: #fff; font-size: 1.1rem; opacity: 0.95;">Rejected Visits</p>
+                <span style="color: #fff; font-size: 2rem; font-weight: bold;">{{ $stats['rejected'] }}</span>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon blue"><i class="fas fa-robot"></i></div>
-            <div class="stat-info">
-                <p>Auto-Scheduled</p>
-                <span>{{ $stats['auto_scheduled'] }}</span>
+        <div class="stat-card" style="background: linear-gradient(135deg, #eab308 0%, #a16207 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="stat-icon blue" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-robot"></i></div>
+            <div class="stat-info" style="color: #fff;">
+                <p style="color: #fff; font-size: 1.1rem; opacity: 0.95;">Auto-Scheduled</p>
+                <span style="color: #fff; font-size: 2rem; font-weight: bold;">{{ $stats['auto_scheduled'] }}</span>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon light-green"><i class="fas fa-clipboard-check"></i></div>
-            <div class="stat-info">
-                <p>Completed This Week</p>
-                <span>{{ $stats['this_week'] }}</span>
+        <div class="stat-card" style="background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div class="stat-icon light-green" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-right: 1rem;"><i class="fas fa-clipboard-check"></i></div>
+            <div class="stat-info" style="color: #fff;">
+                <p style="color: #fff; font-size: 1.1rem; opacity: 0.95;">Completed This Week</p>
+                <span style="color: #fff; font-size: 2rem; font-weight: bold;">{{ $stats['this_week'] }}</span>
             </div>
         </div>
     </div>

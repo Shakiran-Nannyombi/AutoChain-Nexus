@@ -116,42 +116,34 @@
     <h1 class="page-title" style="margin-bottom: 1.5rem;">System Flow Visualization</h1>
 
     <!-- Stats Cards -->
-    <div class="stats-container mb-8">
-        <div class="stat-card">
-            <div>
-                <div class="stat-title">Active Users</div>
-                <div class="stat-value">{{ $stats['activeUsers'] }}</div>
+    <div class="stats-container mb-8" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="stat-card" style="background: linear-gradient(135deg, #174ea6 0%, #2563eb 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">Active Users</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['activeUsers'] }}</div>
             </div>
-            <div class="stat-icon green">
-                <i class="fas fa-users"></i>
-            </div>
+            <div class="stat-icon green" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;"><i class="fas fa-users"></i></div>
         </div>
-        <div class="stat-card" style="cursor: pointer;" onclick="openSystemHealthModal()">
-            <div>
-                <div class="stat-title">System Health</div>
-                <div class="stat-value">{{ $stats['systemHealth'] }}%</div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #15803d 0%, #166534 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center; cursor: pointer;" onclick="openSystemHealthModal()">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">System Health</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['systemHealth'] }}%</div>
             </div>
-            <div class="stat-icon {{ $stats['systemHealth'] > 90 ? 'green' : 'yellow' }}">
-                <i class="fas fa-heartbeat"></i>
-            </div>
+            <div class="stat-icon green" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;"><i class="fas fa-heartbeat"></i></div>
         </div>
-        <div class="stat-card">
-            <div>
-                <div class="stat-title">Active Connections</div>
-                <div class="stat-value">{{ $stats['activeConnections'] }}</div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #eab308 0%, #a16207 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">Active Connections</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['activeConnections'] }}</div>
             </div>
-            <div class="stat-icon blue">
-                <i class="fas fa-link"></i>
-            </div>
+            <div class="stat-icon blue" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;"><i class="fas fa-link"></i></div>
         </div>
-        <div class="stat-card" style="cursor: pointer;" onclick="openBottleneckModal()">
-            <div>
-                <div class="stat-value" style="color: #F3950D;">{{ $stats['bottlenecks'] }}</div>
-                <div class="stat-title">Bottlenecks</div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center; cursor: pointer;" onclick="openBottleneckModal()">
+            <div style="flex: 1; color: #fff;">
+                <div class="stat-title" style="font-size: 1.1rem; opacity: 0.95; color: #fff;">Bottlenecks</div>
+                <div class="stat-value" style="font-size: 2rem; font-weight: bold; color: #fff;">{{ $stats['bottlenecks'] }}</div>
             </div>
-            <div class="stat-icon yellow">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
+            <div class="stat-icon yellow" style="color: #fff; background: rgba(255,255,255,0.12); border-radius: 50%; padding: 0.7rem; margin-left: 1rem;"><i class="fas fa-exclamation-triangle"></i></div>
         </div>
     </div>
 

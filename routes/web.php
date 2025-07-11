@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cookie;
 use App\Models\User;
 use App\Services\UserMigrationService;
 use App\Http\Controllers\Admin\DashboardController;
@@ -24,14 +25,231 @@ use App\Http\Controllers\ChatController;
 
 
 
-
 // Welcome page
 Route::get('/', function () {
     return view('welcome');
-});
+}) ->name('home');
+//
 
+
+//
 // Demand prediction route
 Route::post('/predict-demand', [DemandPrediction::class, 'getDemandForecast']);
+
+
+// Login page
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+// Handle login
+Route::post('/login', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'role' => 'required|in:admin,manufacturer,supplier,vendor,retailer,analyst',
+    ]);
+
+    $email = $request->email;
+    $password = $request->password;
+    $role = $request->role;
+
+    // Use the UserMigrationService to authenticate
+    $userMigrationService = new UserMigrationService();
+    $user = $userMigrationService->authenticateUser($email, $password, $role);
+
+    if ($user) {
+        // For non-admin users, ensure they are migrated to role table
+        if ($role !== 'admin' && $user instanceof User) {
+            try {
+                $userMigrationService->migrateUserToRoleTable($user);
+            } catch (\Exception $e) {
+                Log::error("Migration failed for {$email} on login: " . $e->getMessage());
+                return back()->withErrors(['email' => 'An error occurred during account setup. Please contact support.']);
+            }
+            // Log in the user with Laravel Auth
+            Auth::login($user);
+        }
+
+        // Store user info in session
+        session([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+            'user_role' => $role
+        ]);
+
+        // Redirect to role-specific dashboard
+        switch ($role) {
+            case 'admin':
+                return redirect('/admin/dashboard');
+            case 'manufacturer':
+                return redirect('/manufacturer/dashboard');
+            case 'supplier':
+                return redirect('/supplier/dashboard');
+            case 'vendor':
+                return redirect('/vendor/dashboard');
+            case 'retailer':
+                return redirect('/retailer/dashboard');
+            case 'analyst':
+                return redirect('/analyst/dashboard');
+            default:
+                return redirect('/dashboard');
+        }
+    }
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ]);
+});
+
+// Register page
+Route::get('/register', function () {
+    $approvedManufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->get();
+    return view('auth.register', compact('approvedManufacturers'));
+})->name('register');
+
+// Handle registration
+Route::post('/register', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+        'role' => 'required|in:manufacturer,supplier,vendor,retailer,analyst',
+        'phone' => 'required|string|max:20',
+        'address' => 'required|string|max:500',
+        'company_name' => 'required|string|max:255',
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'supporting_documents' => 'required|array|min:1',
+        'supporting_documents.*' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
+        'manufacturer_id' => 'nullable|exists:users,id',
+    ]);
+
+    // Create user with pending status
+    $user = \App\Models\User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone' => $request->phone,
+        'password' => bcrypt($request->password),
+        'role' => $request->role,
+        'company' => $request->company_name,
+        'address' => $request->address,
+        'status' => 'pending',
+        'manufacturer_id' => $request->role === 'vendor' ? $request->manufacturer_id : null,
+    ]);
+
+    // Handle profile picture upload
+    if ($request->hasFile('profile_picture')) {
+        $profilePicture = $request->file('profile_picture');
+        $profilePictureName = time() . '_' . $profilePicture->getClientOriginalName();
+        $profilePicture->storeAs('public/profile_pictures', $profilePictureName);
+        $profilePicturePath = 'profile_pictures/' . $profilePictureName;
+        
+        // Save profile picture to user_documents table
+        \App\Models\UserDocument::create([
+            'user_id' => $user->id,
+            'document_type' => 'profile_picture',
+            'file_path' => $profilePicturePath
+        ]);
+    }
+
+    // Handle supporting documents upload
+    if ($request->hasFile('supporting_documents')) {
+        foreach ($request->file('supporting_documents') as $document) {
+            $documentName = time() . '_' . $document->getClientOriginalName();
+            $document->storeAs('public/supporting_documents', $documentName);
+            $documentPath = 'supporting_documents/' . $documentName;
+            
+            // Save each supporting document to user_documents table
+            \App\Models\UserDocument::create([
+                'user_id' => $user->id,
+                'document_type' => 'supporting_document',
+                'file_path' => $documentPath
+            ]);
+        }
+    }
+
+    // Redirect to status page
+    return redirect()->route('application.status', ['email' => $user->email])
+        ->with('status', 'Registration successful! Your application is now pending approval.');
+});
+
+// Application status page
+Route::get('/status/{email}', function ($email) {
+    $user = \App\Models\User::where('email', $email)->first();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'User not found.');
+    }
+    
+    return view('auth.application-status', ['user' => $user]);
+})->name('application.status');
+
+// Application status page (alternative URL pattern)
+Route::get('/application-status', function (Request $request) {
+    $email = $request->query('email');
+    
+    if (!$email) {
+        return redirect()->route('login')->with('error', 'Email address is required.');
+    }
+    
+    $user = \App\Models\User::where('email', $email)->first();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'User not found.');
+    }
+    
+    return view('auth.application-status', ['user' => $user]);
+});
+
+//Reset password page
+Route::get('/password.reset', function () {
+    return view('auth.reset-password');
+})->name('password.request');
+
+// Password reset form
+Route::get('/password.reset/{token}', function ($token) {
+    return view('auth.reset-password-form', ['token' => $token]);
+})->name('password.reset');
+
+// Password token page
+Route::get('/password/enter-token', function () {
+    return view('auth.reset-password-token');
+})->name('password.token');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+
+Route::get('/password/enter-token', [ForgotPasswordController::class, 'showTokenForm'])->name('password.token');
+Route::post('/password/verify-token', [ForgotPasswordController::class, 'verifyToken'])->name('password.token.submit');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+// Email verification routes
+Route::middleware('auth')->group(function () {
+    Route::get('verify-email', \App\Http\Controllers\Auth\EmailVerificationPromptController::class)
+        ->name('verification.notice');
+
+    Route::get('verify-email/{id}/{hash}', \App\Http\Controllers\Auth\VerifyEmailController::class)
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+
+    Route::get('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'show'])
+        ->name('password.confirm');
+
+    Route::post('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'store']);
+
+    Route::put('password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('password.update');
+});
+
+// Dashboard (for testing)
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 // Login page
@@ -252,7 +470,7 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 // Role-specific dashboard routes
-Route::middleware(['admin'])->prefix('admin')->group(function () {
+Route::middleware(['admin', \App\Http\Middleware\PreventBackAfterLogout::class])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/search', [SearchController::class, 'search'])->name('admin.search');
     Route::get('/system-flow', [DashboardController::class, 'systemFlow'])->name('admin.system-flow');
@@ -265,6 +483,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::put('/settings', [DashboardController::class, 'updateSettings'])->name('admin.settings.update');
     Route::get('/backups', [DashboardController::class, 'backups'])->name('admin.backups');
     Route::post('/backups/create', [DashboardController::class, 'createBackup'])->name('admin.backups.create');
+    Route::get('/chat', [DashboardController::class, 'chat'])->name('admin.chat');
 
     // User management specific routes
     Route::get('/user-management', [UserController::class, 'index'])->name('admin.user-management');
@@ -306,87 +525,38 @@ Route::get('/manufacturer/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'manufacturer') {
         return redirect('/login');
     }
-    // Customer segmentation analytics
-    $customerSegmentCounts = \App\Models\Customer::select('segment', \DB::raw('count(*) as count'))
-        ->groupBy('segment')
-        ->get();
-    $segmentSummaries = \App\Models\Customer::select(
-            'segment',
-            \DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
-            \DB::raw('AVG((SELECT COUNT(*) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
-            \DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
-            \DB::raw('COUNT(*) as count')
-        )
-        ->groupBy('segment')
-        ->get();
-    $segmentNames = [
-        1 => 'Occasional Buyers',
-        2 => 'High Value Customers',
-        3 => 'At Risk Customers',
-    ];
-    $segmentRecommendations = [];
-    foreach ($segmentNames as $segId => $segName) {
-        $customerIdsInSegment = \App\Models\Customer::where('segment', $segId)->pluck('id');
-        $products = \App\Models\Product::whereHas('purchases', function ($query) use ($customerIdsInSegment) {
-            $query->whereIn('customer_id', $customerIdsInSegment);
-        })
-        ->withCount('purchases')
-        ->orderBy('purchases_count', 'desc')
-        ->take(5)
-        ->get();
-        $segmentRecommendations[$segId] = $products;
-    }
-    // Also pass the other dashboard variables if needed
-    $activeProducts = \App\Models\Product::count();
-    $pendingOrders = 0; // Replace with actual logic if needed
-    $productionLines = 0; // Replace with actual logic if needed
-    $monthlyRevenue = 0; // Replace with actual logic if needed
-    return view('dashboards.manufacturer.index', compact(
-        'customerSegmentCounts',
-        'segmentSummaries',
-        'segmentNames',
-        'segmentRecommendations',
-        'activeProducts',
-        'pendingOrders',
-        'productionLines',
-        'monthlyRevenue'
-    ));
+    return view('dashboards.manufacturer.index');
 });
 
 Route::get('/supplier/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'supplier') {
         return redirect('/login');
     }
+    
     return view('dashboards.supplier.index');
-});
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/vendor/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'vendor') {
         return redirect('/login');
     }
+    
     return view('dashboards.vendor.index');
-});
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/retailer/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'retailer') {
         return redirect('/login');
     }
+    
     return view('dashboards.retailer.index');
-});
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/analyst/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'analyst') {
         return redirect('/login');
     }
-    $users = \App\Models\User::where('role', '!=', 'admin')->get();
-    $segmentCounts = \App\Models\User::where('role', '!=', 'admin')
-        ->select('segment', \DB::raw('count(*) as count'))
-        ->groupBy('segment')
-        ->get();
-    return view('dashboards.analyst.index', [
-        'users' => $users,
-        'segmentCounts' => $segmentCounts,
-    ]);
+    return view('dashboards.analyst.index');
 })->name('analyst.dashboard');
 
 // Analyst dashboard routes
@@ -402,18 +572,47 @@ Route::prefix('analyst')->group(function () {
     Route::get('/reports/performance', function () { return view('dashboards.analyst.performance-reports'); })->name('analyst.performance-reports');
     Route::get('/profile', function () { return view('dashboards.analyst.profile'); })->name('analyst.profile');
     Route::get('/settings', function () { return view('dashboards.analyst.settings'); })->name('analyst.settings');
+    Route::get('/analyst/sales-analysis', [AnalystController::class, 'salesAnalysis'])->name('analyst.sales-analysis');
+    Route::get('/analyst/inventory-analysis', [AnalystController::class, 'inventoryAnalysis'])->name('analyst.inventory-analysis');
+    Route::get('/analyst/trends', [AnalystController::class, 'trends'])->name('analyst.trends');
+    Route::get('/analyst/reports', [AnalystReportController::class, 'index'])->name('analyst.reports');
+    Route::get('/analyst/reports/generate', [AnalystReportController::class, 'create'])->name('analyst.reports.create');
+    Route::post('/analyst/reports/generate', [AnalystReportController::class, 'store'])->name('analyst.reports.store');
+
+
 });
 
 // Logout route
 Route::get('/logout', function () {
+    // Clear all authentication guards
+    Auth::guard('web')->logout();
+    Auth::guard('admin')->logout();
+    
+    // Clear all session data
     session()->flush();
-    return redirect('/login');
+    session()->invalidate();
+    session()->regenerateToken();
+    
+    // Clear any remember me cookies
+    Cookie::queue(Cookie::forget('remember_web'));
+    Cookie::queue(Cookie::forget('remember_admin'));
+    
+    // Add cache-busting headers to prevent browser back button access
+    return redirect('/login')
+        ->withHeaders([
+            'Cache-Control' => 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => 'Thu, 01 Jan 1970 00:00:00 GMT'
+        ]);
 })->name('logout');
 
 // Admin login page
 Route::get('/admin/login', function () {
     return view('auth.admin-login');
 });
+
+// Admin logout route
+Route::get('/admin/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 
 // Admin login route (separate from regular user login)
 Route::post('/admin/login', function (Request $request) {
@@ -427,23 +626,25 @@ Route::post('/admin/login', function (Request $request) {
 
     // Use the UserMigrationService to authenticate admin
     $userMigrationService = new \App\Services\UserMigrationService();
-    $user = $userMigrationService->authenticateUser($email, $password, 'admin');
+    $admin = $userMigrationService->authenticateUser($email, $password, 'admin');
 
-    if ($user) {
-        // Store user info in session
+    if ($admin) {
+        // Store admin info in session
         session([
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
+            'user_id' => $admin->id,
+            'user_name' => $admin->name,
+            'user_email' => $admin->email,
             'user_role' => 'admin'
         ]);
-        Auth::login($user);
+        
+        // Use the admin guard for authentication
+        Auth::guard('admin')->login($admin);
 
         // Debug: Log the session data
         Log::info('Admin login successful', [
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
+            'user_id' => $admin->id,
+            'user_name' => $admin->name,
+            'user_email' => $admin->email,
             'session_data' => session()->all()
         ]);
 
@@ -538,7 +739,7 @@ Route::prefix('retailer')->group(function () {
 });
 
 // Chat routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['user_or_admin'])->group(function () {
     Route::resource('chats', ChatController::class);
     Route::post('chats/{chat}/messages', [ChatController::class, 'storeMessage'])->name('chats.storeMessage');
     Route::get('chats/order/{orderId}', [ChatController::class, 'getOrderChats'])->name('chats.getOrderChats');
@@ -547,4 +748,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('chats/messages/{message}/edit', [ChatController::class, 'editMessage'])->name('chats.editMessage');
     Route::put('chats/messages/{message}', [ChatController::class, 'updateMessage'])->name('chats.updateMessage');
     Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
+});
+
+    Route::middleware(['auth'])->group(function () {
+    Route::get('/user/reports', [AnalystReportController::class, 'userReports'])->name('user.reports');
+    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('user.chat');
 });
