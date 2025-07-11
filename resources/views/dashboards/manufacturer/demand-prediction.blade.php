@@ -85,7 +85,7 @@
 
         const ctx = document.getElementById("forecastChart").getContext("2d");
         chart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels,
                 datasets

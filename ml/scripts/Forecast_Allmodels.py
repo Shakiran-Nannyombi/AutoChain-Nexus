@@ -1,78 +1,187 @@
-import os
 import pandas as pd
-from prophet import Prophet
+import numpy as np
+from xgboost import XGBRegressor
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
 import matplotlib.pyplot as plt
+import joblib
+from datetime import datetime
+import seaborn as sns
+import os
 
-# Always find the path relative to this script
-base_dir = os.path.dirname(__file__)
+class DemandForecaster:
+    def __init__(self):
+        self.model = None
+        self.preprocessor = None
+        self.demand_data = None
+        
+    def load_data(self):
+        """Load and preprocess the raw data"""
+        base_dir = os.path.dirname(__file__)
+        csv_path = os.path.abspath(os.path.join(base_dir, '..', 'data', 'Car_data.csv'))
+        
+        try:
+            df = pd.read_csv(csv_path)
+            df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y')
+            return df
+        except Exception as e:
+            raise ValueError(f"Error loading data: {str(e)}")
 
-# Navigate to ../data/Car_data.csv
-csv_path = os.path.join(base_dir, '..', 'data', 'Car_data.csv')
+    def prepare_features(self, df):
+        """Create time-series features from raw data"""
+        # Monthly demand per model/region
+        demand_data = (
+            df.groupby([pd.Grouper(key='Date', freq='ME'), 'Model', 'Dealer_Region'])
+            .agg(Demand=('Customer Name', 'count'))
+            .reset_index()
+        )
+        
+        # Feature engineering
+        demand_data['Month'] = demand_data['Date'].dt.month
+        demand_data['Year'] = demand_data['Date'].dt.year
+        demand_data['Lag_Demand'] = demand_data.groupby(['Model', 'Dealer_Region'])['Demand'].shift(1)
+        demand_data = demand_data.dropna()
+        
+        return demand_data
 
-# Normalize path (optional but safe)
-csv_path = os.path.abspath(csv_path)
+    def train(self):
+        """Train the forecasting model"""
+        df = self.load_data()
+        self.demand_data = self.prepare_features(df)
+        
+        # Preprocessor pipeline
+        self.preprocessor = ColumnTransformer([
+            ('cat', OneHotEncoder(handle_unknown='ignore'), 
+             ['Model', 'Dealer_Region']),
+            ('num', StandardScaler(), 
+             ['Month', 'Year', 'Lag_Demand'])
+        ])
+        
+        # Model training
+        X = self.demand_data[['Model', 'Dealer_Region', 'Month', 'Year', 'Lag_Demand']]
+        y = self.demand_data['Demand']
+        X_processed = self.preprocessor.fit_transform(X)
+        
+        self.model = XGBRegressor(
+            n_estimators=100,
+            max_depth=3,
+            random_state=42,
+            eval_metric='mae'
+        )
+        self.model.fit(X_processed, y)
+        
+        # Save artifacts
+        self.save_model()
 
-# Read CSV
-df = pd.read_csv(csv_path)
+    def save_model(self):
+        """Save model and preprocessor"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        joblib.dump(self.model, f'model_{timestamp}.pkl')
+        joblib.dump(self.preprocessor, f'preprocessor_{timestamp}.pkl')
+        print(f"Model saved with timestamp: {timestamp}")
 
+    def predict(self, model_name, region, months=12):
+        """Generate demand predictions"""
+        if not self.model or not self.preprocessor:
+            raise ValueError("Model not trained. Call train() first.")
+        if self.demand_data is None:
+            raise ValueError("Demand data not loaded. Call train() first.")
+            
+        # Get historical data
+        history = self.demand_data[
+            (self.demand_data['Model'] == model_name) & 
+            (self.demand_data['Dealer_Region'] == region)
+        ]
+        
+        if history.empty:
+            raise ValueError(f"No historical data found for {model_name} in {region}")
 
-df['Date'] = pd.to_datetime(df['Date'])
+        # Generate future dates
+        last_date = self.demand_data['Date'].max()
+        future_dates = pd.date_range(
+            start=last_date + pd.DateOffset(months=1),
+            periods=months,
+            freq='ME'
+        )
+        
+        # Prepare prediction data
+        pred_data = pd.DataFrame({
+            'Date': future_dates,
+            'Model': model_name,
+            'Dealer_Region': region,
+            'Month': future_dates.month,
+            'Year': future_dates.year,
+            'Lag_Demand': history['Demand'].iloc[-1]  # Last known demand
+        })
+        
+        # Make predictions
+        X_pred = pred_data[['Model', 'Dealer_Region', 'Month', 'Year', 'Lag_Demand']]
+        X_processed = self.preprocessor.transform(X_pred)
+        pred_data['Predicted_Demand'] = np.round(self.model.predict(X_processed))
+        
+        return history, pred_data
 
-# Group by month, model, region, and count sales
-grouped_df = (
-    df.groupby([pd.Grouper(key='Date', freq='M'), 'Model', 'Dealer_Region'])
-    .size()
-    .reset_index(name='quantity_sold')
-)
+    def plot_forecast(self, history, predictions):
+        """Generate and save forecast visualization"""
+        plt.figure(figsize=(12, 6))
+        
+        # Historical data
+        sns.lineplot(
+            x='Date', y='Demand', 
+            data=history, 
+            label='Historical Demand',
+            marker='o'
+        )
+        
+        # Predicted data
+        sns.lineplot(
+            x='Date', y='Predicted_Demand', 
+            data=predictions, 
+            label='Forecasted Demand',
+            marker='o',
+            linestyle='--'
+        )
+        
+        model_name = predictions['Model'].iloc[0]
+        region = predictions['Dealer_Region'].iloc[0]
+        plt.title(f"Demand Forecast: {model_name} in {region}")
+        plt.xlabel('Date')
+        plt.ylabel('Units Sold')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        
+        # Save plot
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        plot_path = f"forecast_{model_name}_{region}_{timestamp}.png"
+        plt.savefig(plot_path)
+        plt.close()
+        
+        return plot_path
 
-# Rename for Prophet format
-grouped_df = grouped_df.rename(columns={'Date': 'ds', 'quantity_sold': 'y'})
-
-# Loop through unique (Model, Region) pairs
-forecast_results = []
-unique_pairs = grouped_df[['Model', 'Dealer_Region']].drop_duplicates()
-
-for _, row in unique_pairs.iterrows():
-    model_name = row['Model']
-    region_name = row['Dealer_Region']
-
-    filtered = grouped_df[
-        (grouped_df['Model'] == model_name) &
-        (grouped_df['Dealer_Region'] == region_name)
-    ][['ds', 'y']]
-
-    if len(filtered) < 3:
-        continue  # skip if not enough data to train
-
-    try:
-        model = Prophet()
-        model.fit(filtered)
-
-        future = model.make_future_dataframe(periods=6, freq='M')
-        forecast = model.predict(future)
-
-        # ds - datestamp/date, 
-        predicted = forecast[['ds', 'yhat']].tail(6).copy()
-        predicted['Model'] = model_name
-        predicted['Dealer_Region'] = region_name
-
-        forecast_results.append(predicted)
-    except Exception as e:
-        print(f"Error with {model_name} in {region_name}: {e}")
-        continue
-
-# STEP 6: Combine all forecasts into one DataFrame
-if forecast_results:
-    final_forecast_df = pd.concat(forecast_results, ignore_index=True)
-    final_forecast_df.to_csv("model_region_forecast.csv", index=False)
-    print("\n\n\n\nForecast saved to model_region_forecast.csv")
-else:
-    print("\n\n\nNo forecast data generated.")
+if __name__ == "__main__":
+    # Example usage
+    forecaster = DemandForecaster()
     
-filtered = df[
-    (df['Model'] == 'Camry') & 
-    (df['Dealer_Region'] == 'Toronto')
-]
-
-print(len(filtered))
-print(filtered[['Date', 'Model', 'Dealer_Region']])
+    # Step 1: Train the model
+    print("Training model...")
+    forecaster.train()
+    
+    # Step 2: Make predictions
+    test_model = "Expedition"
+    test_region = "Middletown"
+    
+    try:
+        print(f"\nGenerating forecast for {test_model} in {test_region}...")
+        history, predictions = forecaster.predict(test_model, test_region)
+        
+        # Step 3: Visualize results
+        plot_path = forecaster.plot_forecast(history, predictions)
+        print(f"Forecast plot saved to: {plot_path}")
+        
+        # Print predictions
+        print("\nPredicted Demand:")
+        print(predictions[['Date', 'Predicted_Demand']].to_string(index=False))
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
