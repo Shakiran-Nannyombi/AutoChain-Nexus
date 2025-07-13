@@ -1,0 +1,16 @@
+@extends('layouts.dashboard')
+
+@section('title', 'Orders')
+
+@section('sidebar-content')
+    @include('dashboards.manufacturer.sidebar')
+@endsection
+
+@section('content')
+    <div class="content-card">
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-shopping-cart"></i> Orders</h2>
+        <div style="text-align:center; color: var(--primary); font-size: 1.1rem; padding: 2rem 0;">
+            This is the Orders page. Add your order management features here.
+        </div>
+    </div>
+@endsection

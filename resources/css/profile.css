@@ -1,0 +1,422 @@
+.profile-page {
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 0 1rem 2rem 1rem;
+}
+
+.profile-summary-card {
+  background: linear-gradient(135deg, #e9f6ec 0%, #f8fafc 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(22,97,14,0.06);
+  padding: 2rem 2.5rem;
+  margin-bottom: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1.5px solid var(--primary-light, #82d48a);
+}
+
+.profile-summary-avatar {
+  flex-shrink: 0;
+}
+
+.profile-avatar-lg {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid var(--primary, #16610E);
+  box-shadow: 0 2px 8px rgba(22,97,14,0.08);
+}
+
+.profile-summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.profile-summary-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.profile-summary-role {
+  color: var(--secondary, #F97A00);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.profile-summary-location {
+  color: #6b7280;
+  font-size: 0.98rem;
+}
+
+.profile-section-card {
+  background: linear-gradient(135deg, #f4fdf7 0%, #f8fafc 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(22,97,14,0.06);
+  margin-bottom: 2rem;
+  padding: 2rem 2.5rem;
+  border: 1.5px solid var(--primary-light, #82d48a);
+}
+
+.profile-section-header {
+  background: none;
+  border: none;
+  margin-bottom: 1.2rem;
+  padding: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-edit-btn {
+  background: var(--secondary, #F97A00);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.profile-edit-btn i {
+  font-size: 1rem;
+}
+.profile-edit-btn:hover {
+  background: var(--primary, #16610E);
+  color: #fff;
+}
+
+.profile-section-content {
+  padding: 0.2rem 0 0.5rem 0;
+}
+
+.profile-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  row-gap: 1.2rem;
+}
+
+.profile-info-row > div {
+  min-width: 180px;
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.profile-info-label {
+  color: #6b7280;
+  font-size: 0.93rem;
+  font-weight: 500;
+  margin-bottom: 0.1rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f8f9fa;
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+input:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light, #82d48a);
+  outline: none;
+}
+button, .btn, .profile-section-card button[type="submit"] {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+  margin-top: 1rem;
+}
+button:hover, .btn:hover, .profile-section-card button[type="submit"]:hover {
+  background: var(--secondary, #F97A00);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(249,122,0,0.10);
+}
+
+.profile-main-row {
+  display: flex;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+.profile-summary-col {
+  flex: 0 0 320px;
+  max-width: 340px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.profile-info-col {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: flex-start;
+}
+
+/* Ensure cards fill the height and align visually */
+.profile-summary-card, .profile-section-card {
+  margin-bottom: 0;
+}
+
+.profile-edit-row {
+  display: flex;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+.profile-edit-col {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: flex-start;
+}
+@media (max-width: 900px) {
+  .profile-edit-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .profile-main-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .profile-summary-col, .profile-info-col {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .profile-summary-card, .profile-section-card {
+    padding: 1.2rem 0.7rem;
+  }
+  .profile-summary-card {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .profile-info-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+} 
+
+/* Modal overlay and popup styles for Delete Account */
+.modal-overlay {
+    display: none; /* Hide by default, JS will set to flex when shown */
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.35);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.2rem 2rem 2rem 2rem;
+    min-width: 320px;
+    max-width: 420px;
+    width: 95vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #d32f2f;
+    justify-content: flex-start;
+    margin-bottom: 0.5rem;
+}
+.modal-warning-icon {
+    color: #f97a00;
+    font-size: 1.5rem;
+}
+.modal-body {
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+}
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    margin-top: 1.2rem;
+}
+.modal-cancel-btn {
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    transition: background 0.18s;
+}
+.modal-cancel-btn:hover {
+    background: #bdbdbd;
+}
+.modal-delete-btn {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+.modal-delete-btn:hover {
+    background: #b71c1c;
+}
+.modal-password-input {
+    margin-bottom: 1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    width: 100%;
+    font-size: 1rem;
+}
+@media (max-width: 500px) {
+    .modal-content {
+        padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+        min-width: 0;
+        max-width: 98vw;
+    }
+    .modal-header {
+        font-size: 1rem;
+    }
+} 
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem 1rem 2rem;
+    background: #fff;
+    border-bottom: 1.5px solid #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a2a5c;
+    margin: 0;
+}
+.dashboard-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: #f7f8fa;
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    border: 1px solid #e0e0e0;
+    margin-right: 1rem;
+}
+.search-bar i {
+    color: #8a8fa3;
+    margin-right: 0.5rem;
+}
+.search-bar input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 1rem;
+    color: #333;
+}
+.dashboard-header-right i {
+    font-size: 1.3rem;
+    color: #8a8fa3;
+    cursor: pointer;
+    transition: color 0.18s;
+}
+.dashboard-header-right i:hover {
+    color: #1a2a5c;
+}
+@media (max-width: 700px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem 0.7rem 0.7rem 0.7rem;
+    }
+    .dashboard-title {
+        font-size: 1.3rem;
+    }
+    .dashboard-header-right {
+        gap: 0.7rem;
+        margin-top: 0.7rem;
+    }
+} 
+
+.dashboard-header,
+.header {
+    margin-bottom: 2.2rem !important;
+}
+
+.content-card, .profile-content-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(22,97,14,0.06);
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    max-width: 1100px;
+    margin: 0 auto 2.5rem auto;
+    width: 100%;
+}
+
+.profile-section-card {
+    /* Removed override that set background: transparent, border: none, box-shadow: none, padding: 0 */
+}
+
+.profile-section-header {
+    background: none;
+    border: none;
+    margin-bottom: 1.2rem;
+    padding: 0;
+}
+
+.mt-header {
+    margin-top: 2.2rem !important;
+} 
