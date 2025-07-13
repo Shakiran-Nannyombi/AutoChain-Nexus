@@ -1,1 +1,0 @@
-<h2 style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-check-circle"></i> Validation</h2> 
