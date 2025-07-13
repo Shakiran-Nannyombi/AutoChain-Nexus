@@ -11,9 +11,8 @@
 @endsection
 
 @section('content')
+  <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-database"></i> Backups</h2>
   <div class="content-card">
-    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-database"></i> Backups</h2>
-
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
     @endif

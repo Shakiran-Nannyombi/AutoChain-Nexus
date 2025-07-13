@@ -12,8 +12,8 @@
 
 @section('content')
   
+  <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Management</h2>
   <div class="content-card">
-    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Management</h2>
     <!-- Stats Cards -->
     <div class="stats-container" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
         <div class="stat-card" style="background: linear-gradient(135deg, #174ea6 0%, #2563eb 100%); color: #fff; box-shadow: 0 2px 8px rgba(23,78,166,0.12); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
