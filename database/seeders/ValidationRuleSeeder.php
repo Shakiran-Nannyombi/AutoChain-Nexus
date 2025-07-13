@@ -13,59 +13,66 @@ class ValidationRuleSeeder extends Seeder
      */
     public function run(): void
     {
-        ValidationRule::create([
+        ValidationRule::updateOrInsert([
             'name' => 'ISO Certification Required',
             'category' => 'Compliance',
-            'description' => 'Vendors must have at least one valid ISO certification (e.g., ISO 9001, ISO 14001, ISO 27001) to pass compliance validation.',
             'value' => 'true',
+        ], [
+            'description' => 'Vendors must have at least one valid ISO certification (e.g., ISO 9001, ISO 14001, ISO 27001) to pass compliance validation.',
             'status' => 'Active',
         ]);
 
-        ValidationRule::create([
+        ValidationRule::updateOrInsert([
             'name' => 'Allowed File Formats',
             'category' => 'Document Validation',
-            'description' => 'Only PDF, DOC, DOCX, JPG, JPEG, and PNG files are accepted for vendor document uploads.',
             'value' => 'pdf,doc,docx,jpg,jpeg,png',
+        ], [
+            'description' => 'Only PDF, DOC, DOCX, JPG, JPEG, and PNG files are accepted for vendor document uploads.',
             'status' => 'Active',
         ]);
 
-        ValidationRule::create([
+        ValidationRule::updateOrInsert([
             'name' => 'Minimum Financial Score',
             'category' => 'Financial',
-            'description' => 'Vendors must achieve a financial score of at least 25 to pass financial validation.',
             'value' => '25',
+        ], [
+            'description' => 'Vendors must achieve a financial score of at least 25 to pass financial validation.',
             'status' => 'Active',
         ]);
 
-        ValidationRule::create([
+        ValidationRule::updateOrInsert([
             'name' => 'Minimum Reputation Score',
             'category' => 'Reputation',
-            'description' => 'Vendors must achieve a reputation score of at least 20, based on years in business, customer reviews, and industry ranking.',
             'value' => '20',
+        ], [
+            'description' => 'Vendors must achieve a reputation score of at least 20, based on years in business, customer reviews, and industry ranking.',
             'status' => 'Active',
         ]);
 
-        ValidationRule::create([
+        ValidationRule::updateOrInsert([
             'name' => 'Minimum Years in Business',
             'category' => 'Financial',
-            'description' => 'Vendors must have been in business for at least 3 years.',
             'value' => '3',
+        ], [
+            'description' => 'Vendors must have been in business for at least 3 years.',
             'status' => 'Active',
         ]);
 
-        ValidationRule::create([
+        ValidationRule::updateOrInsert([
             'name' => 'Minimum Revenue',
             'category' => 'Financial',
-            'description' => 'Vendors must have an annual revenue of at least 500,000 shs.',
             'value' => '500000',
+        ], [
+            'description' => 'Vendors must have an annual revenue of at least 500,000 shs.',
             'status' => 'Active',
         ]);
 
-        ValidationRule::create([
+        ValidationRule::updateOrInsert([
             'name' => 'Minimum Employee Count',
             'category' => 'Financial',
-            'description' => 'Vendors must have at least 10 employees.',
             'value' => '10',
+        ], [
+            'description' => 'Vendors must have at least 10 employees.',
             'status' => 'Active',
         ]);
     }

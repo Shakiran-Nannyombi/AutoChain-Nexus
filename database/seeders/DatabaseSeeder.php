@@ -21,71 +21,12 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             AdminUserSeeder::class,
+            ApprovedAndPendingUsersSeeder::class,
             ValidationRuleSeeder::class,
             FacilityVisitSeeder::class,
-            DemoUsersSeeder::class,
-        ]);
-
-        $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];
-
-        foreach ($roles as $role) {
-            User::firstOrCreate(
-                ['email' => $role . '@example.com'],
-                [
-                    'name' => ucfirst($role) . ' User',
-                    'password' => Hash::make('password'),
-                    'role' => $role,
-                    'status' => 'pending',
-                    'company' => ucfirst($role) . ' Company',
-                    'phone' => '123-456-7890',
-                    'address' => '123 ' . ucfirst($role) . ' Street',
-                    'profile_photo' => 'images/profile.jpeg',
-                ]
-            );
-        }
-
-        // Seed demo communications for active connections
-        $manufacturer = \App\Models\User::where('role', 'manufacturer')->first();
-        $supplier = \App\Models\User::where('role', 'supplier')->first();
-        $vendor = \App\Models\User::where('role', 'vendor')->first();
-        $retailer = \App\Models\User::where('role', 'retailer')->first();
-        $analyst = \App\Models\User::where('role', 'analyst')->first();
-
-        if ($manufacturer && $supplier) {
-            \App\Models\Communication::create([
-                'sender_id' => $manufacturer->id,
-                'receiver_id' => $supplier->id,
-                'type' => 'message',
+            AnalystSampleDataSeeder::class,
+            DemoNotificationsSeeder::class,
             ]);
-        }
-        if ($supplier && $vendor) {
-            \App\Models\Communication::create([
-                'sender_id' => $supplier->id,
-                'receiver_id' => $vendor->id,
-                'type' => 'transaction',
-            ]);
-        }
-        if ($vendor && $retailer) {
-            \App\Models\Communication::create([
-                'sender_id' => $vendor->id,
-                'receiver_id' => $retailer->id,
-                'type' => 'message',
-            ]);
-        }
-        if ($retailer && $analyst) {
-            \App\Models\Communication::create([
-                'sender_id' => $retailer->id,
-                'receiver_id' => $analyst->id,
-                'type' => 'report',
-            ]);
-        }
-        if ($analyst && $manufacturer) {
-            \App\Models\Communication::create([
-                'sender_id' => $analyst->id,
-                'receiver_id' => $manufacturer->id,
-                'type' => 'feedback',
-            ]);
-        }
 
         // Seed demo process flows for flow performance metrics
         $now = now();
@@ -101,48 +42,6 @@ class DatabaseSeeder extends Seeder
         ];
         foreach ($items as $item) {
             \App\Models\ProcessFlow::create($item);
-        }
-
-        $this->call(AnalystSampleDataSeeder::class);
-
-        // Add demo notifications for all user types
-        $roles = ['vendor', 'supplier', 'manufacturer', 'retailer', 'analyst'];
-        foreach ($roles as $role) {
-            $user = \App\Models\User::where('role', $role)->first();
-            if ($user) {
-                DB::table('notifications')->insert([
-                    [
-                        'id' => (string) Str::uuid(),
-                        'type' => 'App\\Notifications\\NewUserNotification',
-                        'notifiable_type' => 'App\\Models\\User',
-                        'notifiable_id' => $user->id,
-                        'data' => json_encode(['message' => ucfirst($role) . ' notification: Welcome to your dashboard!']),
-                        'read_at' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ],
-                    [
-                        'id' => (string) Str::uuid(),
-                        'type' => 'App\\Notifications\\NewUserNotification',
-                        'notifiable_type' => 'App\\Models\\User',
-                        'notifiable_id' => $user->id,
-                        'data' => json_encode(['message' => ucfirst($role) . ' notification: You have a new message.']),
-                        'read_at' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ],
-                    [
-                        'id' => (string) Str::uuid(),
-                        'type' => 'App\\Notifications\\NewUserNotification',
-                        'notifiable_type' => 'App\\Models\\User',
-                        'notifiable_id' => $user->id,
-                        'data' => json_encode(['message' => ucfirst($role) . ' notification: System update completed.']),
-                        'read_at' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ],
-                ]);
-            }
         }
 
     }

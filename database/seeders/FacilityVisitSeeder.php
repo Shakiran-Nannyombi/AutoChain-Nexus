@@ -17,46 +17,63 @@ class FacilityVisitSeeder extends Seeder
     {
         FacilityVisit::truncate();
 
-        $vendorUser = User::where('role', 'vendor')->first();
-        $manufacturerUser = User::where('role', 'manufacturer')->first();
+        // Get all approved vendors
+        $approvedVendors = User::where('role', 'vendor')->where('status', 'approved')->get();
 
-        if ($vendorUser) {
-            FacilityVisit::create([
-                'user_id' => $vendorUser->id,
-                'company_name' => $vendorUser->company,
-                'contact_person' => $vendorUser->name,
-                'contact_email' => $vendorUser->email,
-                'visit_type' => 'Facility Inspection',
-                'purpose' => 'Initial vendor onboarding assessment',
-                'location' => $vendorUser->address,
-                'visit_date' => Carbon::now()->addDays(10),
-                'requested_date' => Carbon::now()->subDays(2),
-                'status' => 'pending',
-            ]);
+        if ($approvedVendors->count() > 0) {
+            $visitTypes = [
+                'Facility Inspection',
+                'Compliance Audit', 
+                'Quality Assessment',
+                'Safety Review',
+                'Capacity Evaluation'
+            ];
 
-            FacilityVisit::create([
-                'user_id' => $vendorUser->id,
-                'company_name' => $vendorUser->company,
-                'contact_person' => $vendorUser->name,
-                'contact_email' => $vendorUser->email,
-                'visit_type' => 'Compliance Audit',
-                'purpose' => 'Quarterly compliance check',
-                'location' => $vendorUser->address,
-                'visit_date' => Carbon::now()->subDays(30),
-                'requested_date' => Carbon::now()->subDays(45),
-                'status' => 'completed',
-            ]);
+            $purposes = [
+                'Initial vendor onboarding assessment',
+                'Quarterly compliance check',
+                'Quality management system review',
+                'Safety protocol verification',
+                'Production capacity evaluation'
+            ];
+
+            foreach ($approvedVendors as $index => $vendor) {
+                // Create one visit per approved vendor
+                $visitType = $visitTypes[$index % count($visitTypes)];
+                $purpose = $purposes[$index % count($purposes)];
+                
+                // Mark first 2 as completed, rest as pending
+                $status = $index < 2 ? 'completed' : 'pending';
+                $visitDate = $status === 'completed' 
+                    ? Carbon::now()->subDays(rand(5, 30)) 
+                    : Carbon::now()->addDays(rand(1, 14));
+                
+                FacilityVisit::create([
+                    'user_id' => $vendor->id,
+                    'company_name' => $vendor->company_name ?? $vendor->name,
+                    'contact_person' => $vendor->name,
+                    'contact_email' => $vendor->email,
+                    'visit_type' => $visitType,
+                    'purpose' => $purpose,
+                    'location' => $vendor->address ?? 'TBD',
+                    'visit_date' => $visitDate,
+                    'requested_date' => Carbon::now()->subDays(rand(10, 45)),
+                    'status' => $status,
+                ]);
+            }
         }
 
+        // Also create a sample visit for a manufacturer (if exists)
+        $manufacturerUser = User::where('role', 'manufacturer')->first();
         if ($manufacturerUser) {
             FacilityVisit::create([
                 'user_id' => $manufacturerUser->id,
-                'company_name' => $manufacturerUser->company,
+                'company_name' => $manufacturerUser->company_name ?? $manufacturerUser->name,
                 'contact_person' => $manufacturerUser->name,
                 'contact_email' => $manufacturerUser->email,
                 'visit_type' => 'Partnership Meeting',
-                'purpose' => 'To discuss supply chain partnership',
-                'location' => $manufacturerUser->address,
+                'purpose' => 'To discuss supply chain partnership opportunities',
+                'location' => $manufacturerUser->address ?? 'TBD',
                 'visit_date' => Carbon::now()->addDays(5),
                 'requested_date' => Carbon::now(),
                 'status' => 'pending',
