@@ -38,14 +38,6 @@
                 <input type="text" id="phone" name="phone" class="form-control" value="{{ old('phone', $user->phone) }}">
             </div>
 
-            <div class="form-group">
-                <label for="role">Role</label>
-                <select id="role" name="role" class="form-control" required>
-                    @foreach(['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'] as $role)
-                        <option value="{{ $role }}" @if(old('role', $user->role) == $role) selected @endif>{{ ucfirst($role) }}</option>
-                    @endforeach
-                </select>
-            </div>
 
             <div class="form-group">
                 <label for="status">Status</label>

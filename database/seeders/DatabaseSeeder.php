@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Str; 
 
 class DatabaseSeeder extends Seeder
 {
@@ -26,7 +26,46 @@ class DatabaseSeeder extends Seeder
             FacilityVisitSeeder::class,
             AnalystSampleDataSeeder::class,
             DemoNotificationsSeeder::class,
+            ProductsTableSeeder::class,
+            CustomersTableSeeder::class,
+            PurchasesTableSeeder::class,
+        ]);
+
+        $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];
+
+        foreach ($roles as $role) {
+            User::firstOrCreate(
+                ['email' => $role . '@example.com'],
+                [
+                    'name' => ucfirst($role) . ' User',
+                    'password' => Hash::make('password'),
+                    'role' => $role,
+                    'status' => 'pending',
+                    'company' => ucfirst($role) . ' Company',
+                    'phone' => '123-456-7890',
+                    'address' => '123 ' . ucfirst($role) . ' Street',
+                    'profile_photo' => 'images/profile.jpeg',
+                ]
+            );
+        }
+
+        // Seed demo communications for active connections
+        $manufacturer = \App\Models\User::where('role', 'manufacturer')->first();
+        $supplier = \App\Models\User::where('role', 'supplier')->first();
+        $vendor = \App\Models\User::where('role', 'vendor')->first();
+        $retailer = \App\Models\User::where('role', 'retailer')->first();
+        $analyst = \App\Models\User::where('role', 'analyst')->first();
+
+        if ($manufacturer && $supplier) {
+            \App\Models\Communication::create([
+                'sender_id' => $manufacturer->id,
+                'receiver_id' => $supplier->id,
+                'type' => 'message',
+                'content' => 'Initial partnership discussion',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
+        }
 
         // Seed demo process flows for flow performance metrics
         $now = now();

@@ -110,4 +110,58 @@ $recentActivities) && $recentActivities->count())
             </div>
         </div>
     </div>
+
+    @php
+        $segmentNames = [
+            1 => 'Occasional Buyers',
+            2 => 'High Value Customers',
+            3 => 'At Risk Customers',
+        ];
+    @endphp
+    <!-- Customer Segment Analytics Section -->
+    <div style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow); margin-top: 2rem;">
+        <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
+            <i class="fas fa-users"></i> Customer Segment Distribution
+        </h3>
+        <div>
+            @if(isset($customerSegmentCounts) && count($customerSegmentCounts) > 0)
+                <ul style="list-style: none; padding: 0;">
+                    @foreach($customerSegmentCounts as $seg)
+                        <li style="margin-bottom: 0.5rem;">
+                            <strong>{{ $segmentNames[$seg->segment] ?? 'Unsegmented' }}:</strong> {{ $seg->count }} customers
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p>No segmentation data available.</p>
+            @endif
+        </div>
+        @if(isset($segmentSummaries) && count($segmentSummaries) > 0)
+        <div style="margin-top: 2rem;">
+            <h4 style="color: var(--deep-purple);">Segment Summary Table</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 0.5rem; text-align: left;">Segment</th>
+                        <th style="padding: 0.5rem; text-align: left;">Avg. Total Spent</th>
+                        <th style="padding: 0.5rem; text-align: left;">Avg. Purchases</th>
+                        <th style="padding: 0.5rem; text-align: left;">Avg. Recency (days)</th>
+                        <th style="padding: 0.5rem; text-align: left;"># Customers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($segmentSummaries as $summary)
+                    <tr>
+                        <td style="padding: 0.5rem;">{{ $segmentNames[$summary->segment] ?? 'Unsegmented' }}</td>
+                        <td style="padding: 0.5rem;">${{ number_format($summary->avg_total_spent, 2) }}</td>
+                        <td style="padding: 0.5rem;">{{ number_format($summary->avg_purchases, 2) }}</td>
+                        <td style="padding: 0.5rem;">{{ $summary->avg_recency !== null ? number_format($summary->avg_recency, 1) : 'N/A' }}</td>
+                        <td style="padding: 0.5rem;">{{ $summary->count }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
+    </div>
 @endsection 

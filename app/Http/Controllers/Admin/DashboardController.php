@@ -86,14 +86,37 @@ class DashboardController extends Controller
             }
         }
 
+        $segmentCounts = User::where('role', '!=', 'admin')
+            ->select('segment', DB::raw('count(*) as count'))
+            ->groupBy('segment')
+            ->get();
+
+        // Customer segmentation analytics
+        $customerSegmentCounts = \App\Models\Customer::select('segment', DB::raw('count(*) as count'))
+            ->whereNotNull('segment')
+            ->groupBy('segment')
+            ->get();
+
+        // Segment summary statistics
+        $segmentSummaries = \App\Models\Customer::select(
+                'segment',
+                DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
+                DB::raw('AVG((SELECT COUNT(*) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
+                DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->whereNotNull('segment')
+            ->groupBy('segment')
+            ->get();
+
         return view('dashboards.admin.index', [
             'pendingUsers' => $pendingUsers,
             'totalUsers' => $totalUsers,
             'activeUsers' => $activeUsers,
             'roleCounts' => $roleCounts,
             'recentActivities' => $recentActivities,
-            'unreadNotifications' => $unreadNotifications,
-            'allNotifications' => $allNotifications,
+            'customerSegmentCounts' => $customerSegmentCounts,
+            'segmentSummaries' => $segmentSummaries,
         ]);
     }
 
@@ -377,7 +400,7 @@ class DashboardController extends Controller
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();
-
+            
         $recentActivities = User::latest()->take(5)->get();
 
         // User session analytics (bar graph)
@@ -584,7 +607,7 @@ class DashboardController extends Controller
     {
         $disk = Storage::disk(config('backup.backup.destination.disks')[0]);
         $files = $disk->allFiles(config('backup.backup.name'));
-
+    
         $backups = collect($files)
             ->map(function ($file) use ($disk) {
                 return [
@@ -595,7 +618,7 @@ class DashboardController extends Controller
             })
             ->sortByDesc('date')
             ->values();
-
+    
         return view('dashboards.admin.backups', ['backups' => $backups]);
     }
 

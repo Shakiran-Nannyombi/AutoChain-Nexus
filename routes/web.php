@@ -22,8 +22,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\AnalystController;
-use App\Http\Controllers\AnalystReportController;
+
 
 
 // Welcome page
@@ -509,9 +508,8 @@ Route::get('/manufacturer/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'manufacturer') {
         return redirect('/login');
     }
-    
     return view('dashboards.manufacturer.index');
-})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
+});
 
 Route::get('/supplier/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'supplier') {
@@ -541,9 +539,8 @@ Route::get('/analyst/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'analyst') {
         return redirect('/login');
     }
-    
     return view('dashboards.analyst.index');
-})->name('analyst.dashboard')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
+})->name('analyst.dashboard');
 
 // Analyst dashboard routes
 Route::prefix('analyst')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
@@ -642,6 +639,9 @@ Route::post('/admin/login', function (Request $request) {
 Route::get('/customer/dashboard', function () {
     return view('dashboards.customer.index');
 })->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->name('customer.dashboard');
+
+Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'list'])->name('customer.list');
+Route::get('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'show'])->name('customer.show');
 
 Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
