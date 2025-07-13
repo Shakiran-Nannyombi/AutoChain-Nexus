@@ -9,7 +9,7 @@
     <div class="settings-form-grid">
         <div class="form-group">
             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Name') }}</label>
-            <input id="name" name="name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" />
+            <input id="name" name="name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('name', $user->name) }}" required autocomplete="name" />
             @error('name')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -49,6 +49,14 @@
 
         <div class="form-group-full">
             <label for="profile_photo" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Profile Photo') }}</label>
+            <div style="margin-bottom: 1rem;">
+                @php $profilePhoto = $user->profile_photo ?? null; @endphp
+                @if($profilePhoto)
+                    <img src="{{ asset($profilePhoto) }}" alt="Current Profile Photo" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #e0e0e0;">
+                @else
+                    <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #e0e0e0;">
+                @endif
+            </div>
             <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
             @error('profile_photo')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

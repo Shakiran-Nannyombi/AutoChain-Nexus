@@ -3,166 +3,107 @@
 @section('title', 'Profile')
 
 @section('sidebar-content')
-    @if(auth()->user()->role === 'manufacturer')
+    @if(($user instanceof \App\Models\Admin) || ($user->role === 'admin'))
+        @include('dashboards.admin.sidebar')
+    @elseif($user->role === 'manufacturer')
         @include('dashboards.manufacturer.sidebar')
-    @elseif(auth()->user()->role === 'supplier')
+    @elseif($user->role === 'supplier')
         @include('dashboards.supplier.sidebar')
-    @elseif(auth()->user()->role === 'vendor')
+    @elseif($user->role === 'vendor')
         @include('dashboards.vendor.sidebar')
-    @elseif(auth()->user()->role === 'retailer')
+    @elseif($user->role === 'retailer')
         @include('dashboards.retailer.sidebar')
-    @elseif(auth()->user()->role === 'analyst')
+    @elseif($user->role === 'analyst')
         @include('dashboards.analyst.sidebar')
     @endif
 @endsection
 
+@push('styles')
+    @vite(['resources/css/profile.css'])
+@endpush
+
 @section('content')
-<h1 class='page-title' style='margin-bottom: 1.5rem;'>Edit Profile</h1>
-
-<div class="admin-profile-grid">
-    <!-- Left Column: User Info Card -->
-    <div class="profile-user-card">
-        @php
-            $userProfilePhoto = $user->profile_photo;
-            $nameParts = explode(' ', $user->name);
-            $initials = count($nameParts) > 1 
-                ? strtoupper(substr($nameParts[0], 0, 1) . substr(end($nameParts), 0, 1))
-                : strtoupper(substr($user->name, 0, 2));
-        @endphp
+<div class="content-card profile-content-card">
+    <h2 class="profile-page-heading" style="color: var(--primary); font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 0.7rem; margin-bottom: 2.2rem;"><i class="fas fa-user-circle"></i> Profile</h2>
+    <div class="profile-main-row">
+        <!-- Left: Profile Summary Card -->
+        <div class="profile-summary-col">
+            <div class="profile-summary-card">
+                <div class="profile-summary-avatar">
+                    @php $userProfilePhoto = $user->profile_photo; @endphp
         @if($userProfilePhoto)
-            <img src="{{ asset($userProfilePhoto) }}" alt="Profile Photo" class="profile-avatar" style="object-fit:cover; width:100px; height:100px; border-radius:50%; border:2px solid #e0e0e0; margin-bottom:1rem;">
+                        <img src="{{ asset($userProfilePhoto) }}" alt="Profile Photo" class="profile-avatar-lg">
         @else
-            <div class="profile-avatar">{{ $initials }}</div>
+                        <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" class="profile-avatar-lg">
         @endif
-        <h2 class="user-name">{{ $user->name }}</h2>
-        <div class="user-role">{{ ucfirst($user->role) }}</div>
-        <hr style="margin: 1.5rem 0;">
-        <ul class="profile-user-details">
-            <li><i class="fas fa-envelope"></i>{{ $user->email }}</li>
-            <li><i class="fas fa-phone"></i>{{ $user->phone ?? 'N/A' }}</li>
-            <li><i class="fas fa-building"></i>{{ $user->company ?? 'N/A' }}</li>
-            <li><i class="fas fa-map-marker-alt"></i>{{ $user->address ?? 'N/A' }}</li>
-            <li><i class="fas fa-calendar-alt"></i>Joined {{ $user->created_at->format('F Y') }}</li>
-            <li><i class="fas fa-check-circle"></i>Status: {{ ucfirst($user->status) }}</li>
-        </ul>
-    </div>
-
-    <!-- Right Column: Settings Forms -->
-    <div class="profile-settings-forms">
-        <div class="profile-settings-card">
-            <h3><i class="fas fa-user-edit"></i>Profile Information</h3>
-            @include('profile.partials.update-profile-information-form')
+                </div>
+                <div class="profile-summary-info">
+                    <div class="profile-summary-name">{{ $user->name }}</div>
+                    <div class="profile-summary-role">{{ ucfirst($user->role) }}</div>
+                    <div class="profile-summary-location">{{ $user->address ?? 'Location not set' }}</div>
+                </div>
+            </div>
         </div>
-        <div class="password-settings-card" style="margin-top: 2rem;">
-            <h3><i class="fas fa-lock"></i>Update Password</h3>
+        <!-- Right: Info Cards stacked -->
+        <div class="profile-info-col">
+            <div class="profile-section-card">
+                <div class="profile-section-header">
+                    <span>Personal Information</span>
+                    <button class="profile-edit-btn" onclick="document.getElementById('personal-info-form').scrollIntoView({behavior: 'smooth'});"><i class="fas fa-pen"></i> Edit</button>
+                </div>
+                <div class="profile-section-content">
+                    <div class="profile-info-row">
+                        <div><span class="profile-info-label">Full Name</span><span>{{ $user->name }}</span></div>
+                        <div><span class="profile-info-label">Email Address</span><span>{{ $user->email }}</span></div>
+                        <div><span class="profile-info-label">Phone Number</span><span>{{ $user->phone ?? 'N/A' }}</span></div>
+                        <div><span class="profile-info-label">User Role</span><span>{{ ucfirst($user->role) }}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-section-card">
+                <div class="profile-section-header">
+                    <span>Address</span>
+                    <button class="profile-edit-btn" onclick="document.getElementById('personal-info-form').scrollIntoView({behavior: 'smooth'});"><i class="fas fa-pen"></i> Edit</button>
+                </div>
+                <div class="profile-section-content">
+                    <div class="profile-info-row">
+                        <div><span class="profile-info-label">Address</span><span>{{ $user->address ?? 'N/A' }}</span></div>
+                        <div><span class="profile-info-label">Company</span><span>{{ $user->company ?? 'N/A' }}</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Rest of the content (edit forms etc) -->
+    <div class="profile-edit-row">
+        <div class="profile-edit-col">
+            <div class="profile-section-card" id="personal-info-form">
+                <div class="profile-section-header">
+                    <span>Edit Profile Information</span>
+                </div>
+                <div class="profile-section-content">
+            @include('profile.partials.update-profile-information-form')
+                </div>
+            </div>
+        </div>
+        <div class="profile-edit-col">
+            <div class="profile-section-card">
+                <div class="profile-section-header">
+                    <span>Change Password</span>
+                </div>
+                <div class="profile-section-content">
             @include('profile.partials.update-password-form')
         </div>
-        <div class="password-settings-card" style="margin-top: 2rem;">
-            <h3><i class="fas fa-trash-alt"></i>Delete Account</h3>
+            </div>
+            <div class="profile-section-card">
+                <div class="profile-section-header">
+                    <span>Delete Account</span>
+                </div>
+                <div class="profile-section-content">
             @include('profile.partials.delete-user-form')
+                </div>
+            </div>
         </div>
     </div>
 </div>
 @endsection
-
-@push('styles')
-<style>
-    .admin-profile-grid {
-        display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 2rem;
-        align-items: flex-start;
-    }
-
-    .profile-user-card, .profile-settings-card, .password-settings-card {
-        background-color: #fff;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .profile-user-card {
-        text-align: center;
-    }
-
-    .profile-avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        background-color: #eef2ff;
-        color: #4f46e5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        font-weight: 600;
-        margin: 0 auto 1rem;
-    }
-
-    .profile-user-card .user-name {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .profile-user-card .user-role {
-        color: #6b7280;
-        margin-bottom: 1.5rem;
-    }
-
-    .profile-user-details {
-        text-align: left;
-        list-style: none;
-        padding: 0;
-    }
-
-    .profile-user-details li {
-        display: flex;
-        align-items: center;
-        color: #4b5563;
-        margin-bottom: 0.75rem;
-        font-size: 0.9rem;
-    }
-
-    .profile-user-details li i {
-        width: 24px;
-        text-align: center;
-        margin-right: 0.75rem;
-        color: #9ca3af;
-    }
-
-    .profile-settings-card h3, .password-settings-card h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .profile-settings-card h3 i, .password-settings-card h3 i {
-        margin-right: 0.75rem;
-        color: #9ca3af;
-    }
-
-    .settings-form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
-
-    .settings-form-grid .form-group {
-        margin-bottom: 0;
-    }
-
-    .form-group-full {
-        grid-column: 1 / -1;
-    }
-
-    .form-actions-alt .link-cancel {
-        font-size: 14px;
-        color: #6c757d;
-        text-decoration: none;
-        margin-left: 15px;
-    }
-</style>
-@endpush

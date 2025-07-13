@@ -1,11 +1,11 @@
 body { background: #f5f7fa; }
 .chat-outer-card {
     background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border-radius: 0;
+    box-shadow: none;
     display: flex;
-    height: 80vh;
-    margin: 32px auto;
+    height: 100vh;
+    margin: 0 auto;
     max-width: 1100px;
     overflow: hidden;
 }
@@ -151,4 +151,9 @@ body { background: #f5f7fa; }
 .chat-input-area button svg {
     width: 28px;
     height: 28px;
+}
+
+html, body {
+    height: 100vh;
+    overflow-y: hidden;
 } 

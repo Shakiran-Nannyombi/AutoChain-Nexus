@@ -26,7 +26,7 @@ class NewUserNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -48,7 +48,7 @@ class NewUserNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'message' => 'A new user has registered.',
         ];
     }
 }

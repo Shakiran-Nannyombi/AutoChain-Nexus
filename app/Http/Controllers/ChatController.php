@@ -214,7 +214,11 @@ class ChatController extends Controller
         event(new MessageSent($message, \App\Models\User::find($senderId), \App\Models\User::find($receiverId)));
         // Send notification
         \App\Models\User::find($receiverId)->notify(new NewChatMessage($message));
-        return back()->with('success', 'Message sent!');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Message sent!',
+            'data' => $message
+        ]);
     }
 
     public function editMessage(\App\Models\ChatMessage $message)
@@ -230,24 +234,38 @@ class ChatController extends Controller
     {
         $user = auth()->user();
         if ($message->sender_id !== $user->id) {
-            abort(403, 'Unauthorized');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ], 403);
         }
         $request->validate([
             'message' => 'required|string|max:1000',
         ]);
         $message->update(['message' => $request->message]);
-        return redirect()->route('chats.show', $message->chat_id)->with('success', 'Message updated!');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Message updated!',
+            'data' => $message
+        ]);
     }
 
     public function destroyMessage(\App\Models\ChatMessage $message)
     {
         $user = auth()->user();
         if ($message->sender_id !== $user->id) {
-            abort(403, 'Unauthorized');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized'
+            ], 403);
         }
         $chatId = $message->chat_id;
         $message->delete();
-        return redirect()->route('chats.show', $chatId)->with('success', 'Message deleted!');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Message deleted!',
+            'chat_id' => $chatId
+        ]);
     }
 
     public function chat(Request $request)
@@ -291,7 +309,154 @@ class ChatController extends Controller
             })->orWhere(function($q) use ($userId, $selectedUserId) {
                 $q->where('sender_id', $selectedUserId)->where('receiver_id', $userId);
             })->orderBy('created_at')->get();
+            
+            // If no messages exist, provide demo messages based on user roles
+            if ($messages->isEmpty()) {
+                $messages = $this->getDemoMessages($currentUser, $selectedUser);
+            }
         }
         return view('chats.user-chat', compact('users', 'messages', 'selectedUser'));
+    }
+
+    private function getDemoMessages($currentUser, $selectedUser)
+    {
+        $demoMessages = collect();
+        
+        // Generate demo messages based on the roles involved
+        if ($currentUser->role === 'manufacturer' && $selectedUser->role === 'supplier') {
+            // Manufacturer asking supplier about material quality
+            $demoMessages = collect([
+                [
+                    'id' => 1,
+                    'message' => 'Hi! I received the latest batch of steel sheets yesterday, but I noticed some quality issues. The surface finish isn\'t meeting our specifications.',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subHours(3)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+                [
+                    'id' => 2,
+                    'message' => 'I apologize for the inconvenience. Can you send me photos of the affected sheets? I\'ll investigate this immediately and arrange for replacement if needed.',
+                    'sender_id' => $selectedUser->id,
+                    'sender_name' => $selectedUser->name,
+                    'created_at' => now()->subHours(3)->addMinutes(2)->format('Y-m-d H:i'),
+                    'is_me' => false,
+                ],
+                [
+                    'id' => 3,
+                    'message' => 'I\'ve already documented the issues and sent photos to your quality team. The batch number is STL-2024-045. When can I expect the replacement?',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subHours(2)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+                [
+                    'id' => 4,
+                    'message' => 'I\'ve expedited the replacement order. You\'ll receive the new batch by tomorrow morning. I\'ve also added a 10% discount to compensate for the delay.',
+                    'sender_id' => $selectedUser->id,
+                    'sender_name' => $selectedUser->name,
+                    'created_at' => now()->subHours(2)->addMinutes(5)->format('Y-m-d H:i'),
+                    'is_me' => false,
+                ],
+                [
+                    'id' => 5,
+                    'message' => 'That\'s great! Thank you for the quick response. I appreciate the discount too. This will help us stay on schedule with our production.',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subHours(1)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+            ]);
+        } elseif ($currentUser->role === 'retailer' && $selectedUser->role === 'vendor') {
+            // Retailer asking vendor about product availability
+            $demoMessages = collect([
+                [
+                    'id' => 1,
+                    'message' => 'Hi! I need to place a large order for the new XYZ model parts. Do you have sufficient stock for 500 units?',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subHours(2)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+                [
+                    'id' => 2,
+                    'message' => 'Let me check our current inventory. I can confirm we have 450 units in stock, and we\'re expecting a shipment of 200 more units by Friday.',
+                    'sender_id' => $selectedUser->id,
+                    'sender_name' => $selectedUser->name,
+                    'created_at' => now()->subHours(2)->addMinutes(3)->format('Y-m-d H:i'),
+                    'is_me' => false,
+                ],
+                [
+                    'id' => 3,
+                    'message' => 'Perfect! I can take the 450 units now and the remaining 50 when the new shipment arrives. What\'s the best price you can offer for this bulk order?',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subHours(1)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+                [
+                    'id' => 4,
+                    'message' => 'For a bulk order of 500 units, I can offer you a 15% discount off our standard price. This brings the total to $12,750. Would you like me to prepare the order?',
+                    'sender_id' => $selectedUser->id,
+                    'sender_name' => $selectedUser->name,
+                    'created_at' => now()->subHours(1)->addMinutes(2)->format('Y-m-d H:i'),
+                    'is_me' => false,
+                ],
+                [
+                    'id' => 5,
+                    'message' => 'Excellent! That works perfectly for our budget. Please proceed with the order. I\'ll send the purchase order details right away.',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subMinutes(30)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+            ]);
+        } else {
+            // Generic demo conversation
+            $demoMessages = collect([
+                [
+                    'id' => 1,
+                    'message' => 'Hello! I have a question about our recent collaboration. How is everything going on your end?',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subHours(2)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+                [
+                    'id' => 2,
+                    'message' => 'Hi! Everything is going well, thank you for asking. We\'ve been working on improving our processes and I think we\'re making good progress.',
+                    'sender_id' => $selectedUser->id,
+                    'sender_name' => $selectedUser->name,
+                    'created_at' => now()->subHours(2)->addMinutes(5)->format('Y-m-d H:i'),
+                    'is_me' => false,
+                ],
+                [
+                    'id' => 3,
+                    'message' => 'That\'s great to hear! I was wondering if we could discuss some potential improvements to our workflow. Do you have some time this week?',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subHours(1)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+                [
+                    'id' => 4,
+                    'message' => 'Absolutely! I\'m available on Wednesday afternoon or Thursday morning. Which works better for you?',
+                    'sender_id' => $selectedUser->id,
+                    'sender_name' => $selectedUser->name,
+                    'created_at' => now()->subHours(1)->addMinutes(3)->format('Y-m-d H:i'),
+                    'is_me' => false,
+                ],
+                [
+                    'id' => 5,
+                    'message' => 'Wednesday afternoon works perfectly for me. Let\'s say 2 PM? I\'ll send you a calendar invite with the meeting details.',
+                    'sender_id' => $currentUser->id,
+                    'sender_name' => $currentUser->name,
+                    'created_at' => now()->subMinutes(30)->format('Y-m-d H:i'),
+                    'is_me' => true,
+                ],
+            ]);
+        }
+        
+        return $demoMessages;
     }
 } 

@@ -70,15 +70,5 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'auth.shared' => \App\Http\Middleware\EnsureUserIsAuthenticated::class,
         'prevent.back' => \App\Http\Middleware\PreventBackAfterLogout::class,
-        'user_or_admin' => \App\Http\Middleware\UserOrAdmin::class,
-    ];
-
-    /**
-     * Register any other middleware.
-     *
-     * @var array<string, class-string|string>
-     */
-    protected $routeMiddleware = [
-        //
     ];
 } 

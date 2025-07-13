@@ -48,60 +48,50 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
-        'role' => 'required|in:admin,manufacturer,supplier,vendor,retailer,analyst',
     ]);
 
     $email = $request->email;
     $password = $request->password;
-    $role = $request->role;
 
-    // Use the UserMigrationService to authenticate
-    $userMigrationService = new UserMigrationService();
-    $user = $userMigrationService->authenticateUser($email, $password, $role);
-
-    if ($user) {
-        // For non-admin users, ensure they are migrated to role table
-        if ($role !== 'admin' && $user instanceof User) {
-            try {
-                $userMigrationService->migrateUserToRoleTable($user);
-            } catch (\Exception $e) {
-                Log::error("Migration failed for {$email} on login: " . $e->getMessage());
-                return back()->withErrors(['email' => 'An error occurred during account setup. Please contact support.']);
-            }
-            // Log in the user with Laravel Auth
-            Auth::login($user);
-        }
-
-        // Store user info in session
-        session([
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
-            'user_role' => $role
+    // Authenticate user by email and password only
+    $user = \App\Models\User::where('email', $email)->first();
+    if (!$user || !password_verify($password, $user->password)) {
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
         ]);
-
-        // Redirect to role-specific dashboard
-        switch ($role) {
-            case 'admin':
-                return redirect('/admin/dashboard');
-            case 'manufacturer':
-                return redirect('/manufacturer/dashboard');
-            case 'supplier':
-                return redirect('/supplier/dashboard');
-            case 'vendor':
-                return redirect('/vendor/dashboard');
-            case 'retailer':
-                return redirect('/retailer/dashboard');
-            case 'analyst':
-                return redirect('/analyst/dashboard');
-            default:
-                return redirect('/dashboard');
-        }
     }
-
-    return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
+    // Optionally check if user is approved
+    if ($user->status !== 'approved') {
+        return back()->withErrors([
+            'email' => 'Your account is not approved yet.',
+        ]);
+    }
+    // Log in the user with Laravel Auth
+    Auth::login($user);
+    // Store user info in session
+    session([
+        'user_id' => $user->id,
+        'user_name' => $user->name,
+        'user_email' => $user->email,
+        'user_role' => $user->role
     ]);
+    // Redirect to role-specific dashboard
+    switch ($user->role) {
+        case 'admin':
+            return redirect('/admin/dashboard');
+        case 'manufacturer':
+            return redirect('/manufacturer/dashboard');
+        case 'supplier':
+            return redirect('/supplier/dashboard');
+        case 'vendor':
+            return redirect('/vendor/dashboard');
+        case 'retailer':
+            return redirect('/retailer/dashboard');
+        case 'analyst':
+            return redirect('/analyst/dashboard');
+        default:
+            return redirect('/dashboard');
+    }
 });
 
 // Register page
@@ -209,7 +199,7 @@ Route::get('/password.reset', function () {
 })->name('password.request');
 
 // Password reset form
-Route::get('/password.reset/{token}', function ($token) {
+Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password-form', ['token' => $token]);
 })->name('password.reset');
 
@@ -224,222 +214,6 @@ Route::get('/password/enter-token', [ForgotPasswordController::class, 'showToken
 Route::post('/password/verify-token', [ForgotPasswordController::class, 'verifyToken'])->name('password.token.submit');
 
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
-
-// Email verification routes
-Route::middleware('auth')->group(function () {
-    Route::get('verify-email', \App\Http\Controllers\Auth\EmailVerificationPromptController::class)
-        ->name('verification.notice');
-
-    Route::get('verify-email/{id}/{hash}', \App\Http\Controllers\Auth\VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
-
-    Route::post('email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationNotificationController::class, 'store'])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
-
-    Route::get('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
-
-    Route::post('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'store']);
-
-    Route::put('password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('password.update');
-});
-
-// Dashboard (for testing)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
-// Login page
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-// Handle login
-Route::post('/login', function (Illuminate\Http\Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        'role' => 'required|in:admin,manufacturer,supplier,vendor,retailer,analyst',
-    ]);
-
-    $email = $request->email;
-    $password = $request->password;
-    $role = $request->role;
-
-    // Use the UserMigrationService to authenticate
-    $userMigrationService = new UserMigrationService();
-    $user = $userMigrationService->authenticateUser($email, $password, $role);
-
-    if ($user) {
-        // For non-admin users, ensure they are migrated to role table
-        if ($role !== 'admin' && $user instanceof User) {
-            try {
-                $userMigrationService->migrateUserToRoleTable($user);
-            } catch (\Exception $e) {
-                Log::error("Migration failed for {$email} on login: " . $e->getMessage());
-                return back()->withErrors(['email' => 'An error occurred during account setup. Please contact support.']);
-            }
-            // Log in the user with Laravel Auth
-            Auth::login($user);
-        }
-
-        // Store user info in session
-        session([
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
-            'user_role' => $role
-        ]);
-
-        // Redirect to role-specific dashboard
-        switch ($role) {
-            case 'admin':
-                return redirect('/admin/dashboard');
-            case 'manufacturer':
-                return redirect('/manufacturer/dashboard');
-            case 'supplier':
-                return redirect('/supplier/dashboard');
-            case 'vendor':
-                return redirect('/vendor/dashboard');
-            case 'retailer':
-                return redirect('/retailer/dashboard');
-            case 'analyst':
-                return redirect('/analyst/dashboard');
-            default:
-                return redirect('/dashboard');
-        }
-    }
-
-    return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
-    ]);
-});
-
-// Register page
-Route::get('/register', function () {
-    $approvedManufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->get();
-    return view('auth.register', compact('approvedManufacturers'));
-})->name('register');
-
-// Handle registration
-Route::post('/register', function (Illuminate\Http\Request $request) {
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8|confirmed',
-        'role' => 'required|in:manufacturer,supplier,vendor,retailer,analyst',
-        'phone' => 'required|string|max:20',
-        'address' => 'required|string|max:500',
-        'company_name' => 'required|string|max:255',
-        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'supporting_documents' => 'required|array|min:1',
-        'supporting_documents.*' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
-        'manufacturer_id' => 'nullable|exists:users,id',
-    ]);
-
-    // Create user with pending status
-    $user = \App\Models\User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'phone' => $request->phone,
-        'password' => bcrypt($request->password),
-        'role' => $request->role,
-        'company' => $request->company_name,
-        'address' => $request->address,
-        'status' => 'pending',
-        'manufacturer_id' => $request->role === 'vendor' ? $request->manufacturer_id : null,
-    ]);
-
-    // Handle profile picture upload
-    if ($request->hasFile('profile_picture')) {
-        $profilePicture = $request->file('profile_picture');
-        $profilePictureName = time() . '_' . $profilePicture->getClientOriginalName();
-        $profilePicture->storeAs('public/profile_pictures', $profilePictureName);
-        $profilePicturePath = 'profile_pictures/' . $profilePictureName;
-        
-        // Save profile picture to user_documents table
-        \App\Models\UserDocument::create([
-            'user_id' => $user->id,
-            'document_type' => 'profile_picture',
-            'file_path' => $profilePicturePath
-        ]);
-    }
-
-    // Handle supporting documents upload
-    if ($request->hasFile('supporting_documents')) {
-        foreach ($request->file('supporting_documents') as $document) {
-            $documentName = time() . '_' . $document->getClientOriginalName();
-            $document->storeAs('public/supporting_documents', $documentName);
-            $documentPath = 'supporting_documents/' . $documentName;
-            
-            // Save each supporting document to user_documents table
-            \App\Models\UserDocument::create([
-                'user_id' => $user->id,
-                'document_type' => 'supporting_document',
-                'file_path' => $documentPath
-            ]);
-        }
-    }
-
-    // Redirect to status page
-    return redirect()->route('application.status', ['email' => $user->email])
-        ->with('status', 'Registration successful! Your application is now pending approval.');
-});
-
-// Application status page
-Route::get('/status/{email}', function ($email) {
-    $user = \App\Models\User::where('email', $email)->first();
-    
-    if (!$user) {
-        return redirect()->route('login')->with('error', 'User not found.');
-    }
-    
-    return view('auth.application-status', ['user' => $user]);
-})->name('application.status');
-
-// Application status page (alternative URL pattern)
-Route::get('/application-status', function (Request $request) {
-    $email = $request->query('email');
-    
-    if (!$email) {
-        return redirect()->route('login')->with('error', 'Email address is required.');
-    }
-    
-    $user = \App\Models\User::where('email', $email)->first();
-    
-    if (!$user) {
-        return redirect()->route('login')->with('error', 'User not found.');
-    }
-    
-    return view('auth.application-status', ['user' => $user]);
-});
-
-//Reset password page
-Route::get('/password.reset', function () {
-    return view('auth.reset-password');
-})->name('password.request');
-
-// Password reset form
-Route::get('/password.reset/{token}', function ($token) {
-    return view('auth.reset-password-form', ['token' => $token]);
-})->name('password.reset');
-
-// Password token page
-Route::get('/password/enter-token', function () {
-    return view('auth.reset-password-token');
-})->name('password.token');
-
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
-
-Route::get('/password/enter-token', [ForgotPasswordController::class, 'showTokenForm'])->name('password.token');
-Route::post('/password/verify-token', [ForgotPasswordController::class, 'verifyToken'])->name('password.token.submit');
-
-Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Email verification routes
 Route::middleware('auth')->group(function () {
@@ -468,7 +242,214 @@ Route::get('/dashboard', function () {
         return redirect()->route('login');
     }
     return view('dashboard');
-})->name('dashboard');
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->name('dashboard');
+
+
+// Login page
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+// Handle login
+Route::post('/login', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $email = $request->email;
+    $password = $request->password;
+
+    // Authenticate user by email and password only
+    $user = \App\Models\User::where('email', $email)->first();
+    if (!$user || !password_verify($password, $user->password)) {
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+    }
+    // Optionally check if user is approved
+    if ($user->status !== 'approved') {
+        return back()->withErrors([
+            'email' => 'Your account is not approved yet.',
+        ]);
+    }
+    // Log in the user with Laravel Auth
+    Auth::login($user);
+    // Store user info in session
+    session([
+        'user_id' => $user->id,
+        'user_name' => $user->name,
+        'user_email' => $user->email,
+        'user_role' => $user->role
+    ]);
+    // Redirect to role-specific dashboard
+    switch ($user->role) {
+        case 'admin':
+            return redirect('/admin/dashboard');
+        case 'manufacturer':
+            return redirect('/manufacturer/dashboard');
+        case 'supplier':
+            return redirect('/supplier/dashboard');
+        case 'vendor':
+            return redirect('/vendor/dashboard');
+        case 'retailer':
+            return redirect('/retailer/dashboard');
+        case 'analyst':
+            return redirect('/analyst/dashboard');
+        default:
+            return redirect('/dashboard');
+    }
+});
+
+// Register page
+Route::get('/register', function () {
+    $approvedManufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->get();
+    return view('auth.register', compact('approvedManufacturers'));
+})->name('register');
+
+// Handle registration
+Route::post('/register', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+        'role' => 'required|in:manufacturer,supplier,vendor,retailer,analyst',
+        'phone' => 'required|string|max:20',
+        'address' => 'required|string|max:500',
+        'company_name' => 'required|string|max:255',
+        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'supporting_documents' => 'required|array|min:1',
+        'supporting_documents.*' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:4096',
+        'manufacturer_id' => 'nullable|exists:users,id',
+    ]);
+
+    // Create user with pending status
+    $user = \App\Models\User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone' => $request->phone,
+        'password' => bcrypt($request->password),
+        'role' => $request->role,
+        'company' => $request->company_name,
+        'address' => $request->address,
+        'status' => 'pending',
+        'manufacturer_id' => $request->role === 'vendor' ? $request->manufacturer_id : null,
+    ]);
+
+    // Handle profile picture upload
+    if ($request->hasFile('profile_picture')) {
+        $profilePicture = $request->file('profile_picture');
+        $profilePictureName = time() . '_' . $profilePicture->getClientOriginalName();
+        $profilePicture->storeAs('public/profile_pictures', $profilePictureName);
+        $profilePicturePath = 'profile_pictures/' . $profilePictureName;
+        
+        // Save profile picture to user_documents table
+        \App\Models\UserDocument::create([
+            'user_id' => $user->id,
+            'document_type' => 'profile_picture',
+            'file_path' => $profilePicturePath
+        ]);
+    }
+
+    // Handle supporting documents upload
+    if ($request->hasFile('supporting_documents')) {
+        foreach ($request->file('supporting_documents') as $document) {
+            $documentName = time() . '_' . $document->getClientOriginalName();
+            $document->storeAs('public/supporting_documents', $documentName);
+            $documentPath = 'supporting_documents/' . $documentName;
+            
+            // Save each supporting document to user_documents table
+            \App\Models\UserDocument::create([
+                'user_id' => $user->id,
+                'document_type' => 'supporting_document',
+                'file_path' => $documentPath
+            ]);
+        }
+    }
+
+    // Redirect to status page
+    return redirect()->route('application.status', ['email' => $user->email])
+        ->with('status', 'Registration successful! Your application is now pending approval.');
+});
+
+// Application status page
+Route::get('/status/{email}', function ($email) {
+    $user = \App\Models\User::where('email', $email)->first();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'User not found.');
+    }
+    
+    return view('auth.application-status', ['user' => $user]);
+})->name('application.status');
+
+// Application status page (alternative URL pattern)
+Route::get('/application-status', function (Request $request) {
+    $email = $request->query('email');
+    
+    if (!$email) {
+        return redirect()->route('login')->with('error', 'Email address is required.');
+    }
+    
+    $user = \App\Models\User::where('email', $email)->first();
+    
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'User not found.');
+    }
+    
+    return view('auth.application-status', ['user' => $user]);
+});
+
+//Reset password page
+Route::get('/password.reset', function () {
+    return view('auth.reset-password');
+})->name('password.request');
+
+// Password reset form
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password-form', ['token' => $token]);
+})->name('password.reset');
+
+// Password token page
+Route::get('/password/enter-token', function () {
+    return view('auth.reset-password-token');
+})->name('password.token');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+
+Route::get('/password/enter-token', [ForgotPasswordController::class, 'showTokenForm'])->name('password.token');
+Route::post('/password/verify-token', [ForgotPasswordController::class, 'verifyToken'])->name('password.token.submit');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+
+// Email verification routes
+Route::middleware('auth')->group(function () {
+    Route::get('verify-email', \App\Http\Controllers\Auth\EmailVerificationPromptController::class)
+        ->name('verification.notice');
+
+    Route::get('verify-email/{id}/{hash}', \App\Http\Controllers\Auth\VerifyEmailController::class)
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+
+    Route::get('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'show'])
+        ->name('password.confirm');
+
+    Route::post('confirm-password', [\App\Http\Controllers\Auth\ConfirmablePasswordController::class, 'store']);
+
+    Route::put('password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('password.update');
+});
+
+// Dashboard (for testing)
+Route::get('/dashboard', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return view('dashboard');
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->name('dashboard');
 
 // Role-specific dashboard routes
 Route::middleware(['admin', \App\Http\Middleware\PreventBackAfterLogout::class])->prefix('admin')->group(function () {
@@ -485,6 +466,8 @@ Route::middleware(['admin', \App\Http\Middleware\PreventBackAfterLogout::class])
     Route::get('/backups', [DashboardController::class, 'backups'])->name('admin.backups');
     Route::post('/backups/create', [DashboardController::class, 'createBackup'])->name('admin.backups.create');
     Route::get('/chat', [DashboardController::class, 'chat'])->name('admin.chat');
+    Route::get('/chat/messages/{userId}', [App\Http\Controllers\Admin\DashboardController::class, 'getChatMessages'])->name('admin.chat.messages');
+    Route::post('/chat/send', [App\Http\Controllers\Admin\DashboardController::class, 'sendChatMessage'])->name('admin.chat.send');
 
     // User management specific routes
     Route::get('/user-management', [UserController::class, 'index'])->name('admin.user-management');
@@ -563,19 +546,10 @@ Route::get('/analyst/dashboard', function () {
 })->name('analyst.dashboard')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 // Analyst dashboard routes
-Route::prefix('analyst')->group(function () {
+Route::prefix('analyst')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
     Route::get('/dashboard', function () { return view('dashboards.analyst.index'); })->name('analyst.dashboard');
-    Route::get('/reports', function () { return view('dashboards.analyst.reports'); })->name('analyst.reports');
-    Route::get('/analytics', function () { return view('dashboards.analyst.analytics'); })->name('analyst.analytics');
-    Route::get('/sales-analysis', function () { return view('dashboards.analyst.sales-analysis'); })->name('analyst.sales-analysis');
-    Route::get('/inventory-analysis', function () { return view('dashboards.analyst.inventory-analysis'); })->name('analyst.inventory-analysis');
-    Route::get('/trends', function () { return view('dashboards.analyst.trends'); })->name('analyst.trends');
-    Route::get('/reports/sales', function () { return view('dashboards.analyst.sales-reports'); })->name('analyst.sales-reports');
-    Route::get('/reports/inventory', function () { return view('dashboards.analyst.inventory-reports'); })->name('analyst.inventory-reports');
-    Route::get('/reports/performance', function () { return view('dashboards.analyst.performance-reports'); })->name('analyst.performance-reports');
     Route::get('/profile', function () { return view('dashboards.analyst.profile'); })->name('analyst.profile');
     Route::get('/settings', function () { return view('dashboards.analyst.settings'); })->name('analyst.settings');
-    Route::get('/analyst/sales-analysis', [AnalystController::class, 'salesAnalysis'])->name('analyst.sales-analysis');
     Route::get('/analyst/inventory-analysis', [AnalystController::class, 'inventoryAnalysis'])->name('analyst.inventory-analysis');
     Route::get('/analyst/trends', [AnalystController::class, 'trends'])->name('analyst.trends');
     Route::get('/analyst/reports', [AnalystReportController::class, 'index'])->name('analyst.reports');
@@ -667,7 +641,7 @@ Route::post('/admin/login', function (Request $request) {
 
 Route::get('/customer/dashboard', function () {
     return view('dashboards.customer.index');
-})->name('customer.dashboard');
+})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->name('customer.dashboard');
 
 Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -676,7 +650,7 @@ Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(
 });
 
 // Manufacturer dashboard routes
-Route::prefix('manufacturer')->group(function () {
+Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
     Route::get('/dashboard', function () { return view('dashboards.manufacturer.index'); })->name('manufacturer.dashboard');
     Route::get('/production-lines', function () { return view('dashboards.manufacturer.production-lines'); })->name('manufacturer.production-lines');
     Route::get('/machine-health', function () { return view('dashboards.manufacturer.machine-health'); })->name('manufacturer.machine-health');
@@ -692,10 +666,12 @@ Route::prefix('manufacturer')->group(function () {
     Route::get('/demand-prediction', function () { return view('dashboards.manufacturer.demand-prediction'); })->name('manufacturer.demand-prediction');
     Route::get('/chat', function () { return view('dashboards.manufacturer.chat'); })->name('manufacturer.chat');
     Route::get('/settings', function () { return view('dashboards.manufacturer.settings'); })->name('manufacturer.settings');
+    Route::get('/products', function () { return view('dashboards.manufacturer.products'); })->name('manufacturer.products');
+    Route::get('/orders', function () { return view('dashboards.manufacturer.orders'); })->name('manufacturer.orders');
 });
 
 // Supplier dashboard routes
-Route::prefix('supplier')->group(function () {
+Route::prefix('supplier')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
     Route::get('/dashboard', function () { return view('dashboards.supplier.index'); })->name('supplier.dashboard');
     Route::get('/stock-management', [SupplierController::class, 'stockManagement'])->name('supplier.stock-management');
     Route::post('/stock-management/add', [SupplierController::class, 'addStock'])->name('supplier.stock.add');
@@ -707,7 +683,7 @@ Route::prefix('supplier')->group(function () {
 });
 
 // Vendor dashboard routes
-Route::prefix('vendor')->group(function () {
+Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
     Route::get('/dashboard', function () { return view('dashboards.vendor.index'); })->name('vendor.dashboard');
     Route::get('/warehouse', function () { return view('dashboards.vendor.warehouse'); })->name('vendor.warehouse');
     Route::get('/delivery', function () { return view('dashboards.vendor.delivery'); })->name('vendor.delivery');
@@ -716,11 +692,8 @@ Route::prefix('vendor')->group(function () {
     Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
 });
 
-    Route::get('/customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
-    Route::get('/settings', function () { return view('dashboards.customer.settings'); })->name('customer.settings');
-
 // Retailer dashboard routes
-Route::prefix('retailer')->group(function () {
+Route::prefix('retailer')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
     Route::get('/dashboard', [RetailerController::class, 'dashboard'])->name('retailer.dashboard');
 
     Route::get('/stock-overview', [RetailerController::class, 'stockOverview'])->name('retailer.stock-overview');
@@ -740,7 +713,7 @@ Route::prefix('retailer')->group(function () {
 
 // Chat routes
 Route::middleware(['user_or_admin'])->group(function () {
-    Route::resource('chats', ChatController::class);
+    // Route::resource('chats', ChatController::class); // Disabled to prevent redirects and enforce AJAX-only chat
     Route::post('chats/{chat}/messages', [ChatController::class, 'storeMessage'])->name('chats.storeMessage');
     Route::get('chats/order/{orderId}', [ChatController::class, 'getOrderChats'])->name('chats.getOrderChats');
     Route::get('chats/unread', [ChatController::class, 'getUnreadMessages'])->name('chats.getUnreadMessages');
@@ -748,9 +721,5 @@ Route::middleware(['user_or_admin'])->group(function () {
     Route::get('chats/messages/{message}/edit', [ChatController::class, 'editMessage'])->name('chats.editMessage');
     Route::put('chats/messages/{message}', [ChatController::class, 'updateMessage'])->name('chats.updateMessage');
     Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
-});
-
-    Route::middleware(['auth'])->group(function () {
-    Route::get('/user/reports', [AnalystReportController::class, 'userReports'])->name('user.reports');
-    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('user.chat');
+    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('user.chat'); // Enable main chat page
 });

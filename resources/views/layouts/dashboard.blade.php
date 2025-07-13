@@ -210,9 +210,7 @@
                 @if($user && isset($user->profile_photo) && $user->profile_photo)
                     <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
                 @else
-                    <div class="user-avatar" style="margin-left: 0.9rem;">
-                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}{{ strtoupper(substr($user->name ?? 'er', strpos($user->name ?? 'er', ' ')+1, 1)) }}
-                    </div>
+                    <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
                 @endif
                 <div class="user-info" style="display: flex; flex-direction: column; align-items: flex-start;">
                     <div style="font-weight: 600; color: #fff; font-size: 1.05rem; line-height: 1.1;">
@@ -237,31 +235,18 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
+            @php $user = auth('admin')->user() ?? auth()->user(); @endphp
+            @if($user && (get_class($user) === 'App\\Models\\Admin' || $user->role === 'admin'))
+                <!-- Original admin header code restored here -->
             <header class="header">
                 <div class="header-left">
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h1 class="page-title">
-                        @if (request()->is('admin/*'))
                             Admin Dashboard
-                        @elseif (request()->is('supplier/*'))
-                            Supplier Dashboard
-                        @elseif (request()->is('manufacturer/*'))
-                            Manufacturer Dashboard
-                        @elseif (request()->is('vendor/*'))
-                            Vendor Dashboard
-                        @elseif (request()->is('retailer/*'))
-                            Retailer Dashboard
-                        @elseif (request()->is('analyst/*'))
-                            Analyst Dashboard
-                        @else
-                            {{ $title ?? 'Dashboard' }}
-                        @endif
                     </h1>
                 </div>
-                
                 <div class="header-right">
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
@@ -324,7 +309,6 @@
                             @endif
                         </div>
                     </div>
-                    
                     <div class="header-icon user-profile-icon" id="userProfileIcon">
                         <i class="fas fa-user"></i>
                         <div class="dropdown user-dropdown" id="userDropdown">
@@ -333,54 +317,32 @@
                                     @if($user && isset($user->profile_photo) && $user->profile_photo)
                                         <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                                     @else
-                                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                                        <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                                     @endif
                                 </div>
                                 <div>
                                     <div style="font-weight: 600;">{{ $user->name ?? 'User' }}</div>
                                     <div style="font-size: 0.8rem; opacity: 0.8;">
-                                        @if($user && get_class($user) === 'App\\Models\\Admin')
                                             Admin
-                                        @else
-                                            {{ ucfirst($user->role ?? 'User') }}
-                                        @endif
                                     </div>
                                 </div>
                             </div>
                             <a href="{{ route('profile.edit') }}" class="dropdown-item">
                                 <i class="fas fa-user-edit"></i> Profile
                             </a>
-                            @if (request()->is('admin/*'))
                                 <a href="/admin/settings" class="dropdown-item">
                                     <i class="fas fa-cog"></i> Settings
                                 </a>
-                            @elseif (request()->is('supplier/*'))
-                                <a href="{{ route('supplier.settings') }}" class="dropdown-item">
-                                    <i class="fas fa-cog"></i> Settings
-                                </a>
-                            @elseif (request()->is('manufacturer/*'))
-                                <a href="{{ route('manufacturer.settings') }}" class="dropdown-item">
-                                    <i class="fas fa-cog"></i> Settings
-                                </a>
-                            @else
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-cog"></i> Settings
-                                </a>
-                            @endif
-                            @if (request()->is('admin/*'))
                                 <a href="{{ route('admin.logout') }}" class="dropdown-item">
                                     <i class="fas fa-sign-out-alt"></i> Logout
                                 </a>
-                            @else
-                                <a href="{{ route('logout') }}" class="dropdown-item">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </a>
-                            @endif
                         </div>
                     </div>
                 </div>
             </header>
-
+            @else
+                @include('layouts.partials.dashboard-header')
+            @endif
             <!-- Content Area -->
             <div class="content">
                 @yield('content')

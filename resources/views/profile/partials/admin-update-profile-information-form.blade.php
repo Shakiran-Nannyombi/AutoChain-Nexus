@@ -13,7 +13,7 @@
         <div class="settings-form-grid">
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required autofocus />
+                <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required />
             </div>
 
             <div class="form-group">

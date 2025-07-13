@@ -77,7 +77,7 @@ class UserResetPasswordNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'message' => 'A password reset was requested for your account.',
         ];
     }
 }

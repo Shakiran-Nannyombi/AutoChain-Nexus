@@ -1,55 +1,57 @@
-<section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Delete Account') }}
-        </h2>
+<div class="delete-account-card">
+    <div class="delete-account-header" style="color: red;">
+        <span class="delete-account-title"><i class="fas fa-exclamation-triangle warning-icon"></i> Warning </span>
+    </div>
+    <div class="delete-account-warning">
+      Once your account is deleted, <span class="danger-text">all of its resources and data will be permanently deleted.</span> This action cannot be undone. Please download any data or information you wish to retain before proceeding.
+    </div>
+    <button id="showDeleteModalBtn" class="delete-account-btn" style="color: :red;">
+        <i class="fas fa-trash-alt"></i> Delete Account
+    </button>
+</div>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
-        </p>
-    </header>
+<!-- Modal Overlay -->
+<div id="deleteModalOverlay" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i class="fas fa-exclamation-circle modal-warning-icon"></i>
+            <span>Are you sure you want to delete your account?</span>
+        </div>
+        <div class="modal-body">
+            This action is <span class="danger-text">permanent</span> and cannot be undone.<br>
+            Please enter your password to confirm.
+        </div>
+        <div class="modal-actions">
+            <button type="button" id="cancelDeleteModalBtn" class="modal-cancel-btn">Cancel</button>
+            <form method="post" action="{{ route('profile.destroy') }}" style="display: inline;">
+                @csrf
+                @method('delete')
+                <input type="password" name="password" placeholder="Enter your password" required class="modal-password-input" autocomplete="current-password" />
+                <button type="submit" class="modal-delete-btn" style="background: red;">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const showBtn = document.getElementById('showDeleteModalBtn');
+    const modal = document.getElementById('deleteModalOverlay');
+    const cancelBtn = document.getElementById('cancelDeleteModalBtn');
 
-    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
-            @csrf
-            @method('delete')
+    showBtn.addEventListener('click', function() {
+        modal.style.display = 'flex';
+    });
 
-            <h2 class="text-lg font-medium text-gray-900">
-                {{ __('Are you sure you want to delete your account?') }}
-            </h2>
+    cancelBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
 
-            <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-            </p>
-
-            <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
-            </div>
-
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
-
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
-            </div>
-        </form>
-    </x-modal>
-</section>
+    // Optional: Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            modal.style.display = 'none';
+        }
+    });
+});
+</script>
