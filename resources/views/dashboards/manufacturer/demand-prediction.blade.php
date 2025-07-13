@@ -7,19 +7,15 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header-manufacturer">Demand Prediction</h1>
-
+    <div class="content-card">
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-chart-line"></i> Demand Prediction</h2>
     <div class="max-w-2xl mx-auto bg-white p-4 rounded shadow">
         <h1 class="text-xl font-bold mb-4">Forecast Dashboard</h1>
-
         <div class="mb-4">
-            <input id="model" class="border p-2 w-full mb-2"
-                placeholder="Car models (comma-separated, e.g., Camry,Civic) upto 3 models">
-
+                <input id="model" class="border p-2 w-full mb-2" placeholder="Car models (comma-separated, e.g., Camry,Civic) upto 3 models">
             <input id="region" class="border p-2 w-full" placeholder="Region (e.g., Toronto)">
             <button onclick="getForecast()" class="bg-blue-500 text-white px-4 py-2 mt-2">Get Forecast</button>
         </div>
-
         <table class="w-full mt-4 text-sm text-left">
             <thead>
                 <tr>
@@ -30,6 +26,7 @@
             <tbody id="forecast-table" class="text-gray-700"></tbody>
         </table>
         <canvas id="forecastChart" class="mt-6 w-full max-w-xl"></canvas>
+        </div>
     </div>
 @endsection
 
@@ -37,40 +34,32 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     let chart;
-
     async function getForecast() {
         const region = document.getElementById("region").value;
         const models = document.getElementById("model").value.split(',').map(m => m.trim());
-
         const table = document.getElementById("forecast-table");
         table.innerHTML = "";
-
         const datasets = [];
         const labelsSet = new Set();
-
         for (const model of models) {
             const res = await fetch("http://localhost:8001/forecast", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ model, region })
             });
-
             const data = await res.json();
-
             if (data.error) {
                 const row = document.createElement("tr");
                 row.innerHTML = `<td colspan="2">${model} → ${data.error}</td>`;
                 table.appendChild(row);
                 continue;
             }
-
             data.forEach(row => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `<td>${row.Month}</td><td>${row.Predicted}</td>`;
                 table.appendChild(tr);
                 labelsSet.add(row.Month);
             });
-
             datasets.push({
                 label: model,
                 data: data.map(d => d.Predicted),
@@ -78,11 +67,8 @@
                 borderWidth: 1
             });
         }
-
         const labels = Array.from(labelsSet).sort();
-
         if (chart) chart.destroy();
-
         const ctx = document.getElementById("forecastChart").getContext("2d");
         chart = new Chart(ctx, {
             type: 'line',
@@ -101,7 +87,6 @@
             }
         });
     }
-
     function randomColor() {
         const r = Math.floor(100 + Math.random() * 155);
         const g = Math.floor(100 + Math.random() * 155);

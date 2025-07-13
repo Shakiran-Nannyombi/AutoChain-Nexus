@@ -7,11 +7,10 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header-manufacturer">Chat</h1>
-
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-        <div class="p-6 text-gray-900">
-            {{ __("Chat functionality will be implemented here.") }}
+    <div class="content-card">
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-comments"></i> Chat</h2>
+        <div style="text-align:center; color: var(--primary); font-size: 1.1rem; padding: 2rem 0;">
+            Chat functionality will be implemented here.
         </div>
     </div>
 @endsection

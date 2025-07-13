@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('admin_level')->default('standard'); // standard, senior, super
             $table->json('permissions')->nullable(); // Specific permissions for this admin
             $table->string('department')->nullable(); // Which department they manage
+            $table->string('role')->default('admin'); // Add this line
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

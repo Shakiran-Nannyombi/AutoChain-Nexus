@@ -11,9 +11,8 @@
 @endsection
 
 @section('content')
-    <div class="content-card validation-criteria-page">
-        <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-list-alt"></i> Validation Criteria</h2>
-
+<h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-list-alt"></i> Validation Criteria</h2>    
+<div class="content-card validation-criteria-page">
         <div class="validation-grid">
             <!-- Add New Validation Rule -->
             <div class="validation-card">

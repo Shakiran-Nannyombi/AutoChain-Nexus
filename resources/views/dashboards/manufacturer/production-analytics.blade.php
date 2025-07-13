@@ -7,8 +7,9 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header-manufacturer">Production Analytics</h1>
-
+    <div class="content-card">
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-chart-bar"></i> Production Analytics</h2>
+        <!-- All existing content below this line should be inside this content-card div -->
     <!-- Summary Production Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
@@ -68,6 +69,7 @@
                 <h3 class="text-lg font-semibold">Failure Trends Over Time</h3>
                 <div class="mt-4">
                     <canvas id="failureTrendChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>

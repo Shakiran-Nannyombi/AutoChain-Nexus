@@ -7,8 +7,9 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header-manufacturer">Production Reports</h1>
-
+    <div class="content-card">
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-file-alt"></i> Production Reports</h2>
+        <!-- Filter, stats, and table content below -->
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
         <h3 class="text-lg font-semibold mb-4">Filter Reports</h3>
         <form id="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -79,6 +80,7 @@
         <div class="mt-6 flex justify-end space-x-2">
             <button onclick="exportReport('csv')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Export to CSV</button>
             <button onclick="exportReport('pdf')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Export to PDF</button>
+            </div>
         </div>
     </div>
 @endsection

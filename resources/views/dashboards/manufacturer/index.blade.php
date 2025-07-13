@@ -9,48 +9,23 @@
 @section('sidebar-content')
     @include('dashboards.manufacturer.sidebar')
 @endsection
-@section('content')
-    @php
-        $title = 'Manufacturer Control Panel';
-    @endphp
 
+@section('content')
     <div class="content-card">
-        <h2 style="color: var(--deep-purple); margin-bottom: 1.5rem; font-size: 1.8rem;">
+        <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
             <i class="fas fa-industry"></i> Manufacturing Dashboard
         </h2>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-            <!-- Quick Stats -->
+        <!-- Main Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             <div style="background: linear-gradient(135deg, var(--primary), #0d3a07); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-size: 2rem; font-weight: bold;">{{ $activeProducts ?? 0 }}</div>
-                        <div style="opacity: 0.9;">Active Products</div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $activeOrders ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Active Orders</div>
                     </div>
-                    <i class="fas fa-box" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                    <i class="fas fa-shopping-cart" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
             </div>
-
-            <div style="background: linear-gradient(135deg, var(--secondary), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-size: 2rem; font-weight: bold;">{{ $pendingOrders ?? 0 }}</div>
-                        <div style="opacity: 0.9;">Pending Orders</div>
-                    </div>
-                    <i class="fas fa-clock" style="font-size: 2.5rem; opacity: 0.7;"></i>
-                </div>
-            </div>
-
-            <div style="background: linear-gradient(135deg, var(--primary-light), #388e3c); color: white; padding: 1.5rem; border-radius: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-size: 2rem; font-weight: bold;">{{ $productionLines ?? 0 }}</div>
-                        <div style="opacity: 0.9;">Production Lines</div>
-                    </div>
-                    <i class="fas fa-industry" style="font-size: 2.5rem; opacity: 0.7;"></i>
-                </div>
-            </div>
-
             <div style="background: linear-gradient(135deg, var(--accent), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
@@ -60,104 +35,84 @@
                     <i class="fas fa-dollar-sign" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
             </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div style="margin-bottom: 2rem;">
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
-                <i class="fas fa-bolt"></i> Quick Actions
-            </h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                <a href="/manufacturer/products/create" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
-                    <i class="fas fa-plus" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">Add New Product</div>
-                </a>
-                
-                <a href="/manufacturer/orders" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
-                    <i class="fas fa-shopping-cart" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">View Orders</div>
-                </a>
-                
-                <a href="/manufacturer/inventory" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
-                    <i class="fas fa-warehouse" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">Check Inventory</div>
-                </a>
-                
-                <a href="/manufacturer/production" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
-                    <i class="fas fa-industry" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                    <div style="font-weight: 600;">Production Status</div>
-                </a>
-            </div>
-        </div>
-
-        <!-- Recent Orders -->
-        <div style="margin-bottom: 2rem;">
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
-                <i class="fas fa-shopping-cart"></i> Recent Orders
-            </h3>
-            <div style="background: var(--gray); padding: 1rem; border-radius: 8px;">
-                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd;">
-                    <i class="fas fa-clock" style="color: var(--orange);"></i>
+            <div style="background: linear-gradient(135deg, var(--primary-light), #388e3c); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-weight: 600;">Order #12345</div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">50 units - Widget A</div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $inventoryCount ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Inventory</div>
                     </div>
-                    <div style="margin-left: auto; font-size: 0.9rem; opacity: 0.7;">Pending</div>
+                    <i class="fas fa-cubes" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd;">
-                    <i class="fas fa-check-circle" style="color: var(--blue);"></i>
-                    <div>
-                        <div style="font-weight: 600;">Order #12344</div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">100 units - Widget B</div>
                     </div>
-                    <div style="margin-left: auto; font-size: 0.9rem; opacity: 0.7;">Completed</div>
-                </div>
-                
-                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0;">
-                    <i class="fas fa-spinner" style="color: var(--maroon);"></i>
+            <div style="background: linear-gradient(135deg, var(--secondary), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-weight: 600;">Order #12343</div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">75 units - Widget C</div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $activeVendors ?? 0 }}</div>
+                        <div style="opacity: 0.9;">Active Vendors</div>
                     </div>
-                    <div style="margin-left: auto; font-size: 0.9rem; opacity: 0.7;">In Production</div>
+                    <i class="fas fa-users" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
             </div>
         </div>
-
-        <!-- Production Status -->
-        <div>
-            <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
-                <i class="fas fa-industry"></i> Production Status
-            </h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-                <div style="background: var(--white); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--orange);">
-                    <div style="font-weight: 600; color: var(--deep-purple);">Production Line 1</div>
-                    <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem;">Widget A</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="font-size: 0.9rem;">Progress: 75%</div>
-                        <div style="background: var(--orange); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Active</div>
+        <!-- Tabs Section -->
+        <div style="margin-bottom: 2rem;">
+            <div id="customTabs" style="display: flex; gap: 1rem; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem;">
+                <button class="custom-tab-btn active" data-tab="products" style="background: none; border: none; color: var(--primary); font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1.2rem; border-bottom: 3px solid var(--primary); cursor:pointer;">Products</button>
+                <button class="custom-tab-btn" data-tab="orders" style="background: none; border: none; color: var(--primary); font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1.2rem; cursor:pointer;">Orders</button>
+                <button class="custom-tab-btn" data-tab="inventory" style="background: none; border: none; color: var(--primary); font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1.2rem; cursor:pointer;">Inventory</button>
+                <button class="custom-tab-btn" data-tab="vendors" style="background: none; border: none; color: var(--primary); font-weight: 600; font-size: 1.1rem; padding: 0.5rem 1.2rem; cursor:pointer;">Vendors</button>
+            </div>
+            <div id="customTabContent">
+                <div class="custom-tab-content" id="tab-products" style="display:block;">
+                    <div style="max-width: 500px; margin: 2rem auto; background: #f8fafc; padding: 2rem; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align:center;">
+                        <i class="fas fa-box" style="font-size:2.5rem; color:var(--primary); margin-bottom:1rem;"></i>
+                        <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">Product Management</h3>
+                        <p style="color: #444; margin-bottom: 1.5rem;">Easily add, edit, and view all your products in one place. Keep your catalog up to date and organized.</p>
+                        <a href="/manufacturer/products" style="display:inline-block; background: var(--primary); color: #fff; font-weight:600; padding:0.7rem 1.5rem; border:none; border-radius:5px; text-decoration:none; margin-right: 0.5rem;">View Products</a>
+                        <a href="/manufacturer/products/create" style="display:inline-block; background: var(--accent); color: #fff; font-weight:600; padding:0.7rem 1.5rem; border:none; border-radius:5px; text-decoration:none;">Add Product</a>
                     </div>
                 </div>
-                
-                <div style="background: var(--white); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--blue);">
-                    <div style="font-weight: 600; color: var(--deep-purple);">Production Line 2</div>
-                    <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem;">Widget B</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="font-size: 0.9rem;">Progress: 100%</div>
-                        <div style="background: var(--blue); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Complete</div>
+                <div class="custom-tab-content" id="tab-orders" style="display:none;">
+                    <div style="max-width: 500px; margin: 2rem auto; background: #f8fafc; padding: 2rem; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align:center;">
+                        <i class="fas fa-shopping-cart" style="font-size:2.5rem; color:var(--primary); margin-bottom:1rem;"></i>
+                        <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">Order Management</h3>
+                        <p style="color: #444; margin-bottom: 1.5rem;">Track, manage, and fulfill orders efficiently. Stay on top of your sales and order status.</p>
+                        <a href="/manufacturer/orders" style="display:inline-block; background: var(--primary); color: #fff; font-weight:600; padding:0.7rem 1.5rem; border:none; border-radius:5px; text-decoration:none;">View Orders</a>
                     </div>
                 </div>
-                
-                <div style="background: var(--white); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--gray);">
-                    <div style="font-weight: 600; color: var(--deep-purple);">Production Line 3</div>
-                    <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem;">Idle</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="font-size: 0.9rem;">Status: Available</div>
-                        <div style="background: var(--gray); color: var(--deep-purple); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Idle</div>
+                <div class="custom-tab-content" id="tab-inventory" style="display:none;">
+                    <div style="max-width: 500px; margin: 2rem auto; background: #f8fafc; padding: 2rem; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align:center;">
+                        <i class="fas fa-cubes" style="font-size:2.5rem; color:var(--primary); margin-bottom:1rem;"></i>
+                        <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">Inventory Overview</h3>
+                        <p style="color: #444; margin-bottom: 1.5rem;">Monitor your stock levels, raw materials, and finished goods. Ensure you never run out of critical inventory.</p>
+                        <a href="/manufacturer/inventory-status" style="display:inline-block; background: var(--primary); color: #fff; font-weight:600; padding:0.7rem 1.5rem; border:none; border-radius:5px; text-decoration:none;">View Inventory</a>
+                    </div>
+                </div>
+                <div class="custom-tab-content" id="tab-vendors" style="display:none;">
+                    <div style="max-width: 500px; margin: 2rem auto; background: #f8fafc; padding: 2rem; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align:center;">
+                        <i class="fas fa-users" style="font-size:2.5rem; color:var(--primary); margin-bottom:1rem;"></i>
+                        <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">Vendors</h3>
+                        <p style="color: #444; margin-bottom: 1.5rem;">View and manage your active vendors. Build strong supplier relationships for a smooth supply chain.</p>
+                        <a href="/manufacturer/vendors" style="display:inline-block; background: var(--primary); color: #fff; font-weight:600; padding:0.7rem 1.5rem; border:none; border-radius:5px; text-decoration:none;">View Vendors</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.custom-tab-btn');
+            const tabContents = document.querySelectorAll('.custom-tab-content');
+            tabButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    tabButtons.forEach(function(b) { b.classList.remove('active'); b.style.borderBottom = 'none'; });
+                    btn.classList.add('active');
+                    btn.style.borderBottom = '3px solid var(--primary)';
+                    tabContents.forEach(function(content) { content.style.display = 'none'; });
+                    const tabId = btn.getAttribute('data-tab');
+                    document.getElementById('tab-' + tabId).style.display = 'block';
+                });
+            });
+        });
+    </script>
 @endsection 

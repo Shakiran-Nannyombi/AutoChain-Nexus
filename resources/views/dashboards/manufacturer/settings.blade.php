@@ -7,11 +7,10 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header-manufacturer">Settings</h1>
-
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-        <div class="p-6 text-gray-900">
-            {{ __("Settings will be displayed here.") }}
+    <div class="content-card">
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-cog"></i> Settings</h2>
+        <div style="text-align:center; color: var(--primary); font-size: 1.1rem; padding: 2rem 0;">
+            Settings will be displayed here.
         </div>
     </div>
 @endsection

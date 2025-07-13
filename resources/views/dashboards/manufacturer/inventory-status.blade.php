@@ -7,8 +7,9 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header-manufacturer">Inventory Status</h1>
-
+    <div class="content-card">
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-cubes"></i> Inventory Status</h2>
+        <!-- All existing content below this line should be inside this content-card div -->
     <!-- Inventory Summary -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
@@ -20,7 +21,6 @@
             <p class="text-3xl font-bold text-blue-600">{{ $totalRetailerStock }}</p>
         </div>
     </div>
-
     <!-- Supplier Stock Table -->
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
         <h3 class="text-lg font-semibold mb-4">Raw Materials (Supplier Stock)</h3>
@@ -51,7 +51,6 @@
             </table>
         </div>
     </div>
-
     <!-- Retailer Stock Table -->
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
         <h3 class="text-lg font-semibold mb-4">Finished Goods (Retailer Stock)</h3>
@@ -80,6 +79,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 @endsection

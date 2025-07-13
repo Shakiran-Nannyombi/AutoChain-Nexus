@@ -7,9 +7,8 @@
 @endsection
 
 @section('content')
-    <div class="content-card dashboard-page">
-        <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
-        
+<h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-tachometer-alt"></i> Overview</h2>    
+<div class="content-card dashboard-page">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             <!-- Quick Stats -->
             <div style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(37,99,235,0.08);">
