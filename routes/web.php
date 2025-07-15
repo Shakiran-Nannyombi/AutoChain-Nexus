@@ -22,7 +22,9 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\ChatController;
-
+// Add missing analyst controllers
+use App\Http\Controllers\AnalystController;
+use App\Http\Controllers\AnalystReportController;
 
 
 // Welcome page
@@ -688,8 +690,47 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::get('/warehouse', function () { return view('dashboards.vendor.warehouse'); })->name('vendor.warehouse');
     Route::get('/delivery', function () { return view('dashboards.vendor.delivery'); })->name('vendor.delivery');
     Route::get('/tracking', function () { return view('dashboards.vendor.tracking'); })->name('vendor.tracking');
-    Route::get('/notifications', function () { return view('dashboards.vendor.notifications'); })->name('vendor.notifications');
     Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
+    Route::get('/products', function () { return view('dashboards.vendor.products'); })->name('vendor.products');
+    Route::get('/orders', function () { return view('dashboards.vendor.orders'); })->name('vendor.orders');
+    Route::get('/analytics', [\App\Http\Controllers\VendorAnalyticsController::class, 'dashboard'])->name('vendor.analytics');
+    // Vendor chat route (now renders the Blade view directly and passes $users)
+    Route::get('/chats', function () {
+        $currentUser = Auth::user();
+        
+        // Get users from the users table
+        $usersFromUsersTable = \App\Models\User::where('id', '!=', $currentUser->id)
+            ->whereIn('role', ['admin', 'manufacturer', 'retailer'])
+            ->get();
+        
+        // Get admin users from the admins table
+        $adminUsers = \App\Models\Admin::where('is_active', true)
+            ->get()
+            ->map(function($admin) {
+                return (object) [
+                    'id' => 'admin_' . $admin->id, // Prefix to avoid ID conflicts
+                    'name' => $admin->name,
+                    'email' => $admin->email,
+                    'role' => 'admin',
+                    'profile_photo' => $admin->profile_photo,
+                    'company' => $admin->company,
+                    'phone' => $admin->phone,
+                    'address' => $admin->address,
+                    'documents' => collect(), // Empty collection for documents
+                ];
+            });
+        
+        // Combine and shuffle the results
+        $users = $usersFromUsersTable->concat($adminUsers)->shuffle();
+        
+        return view('dashboards.vendor.chat', compact('users'));
+    })->name('chats.index');
+    Route::get('/chats/create', [\App\Http\Controllers\ChatController::class, 'create'])->name('chats.create');
+    Route::get('/chats/{chat}', [\App\Http\Controllers\ChatController::class, 'show'])->name('chats.show');
+    Route::get('/chats/{chat}/edit', [\App\Http\Controllers\ChatController::class, 'edit'])->name('chats.edit');
+    Route::delete('/chats/{chat}', [\App\Http\Controllers\ChatController::class, 'destroy'])->name('chats.destroy');
+    Route::get('/chats/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getChatMessages'])->name('chats.messages');
+    Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
 });
 
 // Retailer dashboard routes
@@ -722,4 +763,8 @@ Route::middleware(['user_or_admin'])->group(function () {
     Route::put('chats/messages/{message}', [ChatController::class, 'updateMessage'])->name('chats.updateMessage');
     Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
     Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('user.chat'); // Enable main chat page
+    Route::get('/chats/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getChatMessages'])->name('chats.getMessages');
+    Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
 });
+
+Route::post('/vendor/orders/create', [App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
