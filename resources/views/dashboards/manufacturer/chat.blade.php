@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Manufacturer Chat')
+@section('title', 'Manufacturer Dashboard')
 
 @push('styles')
     @vite(['resources/css/manufacturer.css', 'resources/css/chat.css'])

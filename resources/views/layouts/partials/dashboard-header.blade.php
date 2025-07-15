@@ -92,6 +92,117 @@
         </div>
     </div>
 </div>
+@elseif($user && $user->role === 'manufacturer')
+<div class="header manufacturer-header">
+    <div class="header-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="dashboard-title" style="color: #0F2C67;">
+            @yield('title', 'Manufacturer Dashboard')
+        </h1>
+    </div>
+    <div class="header-right">
+        <form class="search-bar" method="GET" action="{{ url()->current() }}" id="manufacturerSearchForm" autocomplete="off" style="position:relative;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="manufacturerSearchInput" name="q" placeholder="Search products, orders..." value="{{ request('q') }}" autocomplete="off">
+            <div id="manufacturerSearchDropdown" class="search-results-dropdown" style="display:none;"></div>
+        </form>
+        <div class="header-icon notification-icon" id="manufacturerNotificationIcon">
+            <i class="fas fa-bell"></i>
+            @if(isset($unreadNotifications) && $unreadNotifications->count() > 0)
+                <span class="notification-badge">{{ $unreadNotifications->count() }}</span>
+            @endif
+            <div class="dropdown notification-dropdown" id="manufacturerNotificationDropdown">
+                <div class="dropdown-header">
+                    <span>Notifications</span>
+                    @if(isset($unreadNotifications) && $unreadNotifications->count() > 0)
+                        <span class="unread-count">{{ $unreadNotifications->count() }} new</span>
+                    @endif
+                </div>
+                <div class="notification-list">
+                    @if(isset($allNotifications) && $allNotifications->count() > 0)
+                        @foreach($allNotifications as $notification)
+                            <div class="notification-item {{ $notification->read_at ? '' : 'unread' }}" data-notification-id="{{ $notification->id }}">
+                                <div class="notification-icon">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-message">
+                                        @php
+                                            $data = is_string($notification->data) ? json_decode($notification->data, true) : $notification->data;
+                                            $message = $data['message'] ?? 'New notification';
+                                        @endphp
+                                        {{ $message }}
+                                    </div>
+                                    <div class="notification-time">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        <div class="dropdown-footer">
+                            <a href="#" class="mark-all-read">Mark all as read</a>
+                        </div>
+                    @else
+                        <!-- DEMO NOTIFICATIONS -->
+                        <div class="notification-item unread">
+                            <div class="notification-icon"><i class="fas fa-bell"></i></div>
+                            <div class="notification-content">
+                                <div class="notification-message">New order received from Retailer A</div>
+                                <div class="notification-time">2 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon"><i class="fas fa-cubes"></i></div>
+                            <div class="notification-content">
+                                <div class="notification-message">Inventory below threshold for Product X</div>
+                                <div class="notification-time">10 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon"><i class="fas fa-user-check"></i></div>
+                            <div class="notification-content">
+                                <div class="notification-message">Vendor B approved</div>
+                                <div class="notification-time">1 hour ago</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-footer">
+                            <a href="#" class="mark-all-read">Mark all as read</a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="header-icon user-profile-icon" id="manufacturerUserProfileIcon">
+            <i class="fas fa-user"></i>
+            <div class="dropdown user-dropdown" id="manufacturerUserDropdown">
+                <div class="dropdown-user-info">
+                    <div class="user-avatar" style="background: #e0e0e0; color: #333">
+                        @if($user && isset($user->profile_photo) && $user->profile_photo)
+                            <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                        @else
+                            <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                        @endif
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">{{ $user->name ?? 'Manufacturer' }}</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Manufacturer</div>
+                    </div>
+                </div>
+                <a href="{{ route('profile.edit') }}" class="dropdown-item">
+                    <i class="fas fa-user-edit"></i> Profile
+                </a>
+                <a href="/manufacturer/settings" class="dropdown-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="{{ route('logout') }}" class="dropdown-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 @else
 <div class="dashboard-header">
     <h1 class="dashboard-title">@yield('title', 'Dashboard')</h1>
@@ -102,9 +213,6 @@
         </div>
         @if($user && $user->role === 'admin')
             <i class="fas fa-bell"></i>
-            <i class="fas fa-user"></i>
-        @elseif($user && $user->role === 'manufacturer')
-            <i class="fas fa-industry"></i>
             <i class="fas fa-user"></i>
         @elseif($user && $user->role === 'supplier')
             <i class="fas fa-truck"></i>
@@ -119,7 +227,7 @@
             <i class="fas fa-user"></i>
         @endif
     </div>
-</div> 
+</div>
 @endif 
 <script>
         // Vendor search: filter page content or redirect (placeholder for real search logic)
@@ -198,4 +306,33 @@
         const style = document.createElement('style');
         style.innerHTML = `.search-highlight { background: #e0ffe0 !important; transition: background 0.5s; }`;
         document.head.appendChild(style);
+
+// Manufacturer header dropdown toggle
+const manufacturerNotificationIcon = document.getElementById('manufacturerNotificationIcon');
+const manufacturerUserProfileIcon = document.getElementById('manufacturerUserProfileIcon');
+const manufacturerNotificationDropdown = document.getElementById('manufacturerNotificationDropdown');
+const manufacturerUserDropdown = document.getElementById('manufacturerUserDropdown');
+
+if (manufacturerNotificationIcon && manufacturerNotificationDropdown) {
+    manufacturerNotificationIcon.addEventListener('click', (event) => {
+        event.stopPropagation();
+        manufacturerNotificationDropdown.classList.toggle('open');
+        if (manufacturerUserDropdown) manufacturerUserDropdown.classList.remove('open');
+    });
+}
+if (manufacturerUserProfileIcon && manufacturerUserDropdown) {
+    manufacturerUserProfileIcon.addEventListener('click', (event) => {
+        event.stopPropagation();
+        manufacturerUserDropdown.classList.toggle('open');
+        if (manufacturerNotificationDropdown) manufacturerNotificationDropdown.classList.remove('open');
+    });
+}
+window.addEventListener('click', (event) => {
+    if (manufacturerNotificationDropdown && !manufacturerNotificationIcon.contains(event.target)) {
+        manufacturerNotificationDropdown.classList.remove('open');
+    }
+    if (manufacturerUserDropdown && !manufacturerUserProfileIcon.contains(event.target)) {
+        manufacturerUserDropdown.classList.remove('open');
+    }
+});
 </script> 

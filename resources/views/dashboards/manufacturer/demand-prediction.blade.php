@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Demand Prediction')
+@section('title', 'Manufacturer Dashboard')
 
 @section('sidebar-content')
     @include('dashboards.manufacturer.sidebar')

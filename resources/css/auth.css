@@ -737,3 +737,33 @@ body.auth-page {
     font-weight: bold;
     vertical-align: middle;
     }
+
+@media (max-width: 500px) {
+  .login-form-box,
+  .register-form-box {
+    padding: 1rem 0.5rem !important;
+    max-width: 99vw !important;
+    margin: 1rem auto !important;
+  }
+  .login-title,
+  .register-title,
+  .login-illustration-text,
+  .register-illustration-text {
+    font-size: 1.1rem !important;
+  }
+  .login-navbar,
+  .register-navbar {
+    padding: 0.5rem 0.5rem !important;
+  }
+  .login-split-left,
+  .login-split-right,
+  .register-split-left,
+  .register-split-right {
+    padding: 0.5rem 0.2rem !important;
+  }
+  .login-illustration img,
+  .register-illustration img {
+    max-width: 98vw !important;
+    margin-bottom: 2rem !important;
+  }
+}

@@ -147,7 +147,7 @@
 <script>
 let selectedUserId = null;
 let selectedUserData = null;
-let currentUserId = '{{ auth()->id() ?? session('user_id') }}';
+let currentUserId = '{{ auth()->id() ?? session("user_id") }}';
 
 function formatTimestamp(ts) {
   if (!ts) return '';
@@ -166,7 +166,7 @@ function renderMessages(messages, currentUserId) {
         html += `<div class=\"chat-message-row${msg.is_me ? ' me' : ''}\" style=\"margin-bottom:10px; position: relative;\" data-message-id=\"${messageId}\" data-db-id=\"${msg.id}\">` +
             (msg.is_me ? '' : `<div class=\"avatar\">${msg.user_initial || msg.sender_name?.charAt(0) || ''}</div>`) +
             `<div class=\"chat-message${msg.is_me ? ' me' : ''}\" style=\"${msg.is_me ? 'background:#2563eb;color:#fff;' : ''} position: relative;\">` +
-            `<div class=\"message-content\">${msg.message.replace(/(@\\w+)/g, '<span style=\\'color:#22c55e;font-weight:600;\\'>$1<\\/span>')}</div>` +
+            `<div class="message-content">${msg.message.replace(/(@\w+)/g, '<span style=\'color:#22c55e;font-weight:600;\'>$1</span>')}</div>` +
             `<div class=\"meta\" style=\"font-size:0.85rem;color:#94a3b8;margin-top:6px;text-align:right;\">${msg.is_me ? 'You' : msg.sender_name}, ${formatTimestamp(msg.created_at)}</div>` +
             (msg.is_me ? `<div class=\"message-actions\" style=\"position: absolute; top: 5px; right: 5px;\">` +
                 `<button type=\"button\" class=\"edit-message-btn\" data-db-id=\"${msg.id}\" style=\"background: none; border: none; color: inherit; font-size: 0.8rem; margin-right: 5px; cursor: pointer;\" title=\"Edit\">✏️</button>` +
