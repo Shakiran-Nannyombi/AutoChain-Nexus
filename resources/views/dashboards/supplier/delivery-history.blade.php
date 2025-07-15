@@ -12,6 +12,12 @@
         <i class="fas fa-truck-loading"></i> Delivery History
     </h2>
 
+    @if(session('success'))
+        <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
         @forelse($deliveries as $delivery)
             <div style="background: white; border-left: 5px solid var(--deep-purple); padding: 1rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
