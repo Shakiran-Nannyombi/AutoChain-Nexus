@@ -98,7 +98,7 @@
         <button class="mobile-menu-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
         </button>
-        <h1 class="dashboard-title" style="color: #0F2C67;">
+        <h1 class="dashboard-title" style="color: #0F2C67; font-size: 2.1rem; font-weight: 700;">
             @yield('title', 'Manufacturer Dashboard')
         </h1>
     </div>

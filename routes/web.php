@@ -658,18 +658,21 @@ Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterL
     Route::get('/machine-health', function () { return view('dashboards.manufacturer.machine-health'); })->name('manufacturer.machine-health');
     Route::get('/quality-control', function () { return view('dashboards.manufacturer.quality-control'); })->name('manufacturer.quality-control');
     Route::get('/maintenance', function () { return view('dashboards.manufacturer.maintenance'); })->name('manufacturer.maintenance');
-    Route::get('/inventory-status', function () { return view('dashboards.manufacturer.inventory-status'); })->name('manufacturer.inventory-status');
+    Route::get('/inventory-status', [App\Http\Controllers\ManufacturerDashboardController::class, 'inventory_status'])->name('manufacturer.inventory-status');
     Route::get('/scheduling', function () { return view('dashboards.manufacturer.scheduling'); })->name('manufacturer.scheduling');
-    Route::get('/checklists', function () { return view('dashboards.manufacturer.checklists'); })->name('manufacturer.checklists');
-    Route::get('/material-receipt', function () { return view('dashboards.manufacturer.material-receipt'); })->name('manufacturer.material-receipt');
+    Route::get('/checklists', [\App\Http\Controllers\ManufacturerDashboardController::class, 'checklists'])->name('manufacturer.checklists');
+    Route::post('/checklists/send', [\App\Http\Controllers\ManufacturerDashboardController::class, 'sendChecklist'])->name('manufacturer.checklists.send');
+    Route::get('/material-receipt', [\App\Http\Controllers\ManufacturerDashboardController::class, 'material_receipt'])->name('manufacturer.material-receipt');
     Route::get('/workflow', function () { return view('dashboards.manufacturer.workflow'); })->name('manufacturer.workflow');
-    Route::get('/production-analytics', function () { return view('dashboards.manufacturer.production-analytics'); })->name('manufacturer.production-analytics');
-    Route::get('/production-reports', function () { return view('dashboards.manufacturer.production-reports'); })->name('manufacturer.production-reports');
+    Route::get('/production-analytics', [App\Http\Controllers\ManufacturerDashboardController::class, 'production_analytics'])->name('manufacturer.production-analytics');
+    Route::get('/production-reports', [App\Http\Controllers\ManufacturerDashboardController::class, 'production_reports'])->name('manufacturer.production-reports');
     Route::get('/demand-prediction', function () { return view('dashboards.manufacturer.demand-prediction'); })->name('manufacturer.demand-prediction');
-    Route::get('/chat', function () { return view('dashboards.manufacturer.chat'); })->name('manufacturer.chat');
+    Route::get('/chat', [App\Http\Controllers\ManufacturerDashboardController::class, 'chat'])->name('manufacturer.chat');
     Route::get('/settings', function () { return view('dashboards.manufacturer.settings'); })->name('manufacturer.settings');
     Route::get('/products', function () { return view('dashboards.manufacturer.products'); })->name('manufacturer.products');
-    Route::get('/orders', function () { return view('dashboards.manufacturer.orders'); })->name('manufacturer.orders');
+    Route::get('/orders', [\App\Http\Controllers\ManufacturerDashboardController::class, 'orders'])->name('manufacturer.orders');
+    Route::post('/orders/remake/{id}', [\App\Http\Controllers\ManufacturerDashboardController::class, 'remakeOrder'])->name('manufacturer.remake.order');
+    Route::post('/material-receipt/delivered/{id}', [\App\Http\Controllers\ManufacturerDashboardController::class, 'orderDelivered'])->name('manufacturer.order.delivered');
 });
 
 // Supplier dashboard routes
