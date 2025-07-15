@@ -131,5 +131,23 @@ public function store(Request $request)
         return view('dashboards.shared.user-reports', compact('reports'));
     }
 
+    // --- Add these methods for analyst report routes ---
+    public function salesReports()
+    {
+        // TODO: Implement actual logic and view
+        return view('dashboards.analyst.sales-reports');
+    }
+
+    public function inventoryReports()
+    {
+        // TODO: Implement actual logic and view
+        return view('dashboards.analyst.inventory-reports');
+    }
+
+    public function performanceReports()
+    {
+        // TODO: Implement actual logic and view
+        return view('dashboards.analyst.performance-reports');
+    }
 }
 

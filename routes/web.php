@@ -549,8 +549,33 @@ Route::prefix('analyst')->middleware(\App\Http\Middleware\PreventBackAfterLogout
     Route::get('/analyst/reports', [AnalystReportController::class, 'index'])->name('analyst.reports');
     Route::get('/analyst/reports/generate', [AnalystReportController::class, 'create'])->name('analyst.reports.create');
     Route::post('/analyst/reports/generate', [AnalystReportController::class, 'store'])->name('analyst.reports.store');
-
-
+    Route::get('/analyst/analytics', [AnalystController::class, 'dashboard'])->name('analyst.analytics');
+    Route::get('/analyst/sales-analysis', [AnalystController::class, 'salesAnalysis'])->name('analyst.sales-analysis');
+    Route::get('/analyst/reports/sales', [AnalystReportController::class, 'salesReports'])->name('analyst.sales-reports');
+    Route::get('/analyst/reports/inventory', [AnalystReportController::class, 'inventoryReports'])->name('analyst.inventory-reports');
+    Route::get('/analyst/reports/performance', [AnalystReportController::class, 'performanceReports'])->name('analyst.performance-reports');
+    Route::get('/analyst/chat', function () {
+        $userId = session('user_id') ?? Auth::id();
+        $manufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->where('id', '!=', $userId)->get();
+        $adminUsers = \App\Models\Admin::where('is_active', true)
+            ->get()
+            ->map(function($admin) {
+                return (object) [
+                    'id' => 'admin_' . $admin->id,
+                    'name' => $admin->name,
+                    'email' => $admin->email,
+                    'role' => 'admin',
+                    'profile_photo' => $admin->profile_photo ?? null,
+                    'company' => $admin->company ?? null,
+                    'phone' => $admin->phone ?? null,
+                    'address' => $admin->address ?? null,
+                    'documents' => collect(),
+                ];
+            });
+        $users = $manufacturers->concat($adminUsers);
+        return view('dashboards.analyst.chat', compact('users'));
+    })->name('analyst.chat');
+    Route::get('/analyst/chat/messages/{userId}', [App\Http\Controllers\AnalystController::class, 'messages']);
 });
 
 // Logout route
@@ -683,6 +708,29 @@ Route::prefix('supplier')->middleware(\App\Http\Middleware\PreventBackAfterLogou
     Route::get('/delivery-history', [SupplierController::class, 'deliveryHistory'])->name('supplier.delivery-history');
     Route::get('/notifications', function () { return view('dashboards.supplier.notifications'); })->name('supplier.notifications');
     Route::get('/settings', function () { return view('dashboards.supplier.settings'); })->name('supplier.settings');
+    // Supplier chat route
+    Route::get('/chat', function () {
+        $userId = session('user_id') ?? Auth::id();
+        $users = \App\Models\User::where('role', 'manufacturer')->where('id', '!=', $userId)->get();
+        // Add admin users from the admins table
+        $adminUsers = \App\Models\Admin::where('is_active', true)
+            ->get()
+            ->map(function($admin) {
+                return (object) [
+                    'id' => 'admin_' . $admin->id,
+                    'name' => $admin->name,
+                    'email' => $admin->email,
+                    'role' => 'admin',
+                    'profile_photo' => $admin->profile_photo,
+                    'company' => $admin->company,
+                    'phone' => $admin->phone,
+                    'address' => $admin->address,
+                    'documents' => collect(),
+                ];
+            });
+        $users = $users->concat($adminUsers);
+        return view('dashboards.supplier.chat', compact('users'));
+    })->name('supplier.chat');
 });
 
 // Vendor dashboard routes

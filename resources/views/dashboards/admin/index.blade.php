@@ -164,5 +164,5 @@ $recentActivities) && $recentActivities->count())
         </div>
         @endif
     </div>
-</div>
+    </div>
 @endsection 

@@ -50,70 +50,70 @@
       </div>
       <div id="chat-messages-area" class="chat-messages" style="flex: 1; overflow-y: auto; padding: 2rem 2rem 1rem 2rem; background: #f8fafc; border-radius: 0 0 18px 18px;">
         <div id="welcome-message" style="margin-bottom: 2.5rem; text-align: center;">
-            <svg width="80" height="80" fill="none" viewBox="0 0 24 24"><path fill="#166534" d="M12 3C7.03 3 3 6.58 3 11c0 1.61.62 3.09 1.7 4.36-.23.81-.82 2.13-1.65 3.13-.18.22-.21.53-.07.78.13.25.41.37.68.29 1.52-.44 3.13-1.18 4.13-1.7C9.47 18.41 10.7 19 12 19c4.97 0 9-3.58 9-8s-4.03-8-9-8Z"/></svg>
-            <h1 style="color: #166534; font-size: 2.5rem; font-weight: 700; margin-bottom: 1.2rem; text-align: center;">Welcome to Manufacturer Chat</h1>
-            <div style="font-size: 1.25rem; color: #222; margin-bottom: 2.2rem; max-width: 520px; margin-left: auto; margin-right: auto; text-align: center;">
+          <svg width="80" height="80" fill="none" viewBox="0 0 24 24"><path fill="#166534" d="M12 3C7.03 3 3 6.58 3 11c0 1.61.62 3.09 1.7 4.36-.23.81-.82 2.13-1.65 3.13-.18.22-.21.53-.07.78.13.25.41.37.68.29 1.52-.44 3.13-1.18 4.13-1.7C9.47 18.41 10.7 19 12 19c4.97 0 9-3.58 9-8s-4.03-8-9-8Z"/></svg>
+          <h1 style="color: #166534; font-size: 2.5rem; font-weight: 700; margin-bottom: 1.2rem; text-align: center;">Welcome to Manufacturer Chat</h1>
+          <div style="font-size: 1.25rem; color: #222; margin-bottom: 2.2rem; max-width: 520px; margin-left: auto; margin-right: auto; text-align: center;">
                 Here you can communicate directly with suppliers or vendors. Select a user from the list on the left to view your conversation or start a new chat.
-            </div>
-            <div style="text-align: left; display: inline-block; margin-bottom: 2.2rem;">
-                <div style="color: #f97a00; font-size: 1.1rem; margin-bottom: 0.7rem;"><i class="fas fa-users"></i> Click a user to open your chat history.</div>
-                <div style="color: #166534; font-size: 1.1rem; margin-bottom: 0.7rem;"><i class="fas fa-paper-plane"></i> Send messages, share updates, or ask for support in real time.</div>
-                <div style="color: #fbbf24; font-size: 1.1rem; margin-bottom: 0.7rem;"><i class="fas fa-info-circle"></i> All conversations are private and secure.</div>
-            </div>
-            <div style="color: #f97a00; font-size: 1.15rem; margin-top: 2.2rem; text-align: center;">Need help? Use the chat to connect with your partners efficiently!</div>
+          </div>
+          <div style="text-align: left; display: inline-block; margin-bottom: 2.2rem;">
+            <div style="color: #f97a00; font-size: 1.1rem; margin-bottom: 0.7rem;"><i class="fas fa-users"></i> Click a user to open your chat history.</div>
+            <div style="color: #166534; font-size: 1.1rem; margin-bottom: 0.7rem;"><i class="fas fa-paper-plane"></i> Send messages, share updates, or ask for support in real time.</div>
+            <div style="color: #fbbf24; font-size: 1.1rem; margin-bottom: 0.7rem;"><i class="fas fa-info-circle"></i> All conversations are private and secure.</div>
+          </div>
+          <div style="color: #f97a00; font-size: 1.15rem; margin-top: 2.2rem; text-align: center;">Need help? Use the chat to connect with your partners efficiently!</div>
         </div>
         <div id="demo-chats" style="display:none;">
             <!-- Demo chat for Supplier -->
             <div class="demo-chat" data-role="supplier" style="display:none;">
-                <div style="display: flex; align-items: flex-end; margin-bottom: 1.2rem;">
+            <div style="display: flex; align-items: flex-end; margin-bottom: 1.2rem;">
                     <div style="margin-right: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">S</span></div>
                     <div style="background: #e3f0ff; color: #166534; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                         Hi, can you confirm the delivery schedule for the steel order #STL-2024-045?
                         <div style="font-size: 0.95rem; color: #6b7280; margin-top: 0.5rem; text-align: right;">Supplier, 09:30</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: flex-end; justify-content: flex-end; margin-bottom: 1.2rem;">
-                    <div style="background: #2563eb; color: #fff; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-end; justify-content: flex-end; margin-bottom: 1.2rem;">
+              <div style="background: #2563eb; color: #fff; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                         Yes, the shipment will be ready by Monday. Please check the attached documents for batch details.
                         <div style="font-size: 0.95rem; color: #dbeafe; margin-top: 0.5rem; text-align: right;">You, 09:32</div>
-                    </div>
-                    <div style="margin-left: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">M</span></div>
-                </div>
+              </div>
+              <div style="margin-left: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">M</span></div>
             </div>
-            <!-- Demo chat for Vendor -->
-            <div class="demo-chat" data-role="vendor" style="display:none;">
-                <div style="display: flex; align-items: flex-end; margin-bottom: 1.2rem;">
-                    <div style="margin-right: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">V</span></div>
-                    <div style="background: #e3f0ff; color: #166534; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          </div>
+          <!-- Demo chat for Vendor -->
+          <div class="demo-chat" data-role="vendor" style="display:none;">
+            <div style="display: flex; align-items: flex-end; margin-bottom: 1.2rem;">
+              <div style="margin-right: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">V</span></div>
+              <div style="background: #e3f0ff; color: #166534; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                         Hello, do you have the updated price list for Q3 components?
                         <div style="font-size: 0.95rem; color: #6b7280; margin-top: 0.5rem; text-align: right;">Vendor, 11:10</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: flex-end; justify-content: flex-end; margin-bottom: 1.2rem;">
-                    <div style="background: #2563eb; color: #fff; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-end; justify-content: flex-end; margin-bottom: 1.2rem;">
+              <div style="background: #2563eb; color: #fff; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                         Yes, I have just sent it to your email. Let me know if you have any questions about the new terms.
                         <div style="font-size: 0.95rem; color: #dbeafe; margin-top: 0.5rem; text-align: right;">You, 11:12</div>
-                    </div>
-                    <div style="margin-left: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">M</span></div>
-                </div>
+              </div>
+              <div style="margin-left: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">M</span></div>
             </div>
+          </div>
             <!-- Demo chat for Admin -->
             <div class="demo-chat" data-role="admin" style="display:none;">
-                <div style="display: flex; align-items: flex-end; margin-bottom: 1.2rem;">
+            <div style="display: flex; align-items: flex-end; margin-bottom: 1.2rem;">
                     <div style="margin-right: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #fbbf24; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">A</span></div>
                     <div style="background: #fff7e6; color: #b35400; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                         Hello! Please update your compliance documents by Friday for the upcoming audit.
                         <div style="font-size: 0.95rem; color: #b35400; margin-top: 0.5rem; text-align: right;">Admin, 08:00</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: flex-end; justify-content: flex-end; margin-bottom: 1.2rem;">
-                    <div style="background: #2563eb; color: #fff; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+              </div>
+            </div>
+            <div style="display: flex; align-items: flex-end; justify-content: flex-end; margin-bottom: 1.2rem;">
+              <div style="background: #2563eb; color: #fff; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                         Will do, thanks for the reminder! Let me know if there are any new requirements.
                         <div style="font-size: 0.95rem; color: #dbeafe; margin-top: 0.5rem; text-align: right;">You, 08:01</div>
-                    </div>
-                    <div style="margin-left: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">M</span></div>
-                </div>
+              </div>
+              <div style="margin-left: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">M</span></div>
             </div>
+          </div>
         </div>
       </div>
       <form id="chat-input-form" class="chat-input-area" style="border-radius: 0 0 18px 18px; display: none; padding: 1rem; background: #fff; border-top: 1px solid #e5e7eb; position: sticky; bottom: 0; z-index: 10; box-shadow: 0 -2px 8px rgba(0,0,0,0.03);">
@@ -164,7 +164,7 @@
 <script>
 let selectedUserId = null;
 let selectedUserData = null;
-let currentUserId = '{{ auth()->id() ?? session('user_id') }}';
+let currentUserId = '{{ auth()->id() ?? session("user_id") }}';
 
 function formatTimestamp(ts) {
   if (!ts) return '';
@@ -299,13 +299,13 @@ const chatMessagesArea = document.getElementById('chat-messages-area');
 
 if (userList) {
   userList.addEventListener('click', function(e) {
-    const link = e.target.closest('.user-chat-link');
-    if (!link) return;
-    e.preventDefault();
+  const link = e.target.closest('.user-chat-link');
+  if (!link) return;
+  e.preventDefault();
     const userId = link.getAttribute('data-user-id');
-    const role = link.closest('li').getAttribute('data-role');
-    const name = link.querySelector('.user-name')?.textContent || '';
-    const avatarEl = link.querySelector('.avatar');
+  const role = link.closest('li').getAttribute('data-role');
+  const name = link.querySelector('.user-name')?.textContent || '';
+  const avatarEl = link.querySelector('.avatar');
     selectedUserId = userId;
     // Show header and input
     if (chatHeaderArea) chatHeaderArea.style.display = 'flex';
@@ -314,8 +314,8 @@ if (userList) {
     if (document.getElementById('chat-header-name')) document.getElementById('chat-header-name').textContent = name;
     const headerAvatar = document.getElementById('chat-header-avatar');
     if (headerAvatar) {
-      headerAvatar.innerHTML = '';
-      if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
+    headerAvatar.innerHTML = '';
+    if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
     }
     if (document.getElementById('chat-header-status')) document.getElementById('chat-header-status').textContent = 'Online';
     // Fetch real messages
@@ -335,9 +335,9 @@ if (userList) {
             demoChats.style.display = '';
             welcomeMessage.style.display = 'none';
             demoChats.querySelector('.demo-chat[data-role="' + role + '"]').style.display = '';
-          } else {
-            demoChats.style.display = 'none';
-            welcomeMessage.style.display = '';
+  } else {
+    demoChats.style.display = 'none';
+    welcomeMessage.style.display = '';
           }
         }
       })
@@ -386,7 +386,7 @@ if (chatInputForm) {
     .catch(() => {
       alert('Error sending message.');
     });
-  });
+});
 }
 // Emoji picker logic
 emojiBtn?.addEventListener('click', function() {

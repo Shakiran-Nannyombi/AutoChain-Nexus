@@ -49,7 +49,9 @@
             <div style="background: linear-gradient(135deg, var(--blue), var(--light-cyan)); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-size: 2rem; font-weight: bold;">{{ $trends ?? 0 }}</div>
+                        <div style="font-size: 2rem; font-weight: bold;">
+                            {{ isset($trends) && is_array($trends) ? count($trends) : ($trends ?? 0) }}
+                        </div>
                         <div style="opacity: 0.9;">Trends Identified</div>
                     </div>
                     <i class="fas fa-trending-up" style="font-size: 2.5rem; opacity: 0.7;"></i>
