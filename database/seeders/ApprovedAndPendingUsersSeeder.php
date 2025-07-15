@@ -11,6 +11,22 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     public function run()
     {
         $users = [
+            // Admin user (for chat visibility)
+            [
+                'name' => 'System Admin',
+                'email' => 'admin@autochain.com',
+                'password' => Hash::make('adminpassword'),
+                'role' => 'admin',
+                'status' => 'approved',
+                'company' => 'AutoChain HQ',
+                'phone' => '+1-555-0000',
+                'address' => '1 Admin Plaza, HQ City',
+                'profile_photo' => 'images/profile/admin.jpeg',
+                'supporting_documents' => json_encode([]),
+                'auto_visit_scheduled' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
             // Vendors (examples from user)
             [
                 'name' => 'Jennifer Lee',

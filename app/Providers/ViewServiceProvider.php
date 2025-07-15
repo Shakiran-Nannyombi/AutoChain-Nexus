@@ -19,7 +19,7 @@ class ViewServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer('layouts.dashboard', function ($view) {
+        View::composer('*', function ($view) {
             $user = Auth::guard('admin')->user() ?? Auth::user();
             if ($user instanceof Model && method_exists($user, 'notifications')) {
                 $unreadNotifications = $user->notifications()->whereNull('read_at')->take(5)->get();
