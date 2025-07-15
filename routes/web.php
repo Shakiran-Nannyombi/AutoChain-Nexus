@@ -735,7 +735,7 @@ Route::prefix('supplier')->middleware(\App\Http\Middleware\PreventBackAfterLogou
 
 // Vendor dashboard routes
 Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
-    Route::get('/dashboard', function () { return view('dashboards.vendor.index'); })->name('vendor.dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\VendorDashboardController::class, 'index'])->name('vendor.dashboard');
     Route::get('/warehouse', function () { return view('dashboards.vendor.warehouse'); })->name('vendor.warehouse');
     Route::get('/delivery', function () { return view('dashboards.vendor.delivery'); })->name('vendor.delivery');
     Route::get('/tracking', function () { return view('dashboards.vendor.tracking'); })->name('vendor.tracking');
