@@ -9,7 +9,7 @@ class CustomersTableSeeder extends Seeder
 {
     public function run()
     {
-        Customer::insert([
+        $customers = [
             [ 'name' => 'Auto World Ltd.', 'email' => 'contact@autoworld.com', 'phone' => '0700123456', 'address' => '101 Motorway Ave', 'segment' => 2 ], // High Value
             [ 'name' => 'CarZone Dealers', 'email' => 'info@carzone.com', 'phone' => '0700234567', 'address' => '202 Highway Blvd', 'segment' => 1 ], // Occasional
             [ 'name' => 'Speedy Repairs', 'email' => 'service@speedyrepairs.com', 'phone' => '0700345678', 'address' => '303 Garage Rd', 'segment' => 3 ], // At Risk
@@ -20,6 +20,9 @@ class CustomersTableSeeder extends Seeder
             [ 'name' => 'Elite Auto', 'email' => 'elite@auto.com', 'phone' => '0700890123', 'address' => '808 Elite Blvd', 'segment' => 1 ], // Occasional
             [ 'name' => 'Urban Motors', 'email' => 'urban@motors.com', 'phone' => '0700901234', 'address' => '909 Urban Ave', 'segment' => 3 ], // At Risk
             [ 'name' => 'Classic Cars', 'email' => 'classic@cars.com', 'phone' => '0701012345', 'address' => '1010 Classic Rd', 'segment' => 2 ], // High Value
-        ]);
+        ];
+        foreach ($customers as $data) {
+            Customer::firstOrCreate(['email' => $data['email']], $data);
+        }
     }
 } 

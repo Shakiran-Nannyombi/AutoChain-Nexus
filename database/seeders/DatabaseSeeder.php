@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             ProductsTableSeeder::class,
             CustomersTableSeeder::class,
             PurchasesTableSeeder::class,
+            ManufacturerOrdersSeeder::class,
         ]);
 
         $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];

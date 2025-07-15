@@ -23,7 +23,7 @@ class AdminUserSeeder extends Seeder
                 'phone' => '0123456789',
                 'company' => 'Autochain Nexus',
                 'address' => 'Kampala, Uganda',
-                'role' => 'Admin',
+                // 'role' => 'Admin',
                 'admin_level' => 'super',
                 'permissions' => json_encode(['all']),
                 'department' => 'Administration',
