@@ -11,4 +11,14 @@ class ChecklistRequest extends Model
     protected $casts = [
         'materials_requested' => 'array',
     ];
+
+    public function supplier()
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
+
+    public function manufacturer()
+    {
+        return $this->belongsTo(User::class, 'manufacturer_id');
+    }
 }

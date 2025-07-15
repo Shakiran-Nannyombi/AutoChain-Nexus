@@ -7,17 +7,74 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\SupplierStock;
 use App\Models\RetailerStock;
+use App\Models\ChecklistRequest;
+use App\Models\VendorOrder;
+use Illuminate\Support\Facades\Auth;
 
 class ManufacturerDashboardController extends Controller
 {
     public function chat()
     {
-        return view('dashboards.manufacturer.chat');
+        $userId = session('user_id') ?? Auth::id();
+        // Manufacturer can chat with suppliers, vendors, and admin
+        $users = \App\Models\User::whereIn('role', ['supplier', 'vendor'])
+            ->where('id', '!=', $userId)
+            ->get();
+        // Add admin users from the admins table
+        $adminUsers = \App\Models\Admin::where('is_active', true)
+            ->get()
+            ->map(function($admin) {
+                return (object) [
+                    'id' => 'admin_' . $admin->id,
+                    'name' => $admin->name,
+                    'email' => $admin->email,
+                    'role' => 'admin',
+                    'profile_photo' => $admin->profile_photo,
+                    'company' => $admin->company,
+                    'phone' => $admin->phone,
+                    'address' => $admin->address,
+                    'documents' => collect(),
+                ];
+            });
+        $users = $users->concat($adminUsers);
+
+        // Demo chat messages for each user (will be handled in Blade)
+        return view('dashboards.manufacturer.chat', compact('users'));
     }
 
     public function checklists()
     {
-        return view('dashboards.manufacturer.checklists');
+        $manufacturerId = session('user_id') ?? Auth::id();
+        $suppliers = \App\Models\User::where('role', 'supplier')->where('status', 'approved')->get();
+        $sentChecklists = ChecklistRequest::where('manufacturer_id', $manufacturerId)->with('supplier')->latest()->get();
+        return view('dashboards.manufacturer.checklists', compact('suppliers', 'sentChecklists'));
+    }
+
+    public function sendChecklist(Request $request)
+    {
+        $request->validate([
+            'supplier_id' => 'required|exists:users,id',
+            'materials' => 'required|array|min:1',
+            'quantities' => 'required|array|min:1',
+        ]);
+        $manufacturerId = session('user_id') ?? Auth::id();
+        $materials = $request->input('materials');
+        $quantities = $request->input('quantities');
+        $materialsRequested = [];
+        foreach ($materials as $i => $mat) {
+            $mat = trim($mat);
+            $qty = isset($quantities[$i]) ? (int)$quantities[$i] : 0;
+            if ($mat && $qty > 0) {
+                $materialsRequested[$mat] = $qty;
+            }
+        }
+        ChecklistRequest::create([
+            'manufacturer_id' => $manufacturerId,
+            'supplier_id' => $request->supplier_id,
+            'materials_requested' => $materialsRequested,
+            'status' => 'pending',
+        ]);
+        return redirect()->route('manufacturer.checklists')->with('success', 'Checklist sent to supplier!');
     }
 
     public function inventory_status()
@@ -43,7 +100,14 @@ class ManufacturerDashboardController extends Controller
 
     public function material_receipt()
     {
-        return view('dashboards.manufacturer.material-receipt');
+        $manufacturerId = session('user_id') ?? Auth::id();
+        $deliveries = \App\Models\Delivery::where('manufacturer_id', $manufacturerId)->with('supplier')->latest()->get();
+        $confirmedOrders = \App\Models\ChecklistRequest::where('manufacturer_id', $manufacturerId)
+            ->where('status', 'fulfilled')
+            ->with('supplier')
+            ->latest()
+            ->get();
+        return view('dashboards.manufacturer.material-receipt', compact('deliveries', 'confirmedOrders'));
     }
 
     public function production_lines()
@@ -339,5 +403,32 @@ class ManufacturerDashboardController extends Controller
         $item->save();
 
         return response()->json(['message' => 'Process flow item updated successfully.']);
+    }
+
+    public function orders()
+    {
+        $manufacturerId = session('user_id') ?? Auth::id();
+        $supplierOrders = ChecklistRequest::where('manufacturer_id', $manufacturerId)->get();
+        $vendorOrders = VendorOrder::where('manufacturer_id', $manufacturerId)->get();
+        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders'));
+    }
+
+    public function remakeOrder($id)
+    {
+        $order = \App\Models\ChecklistRequest::findOrFail($id);
+        \App\Models\ChecklistRequest::create([
+            'manufacturer_id' => $order->manufacturer_id,
+            'supplier_id' => $order->supplier_id,
+            'materials_requested' => $order->materials_requested,
+            'status' => 'pending',
+        ]);
+        return back()->with('success', 'Order has been remade and sent to the supplier!');
+    }
+
+    public function orderDelivered($id)
+    {
+        $delivery = \App\Models\Delivery::findOrFail($id);
+        $delivery->delete(); // Placeholder for closing the order
+        return back()->with('success', 'Order marked as delivered and closed.');
     }
 }

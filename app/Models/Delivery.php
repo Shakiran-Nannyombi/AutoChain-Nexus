@@ -13,6 +13,10 @@ class Delivery extends Model
         'materials_delivered' => 'array',
     ];
 
-use HasFactory;
+    use HasFactory;
 
+    public function supplier()
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
 }

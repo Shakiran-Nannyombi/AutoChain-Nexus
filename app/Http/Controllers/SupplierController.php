@@ -52,10 +52,36 @@ class SupplierController extends Controller
         return back()->with('success', 'Stock updated.');
     }
 
-    public function checklistReceipt()
+    public function checklistReceipt(Request $request)
     {
-        $checklists = ChecklistRequest::where('supplier_id', Auth::id())->get();
-        return view('dashboards.supplier.checklist-receipt', compact('checklists'));
+        $supplierId = Auth::id();
+        $query = \App\Models\ChecklistRequest::where('supplier_id', $supplierId)->with('manufacturer');
+
+        // Filtering by status
+        $status = $request->input('status');
+        if ($status && in_array($status, ['pending', 'fulfilled', 'cancelled'])) {
+            $query->where('status', $status);
+        }
+
+        // Searching by manufacturer name (optional)
+        $search = $request->input('search');
+        if ($search) {
+            $query->whereHas('manufacturer', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+        }
+
+        $checklists = $query->orderByDesc('created_at')->get();
+
+        // Summary stats
+        $totalOrders = ChecklistRequest::where('supplier_id', $supplierId)->count();
+        $pendingOrders = ChecklistRequest::where('supplier_id', $supplierId)->where('status', 'pending')->count();
+        $fulfilledOrders = ChecklistRequest::where('supplier_id', $supplierId)->where('status', 'fulfilled')->count();
+        $cancelledOrders = ChecklistRequest::where('supplier_id', $supplierId)->where('status', 'cancelled')->count();
+
+        return view('dashboards.supplier.checklist-receipt', compact(
+            'checklists', 'totalOrders', 'pendingOrders', 'fulfilledOrders', 'cancelledOrders', 'status', 'search'
+        ));
     }
 
     public function fulfillChecklist(Request $request, $id)
