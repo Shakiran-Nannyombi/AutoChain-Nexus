@@ -27,6 +27,7 @@ use App\Http\Controllers\AnalystController;
 use App\Http\Controllers\AnalystReportController;
 use App\Http\Controllers\ManufacturerDashboardController;
 use App\Http\Controllers\VendorDashboardController;
+use App\Http\Controllers\CustomerDashboardController;
 
 
 // Welcome page
@@ -632,9 +633,8 @@ Route::post('/admin/login', function (Request $request) {
     ]);
 })->name('admin.login.submit');
 
-Route::get('/customer/dashboard', function () {
-    return view('dashboards.customer.index');
-})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->name('customer.dashboard');
+Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])
+    ->name('customer.dashboard');
 
 Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'list'])->name('customer.list');
 Route::get('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'show'])->name('customer.show');
@@ -644,6 +644,10 @@ Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/customer/settings', function () {
+    return view('dashboards.customer.settings');
+})->name('customer.settings');
 
 // Manufacturer dashboard routes
 Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
