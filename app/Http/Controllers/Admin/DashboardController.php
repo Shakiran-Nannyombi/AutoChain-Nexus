@@ -86,37 +86,13 @@ class DashboardController extends Controller
             }
         }
 
-        $segmentCounts = User::where('role', '!=', 'admin')
-            ->select('segment', DB::raw('count(*) as count'))
-            ->groupBy('segment')
-            ->get();
-
-        // Customer segmentation analytics
-        $customerSegmentCounts = \App\Models\Customer::select('segment', DB::raw('count(*) as count'))
-            ->whereNotNull('segment')
-            ->groupBy('segment')
-            ->get();
-
-        // Segment summary statistics
-        $segmentSummaries = \App\Models\Customer::select(
-                'segment',
-                DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
-                DB::raw('AVG((SELECT COUNT(*) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
-                DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->whereNotNull('segment')
-            ->groupBy('segment')
-            ->get();
-
         return view('dashboards.admin.index', [
             'pendingUsers' => $pendingUsers,
             'totalUsers' => $totalUsers,
             'activeUsers' => $activeUsers,
             'roleCounts' => $roleCounts,
             'recentActivities' => $recentActivities,
-            'customerSegmentCounts' => $customerSegmentCounts,
-            'segmentSummaries' => $segmentSummaries,
+            // Do not pass customerSegmentCounts or segmentSummaries
         ]);
     }
 

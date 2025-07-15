@@ -144,7 +144,7 @@
             </table>
         </div>
         @endif
-        @if(isset($segmentRecommendations) && count($segmentRecommendations) > 0)
+        @if(isset($segmentRecommendations) && count($segmentRecommendations) > 0 && isset($segmentNames))
         <div style="margin-top: 2rem;">
             <h4 style="color: var(--deep-purple);">Top Recommended Products by Segment</h4>
             @foreach($segmentNames as $segId => $segName)
