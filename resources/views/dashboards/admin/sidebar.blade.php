@@ -13,9 +13,6 @@
 <a href="/admin/validation-criteria" class="nav-item {{ request()->is('admin/validation-criteria') ? 'active' : '' }}">
     <i class="fas fa-check-square"></i> Validation Criteria
 </a>
-<a href="{{ route('admin.inventory.overview') }}" class="nav-item {{ request()->is('admin/inventory-overview*') ? 'active' : '' }}">
-    <i class="fas fa-boxes"></i> Inventory Overview
-</a>
 <a href="/admin/system-flow" class="nav-item {{ request()->is('admin/system-flow') ? 'active' : '' }}">
     <i class="fas fa-project-diagram"></i> System Flow
 </a>

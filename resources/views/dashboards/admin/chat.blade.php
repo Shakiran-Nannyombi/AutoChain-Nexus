@@ -111,26 +111,43 @@
 <script>
 let selectedUserId = null;
 let selectedUserData = null;
+let currentUserId = '{{ auth()->id() ?? session('user_id') }}';
 
 function renderMessages(messages, currentUserId) {
     let html = '';
     messages.forEach(msg => {
         const messageId = msg.id || Math.random().toString(36).substr(2, 9);
-        html += `<div class="chat-message-row${msg.is_me ? ' me' : ''}" style="margin-bottom:10px; position: relative;" data-message-id="${messageId}">` +
+        html += `<div class="chat-message-row${msg.is_me ? ' me' : ''}" style="margin-bottom:10px; position: relative;" data-message-id="${messageId}" data-db-id="${msg.id}">` +
             (msg.is_me ? '' : `<div class="avatar">${msg.user_initial || msg.sender_name.charAt(0)}</div>`) +
             `<div class="chat-message${msg.is_me ? ' me' : ''}" style="${msg.is_me ? 'background:#2563eb;color:#fff;' : ''} position: relative;">` +
             `<div class="message-content">${msg.message.replace(/(@\w+)/g, '<span style=\'color:#22c55e;font-weight:600;\'>$1<\/span>')}</div>` +
             `<div class="meta" style="font-size:0.85rem;color:#94a3b8;margin-top:6px;text-align:right;">${msg.is_me ? 'You' : msg.sender_name}, ${msg.created_at}</div>` +
             // Message actions (only for own messages)
             (msg.is_me ? `<div class="message-actions" style="position: absolute; top: 5px; right: 5px; display: none;">
-                <button type="button" class="edit-message-btn" data-message-id="${messageId}" style="background: none; border: none; color: inherit; font-size: 0.8rem; margin-right: 5px; cursor: pointer;" title="Edit">✏️</button>
-                <button type="button" class="delete-message-btn" data-message-id="${messageId}" style="background: none; border: none; color: inherit; font-size: 0.8rem; cursor: pointer;" title="Delete">🗑️</button>
+                <button type="button" class="edit-message-btn" data-db-id="${msg.id}" style="background: none; border: none; color: inherit; font-size: 0.8rem; margin-right: 5px; cursor: pointer;" title="Edit">✏️</button>
+                <button type="button" class="delete-message-btn" data-db-id="${msg.id}" style="background: none; border: none; color: inherit; font-size: 0.8rem; cursor: pointer;" title="Delete">🗑️</button>
               </div>` : '') +
             `</div>` +
             `</div>`;
     });
     return html;
 }
+
+// Real-time update handler
+window.updateChatWindow = function(e) {
+    if (selectedUserId && (e.message.sender_id == selectedUserId || e.message.receiver_id == selectedUserId)) {
+        // Reload messages for the selected user
+        document.querySelector(`.user-chat-link[data-user-id='${selectedUserId}']`).click();
+    }
+};
+
+// Notification handler
+window.showChatNotification = function(e) {
+    if (e.message.receiver_id == currentUserId) {
+        // Show a notification badge or popup
+        alert('New message from ' + e.sender.name + ': ' + e.message.message);
+    }
+};
 
 function showChatHeader(user) {
     const header = document.getElementById('chat-header-area');
@@ -256,40 +273,52 @@ document.addEventListener('DOMContentLoaded', function() {
             const messageRow = e.target.closest('.chat-message-row');
             const messageContent = messageRow.querySelector('.message-content');
             const currentText = messageContent.textContent;
-            
+            const dbId = e.target.getAttribute('data-db-id');
             // Create edit input
             const editInput = document.createElement('input');
             editInput.type = 'text';
             editInput.value = currentText;
             editInput.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px;';
-            
             // Create save/cancel buttons
             const saveBtn = document.createElement('button');
             saveBtn.textContent = 'Save';
             saveBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: 5px; cursor: pointer;';
-            
             const cancelBtn = document.createElement('button');
             cancelBtn.textContent = 'Cancel';
             cancelBtn.style.cssText = 'background: #6b7280; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;';
-            
             // Replace content with edit form
             messageContent.innerHTML = '';
             messageContent.appendChild(editInput);
             messageContent.appendChild(saveBtn);
             messageContent.appendChild(cancelBtn);
-            
             editInput.focus();
-            
             // Save functionality
             saveBtn.addEventListener('click', function() {
                 const newText = editInput.value.trim();
-                if (newText) {
-                    messageContent.innerHTML = newText;
-                    // Here you would typically send an AJAX request to update the message on the server
-                    console.log('Message updated:', newText);
+                if (newText && dbId) {
+                    fetch(`/chats/messages/${dbId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ message: newText })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            messageContent.innerHTML = newText;
+                        } else {
+                            alert(data.message || 'Failed to update message.');
+                            messageContent.innerHTML = currentText;
+                        }
+                    })
+                    .catch(() => {
+                        alert('Error updating message.');
+                        messageContent.innerHTML = currentText;
+                    });
                 }
             });
-            
             // Cancel functionality
             cancelBtn.addEventListener('click', function() {
                 messageContent.innerHTML = currentText;
@@ -302,15 +331,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.classList.contains('delete-message-btn')) {
             if (confirm('Are you sure you want to delete this message?')) {
                 const messageRow = e.target.closest('.chat-message-row');
-                messageRow.style.opacity = '0.5';
-                messageRow.style.textDecoration = 'line-through';
-                // Here you would typically send an AJAX request to delete the message on the server
-                console.log('Message deleted');
-                
-                // Remove the message after a short delay
-                setTimeout(() => {
-                    messageRow.remove();
-                }, 1000);
+                const dbId = e.target.getAttribute('data-db-id');
+                if (dbId) {
+                    fetch(`/chats/messages/${dbId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            messageRow.remove();
+                        } else {
+                            alert(data.message || 'Failed to delete message.');
+                        }
+                    })
+                    .catch(() => {
+                        alert('Error deleting message.');
+                    });
+                }
             }
         }
     });

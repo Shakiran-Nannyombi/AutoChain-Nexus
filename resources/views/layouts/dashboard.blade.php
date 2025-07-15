@@ -9,7 +9,7 @@
     <title>@yield('title', 'Autochain Nexus')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
-    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/css/manufacturer.css','resources/css/analyst.css','resources/css/supplier.css','resources/css/retailer.css', 'resources/css/vendor.css','resources/js/app.js', 'resources/css/auth.css'])
+    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/css/manufacturer.css','resources/css/analyst.css','resources/css/supplier.css','resources/css/retailer.css', 'resources/css/vendor.css','resources/js/app.js', 'resources/css/auth.css', 'resources/css/vendor.css'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @stack('styles')
     @stack('head')
@@ -266,7 +266,10 @@
                                 @endif
                             </div>
                             <div class="notification-list">
-                                @if(isset($allNotifications) && $allNotifications->count() > 0)
+                                @php
+                                    if (!isset($allNotifications)) $allNotifications = collect();
+                                @endphp
+                                @if($allNotifications->count() > 0)
                                     @foreach($allNotifications as $notification)
                                         <div class="notification-item {{ $notification->read_at ? '' : 'unread' }}" data-notification-id="{{ $notification->id }}">
                                             <div class="notification-icon">
@@ -516,6 +519,56 @@
                 if (unreadCount) unreadCount.style.display = 'none';
             });
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Vendor header dropdown toggle
+            const vendorNotificationIcon = document.getElementById('vendorNotificationIcon');
+            const vendorUserProfileIcon = document.getElementById('vendorUserProfileIcon');
+            const vendorNotificationDropdown = document.getElementById('vendorNotificationDropdown');
+            const vendorUserDropdown = document.getElementById('vendorUserDropdown');
+
+            if (vendorNotificationIcon && vendorNotificationDropdown) {
+                vendorNotificationIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    vendorNotificationDropdown.classList.toggle('open');
+                    if (vendorUserDropdown) vendorUserDropdown.classList.remove('open');
+                });
+            }
+            if (vendorUserProfileIcon && vendorUserDropdown) {
+                vendorUserProfileIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    vendorUserDropdown.classList.toggle('open');
+                    if (vendorNotificationDropdown) vendorNotificationDropdown.classList.remove('open');
+                });
+            }
+            window.addEventListener('click', (event) => {
+                if (vendorNotificationDropdown && !vendorNotificationIcon.contains(event.target)) {
+                    vendorNotificationDropdown.classList.remove('open');
+                }
+                if (vendorUserDropdown && !vendorUserProfileIcon.contains(event.target)) {
+                    vendorUserDropdown.classList.remove('open');
+                }
+            });
+
+            // Vendor 'Mark all as read' functionality
+            const markAllReadBtn = document.querySelector('#vendorNotificationDropdown .mark-all-read');
+            if (markAllReadBtn) {
+                markAllReadBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Remove unread class from all notifications
+                    document.querySelectorAll('#vendorNotificationDropdown .notification-item.unread').forEach(item => {
+                        item.classList.remove('unread');
+                    });
+                    // Hide badge and unread count
+                    const badge = document.querySelector('#vendorNotificationIcon .notification-badge');
+                    if (badge) badge.style.display = 'none';
+                    const unreadCount = document.querySelector('#vendorNotificationDropdown .unread-count');
+                    if (unreadCount) unreadCount.style.display = 'none';
+                    // TODO: Optionally send AJAX request to backend to mark all as read
+                });
+            }
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @stack('scripts')

@@ -103,19 +103,19 @@ class ChatController extends Controller
                 // Supplier can chat with manufacturers and admin
                 return $query->whereIn('role', ['manufacturer', 'admin'])->get();
             case 'manufacturer':
-                // Manufacturer can chat with suppliers, retailers, and admin
-                return $query->whereIn('role', ['supplier', 'retailer', 'admin'])->get();
+                // Manufacturer can chat with admin, vendor, supplier, analyst
+                return $query->whereIn('role', ['admin', 'vendor', 'supplier', 'analyst'])->get();
             case 'retailer':
-                // Retailer can chat with manufacturers, consumers, and admin
-                return $query->whereIn('role', ['manufacturer', 'consumer', 'admin'])->get();
-            case 'consumer':
-                // Consumer can chat with retailers and admin
+                // Retailer can chat with vendor, customer, admin
+                return $query->whereIn('role', ['vendor', 'customer', 'admin'])->get();
+            case 'customer':
+                // Customer can chat with retailer and admin
                 return $query->whereIn('role', ['retailer', 'admin'])->get();
             case 'analyst':
-                // Analyst can only chat with admin
-                return $query->where('role', 'admin')->get();
+                // Analyst can chat with admin and manufacturer
+                return $query->whereIn('role', ['admin', 'manufacturer'])->get();
             case 'vendor':
-                // Vendor can chat with manufacturers, retailers, and admin
+                // Vendor can chat with manufacturer, retailer, admin
                 return $query->whereIn('role', ['manufacturer', 'retailer', 'admin'])->get();
             default:
                 return collect();
@@ -230,7 +230,8 @@ class ChatController extends Controller
         return view('chats.edit_message', compact('message'));
     }
 
-    public function updateMessage(Request $request, \App\Models\ChatMessage $message)
+    // Update message (now using Chat model)
+    public function updateMessage(Request $request, \App\Models\Chat $message)
     {
         $user = auth()->user();
         if ($message->sender_id !== $user->id) {
@@ -250,7 +251,8 @@ class ChatController extends Controller
         ]);
     }
 
-    public function destroyMessage(\App\Models\ChatMessage $message)
+    // Delete message (now using Chat model)
+    public function destroyMessage(\App\Models\Chat $message)
     {
         $user = auth()->user();
         if ($message->sender_id !== $user->id) {
@@ -259,7 +261,7 @@ class ChatController extends Controller
                 'message' => 'Unauthorized'
             ], 403);
         }
-        $chatId = $message->chat_id;
+        $chatId = $message->id;
         $message->delete();
         return response()->json([
             'status' => 'success',
@@ -458,5 +460,156 @@ class ChatController extends Controller
         }
         
         return $demoMessages;
+    }
+
+    private function getDemoMessagesForAdmin($currentUser, $adminUser)
+    {
+        // Generate demo messages for admin conversations
+        return collect([
+            [
+                'id' => 1,
+                'message' => 'Hello! I need to discuss some compliance requirements for our upcoming audit.',
+                'sender_id' => $currentUser->id,
+                'sender_name' => $currentUser->name,
+                'created_at' => now()->subHours(2)->format('Y-m-d H:i'),
+                'is_me' => true,
+            ],
+            [
+                'id' => 2,
+                'message' => 'Of course! I\'m here to help. What specific compliance areas do you need assistance with?',
+                'sender_id' => 'admin_' . $adminUser->id,
+                'sender_name' => $adminUser->name,
+                'created_at' => now()->subHours(2)->addMinutes(1)->format('Y-m-d H:i'),
+                'is_me' => false,
+            ],
+            [
+                'id' => 3,
+                'message' => 'We need to ensure our documentation meets the new regulatory standards. Can you guide us through the requirements?',
+                'sender_id' => $currentUser->id,
+                'sender_name' => $currentUser->name,
+                'created_at' => now()->subHours(1)->format('Y-m-d H:i'),
+                'is_me' => true,
+            ],
+            [
+                'id' => 4,
+                'message' => 'Absolutely! I\'ll send you the updated compliance checklist and schedule a review meeting for next week.',
+                'sender_id' => 'admin_' . $adminUser->id,
+                'sender_name' => $adminUser->name,
+                'created_at' => now()->subMinutes(30)->format('Y-m-d H:i'),
+                'is_me' => false,
+            ],
+        ]);
+    }
+
+    // Add this method for AJAX chat message fetching
+    public function getChatMessages($userId)
+    {
+        $currentUserId = auth()->id() ?? session('user_id');
+        
+        // Check if this is an admin user (prefixed with 'admin_')
+        if (str_starts_with($userId, 'admin_')) {
+            $adminId = substr($userId, 6); // Remove 'admin_' prefix
+            $selectedUser = \App\Models\Admin::find($adminId);
+            if (!$selectedUser) {
+                return response()->json(['status' => 'error', 'message' => 'Admin user not found'], 404);
+            }
+            
+            // For admin users, we'll provide demo messages since they're not in the users table
+            $currentUser = \App\Models\User::find($currentUserId);
+            $messages = $this->getDemoMessagesForAdmin($currentUser, $selectedUser);
+            
+            $messagesArr = $messages->map(function($msg) use ($currentUserId) {
+                return [
+                    'id' => $msg['id'],
+                    'message' => $msg['message'],
+                    'sender_id' => $msg['sender_id'],
+                    'sender_name' => $msg['sender_name'],
+                    'created_at' => $msg['created_at'],
+                    'is_me' => $msg['sender_id'] == $currentUserId,
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'messages' => $messagesArr,
+                'user' => [
+                    'id' => $userId, // Keep the prefixed ID
+                    'name' => $selectedUser->name,
+                    'avatar' => $selectedUser->profile_photo 
+                        ? asset($selectedUser->profile_photo) 
+                        : null,
+                    'status' => 'online',
+                ]
+            ]);
+        }
+        
+        // Regular user handling
+        $selectedUser = \App\Models\User::find($userId);
+        if (!$selectedUser) {
+            return response()->json(['status' => 'error', 'message' => 'User not found'], 404);
+        }
+        $messages = \App\Models\Chat::with('sender')->where(function($q) use ($currentUserId, $userId) {
+            $q->where('sender_id', $currentUserId)->where('receiver_id', $userId);
+        })->orWhere(function($q) use ($currentUserId, $userId) {
+            $q->where('sender_id', $userId)->where('receiver_id', $currentUserId);
+        })->orderBy('created_at')->get();
+
+        if ($messages->isEmpty()) {
+            // Provide demo messages if no real messages exist
+            $currentUser = \App\Models\User::find($currentUserId);
+            $messages = $this->getDemoMessages($currentUser, $selectedUser);
+        }
+
+        $messagesArr = $messages->map(function($msg) use ($currentUserId) {
+            return [
+                'id' => $msg['id'] ?? $msg->id,
+                'message' => $msg['message'] ?? $msg->message,
+                'sender_id' => $msg['sender_id'] ?? $msg->sender_id,
+                'sender_name' => $msg['sender_name'] ?? ($msg->sender ? $msg->sender->name : 'Unknown'),
+                'created_at' => $msg['created_at'] ?? ($msg->created_at ? $msg->created_at->format('Y-m-d H:i') : ''),
+                'is_me' => ($msg['sender_id'] ?? $msg->sender_id) == $currentUserId,
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'messages' => $messagesArr,
+            'user' => [
+                'id' => $selectedUser->id,
+                'name' => $selectedUser->name,
+                'avatar' => $selectedUser->profile_photo 
+                    ? asset($selectedUser->profile_photo) 
+                    : null,
+                'status' => 'online',
+            ]
+        ]);
+    }
+
+    // Add this method for AJAX chat message sending
+    public function sendChatMessage(Request $request)
+    {
+        $currentUserId = auth()->id() ?? session('user_id');
+        $request->validate([
+            'receiver_id' => 'required',
+            'message' => 'required|string|max:1000',
+        ]);
+        
+        // Check if this is an admin user (prefixed with 'admin_')
+        if (str_starts_with($request->receiver_id, 'admin_')) {
+            // For admin users, we'll just return success since they're not in the users table
+            return response()->json(['status' => 'success', 'message' => 'Message sent!', 'data' => null]);
+        }
+        
+        // Regular user handling
+        $request->validate([
+            'receiver_id' => 'exists:users,id',
+        ]);
+        
+        $chat = \App\Models\Chat::create([
+            'sender_id' => $currentUserId,
+            'receiver_id' => $request->receiver_id,
+            'message' => $request->message,
+        ]);
+        return response()->json(['status' => 'success', 'message' => 'Message sent!', 'data' => $chat]);
     }
 } 
