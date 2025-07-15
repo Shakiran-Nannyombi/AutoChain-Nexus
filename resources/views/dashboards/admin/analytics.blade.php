@@ -11,8 +11,8 @@
 @endsection
 
 @section('content')
-  <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700;"><i class="fas fa-chart-line"></i> Analytics</h2>
   <div class="content-card analytics-page" style="background: var(--background); box-shadow: var(--shadow); border-radius: 18px; padding: 2.5rem 2rem;">
+    <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700;"><i class="fas fa-chart-line"></i> Analytics</h2>
     <!-- Modern Stat Cards Grid -->
     <div class="modern-analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
       <!-- Stat Card: Total Users -->

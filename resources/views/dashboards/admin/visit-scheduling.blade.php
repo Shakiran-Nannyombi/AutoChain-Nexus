@@ -16,8 +16,8 @@
 @endsection
 
 @section('content')
-  <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">Visit Scheduling & Management</h2>
   <div class="content-card">
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">Visit Scheduling & Management</h2>
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
     @endif

@@ -11,8 +11,8 @@
 @endsection
 
 @section('content')
-  <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Validation Center</h2>
   <div class="content-card">
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Validation Center</h2>
     <br>
 
     @if(session('success'))

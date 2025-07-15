@@ -10,8 +10,8 @@
 @endsection
 
 @section('content')
-  <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-cogs"></i> Settings</h2>
   <div class="content-card settings-page">
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-cogs"></i> Settings</h2>
     <!-- Tabs Navigation -->
     <div class="tabs-container">
         <div class="tab-link active" data-tab="validation">Validation</div>

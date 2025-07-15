@@ -42,8 +42,8 @@
 @endsection
 
 @section('content')
-  <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700; display: flex; align-items: center;"><i class="fas fa-file-alt" style="margin-right: 0.7rem;"></i> Reports</h2>
   <div class="content-card reports-page" style="max-width: 1200px; margin: 2rem auto; padding: 2.5rem 2rem; background: #fff; border-radius: 18px; box-shadow: var(--shadow);">
+    <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700; display: flex; align-items: center;"><i class="fas fa-file-alt" style="margin-right: 0.7rem;"></i> Reports</h2>
     <div style="display: flex; flex-direction: row; gap: 2.5rem; flex-wrap: wrap; width: 100%;">
         <!-- Schedule a New Report -->
       <section style="flex: 1 1 380px; min-width: 340px; background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 2.5rem 2rem; margin-bottom: 0;">

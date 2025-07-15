@@ -12,8 +12,8 @@
 
 @section('content')
   <div class="system-flow-page">
-  <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-project-diagram"></i> System Flow</h2>
-  <div class="content-card">
+    <div class="content-card">
+      <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-project-diagram"></i> System Flow</h2>
     <!-- Stats Cards -->
     <div class="stats-container mb-8" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
         <div class="stat-card" style="background: linear-gradient(135deg, #174ea6 0%, #2563eb 100%); color: #fff; border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
