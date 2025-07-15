@@ -25,6 +25,8 @@ use App\Http\Controllers\ChatController;
 // Add missing analyst controllers
 use App\Http\Controllers\AnalystController;
 use App\Http\Controllers\AnalystReportController;
+use App\Http\Controllers\ManufacturerDashboardController;
+use App\Http\Controllers\VendorDashboardController;
 
 
 // Welcome page
@@ -506,12 +508,9 @@ Route::middleware(['admin', \App\Http\Middleware\PreventBackAfterLogout::class])
     Route::post('/backups/{filename}/restore', [BackupController::class, 'restore'])->name('admin.backups.restore');
 });
 
-Route::get('/manufacturer/dashboard', function () {
-    if (!session('user_id') || session('user_role') !== 'manufacturer') {
-        return redirect('/login');
-    }
-    return view('dashboards.manufacturer.index');
-});
+Route::get('/manufacturer/dashboard', [ManufacturerDashboardController::class, 'index'])
+    ->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)
+    ->name('manufacturer.dashboard');
 
 Route::get('/supplier/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'supplier') {
@@ -521,13 +520,8 @@ Route::get('/supplier/dashboard', function () {
     return view('dashboards.supplier.index');
 })->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
-Route::get('/vendor/dashboard', function () {
-    if (!session('user_id') || session('user_role') !== 'vendor') {
-        return redirect('/login');
-    }
-    
-    return view('dashboards.vendor.index');
-})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
+Route::get('/vendor/dashboard', [VendorDashboardController::class, 'index'])
+    ->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
 
 Route::get('/retailer/dashboard', function () {
     if (!session('user_id') || session('user_role') !== 'retailer') {
@@ -653,7 +647,7 @@ Route::middleware(\App\Http\Middleware\EnsureUserIsAuthenticated::class)->group(
 
 // Manufacturer dashboard routes
 Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
-    Route::get('/dashboard', function () { return view('dashboards.manufacturer.index'); })->name('manufacturer.dashboard');
+    // Route::get('/dashboard', function () { return view('dashboards.manufacturer.index'); })->name('manufacturer.dashboard'); // Removed to allow controller-based route
     Route::get('/production-lines', function () { return view('dashboards.manufacturer.production-lines'); })->name('manufacturer.production-lines');
     Route::get('/machine-health', function () { return view('dashboards.manufacturer.machine-health'); })->name('manufacturer.machine-health');
     Route::get('/quality-control', function () { return view('dashboards.manufacturer.quality-control'); })->name('manufacturer.quality-control');
