@@ -32,24 +32,6 @@ class DatabaseSeeder extends Seeder
             ManufacturerOrdersSeeder::class,
         ]);
 
-        $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];
-
-        foreach ($roles as $role) {
-            User::firstOrCreate(
-                ['email' => $role . '@example.com'],
-                [
-                    'name' => ucfirst($role) . ' User',
-                    'password' => Hash::make('password'),
-                    'role' => $role,
-                    'status' => 'pending',
-                    'company' => ucfirst($role) . ' Company',
-                    'phone' => '123-456-7890',
-                    'address' => '123 ' . ucfirst($role) . ' Street',
-                    'profile_photo' => 'images/profile.jpeg',
-                ]
-            );
-        }
-
         // Seed demo communications for active connections
         $manufacturer = \App\Models\User::where('role', 'manufacturer')->first();
         $supplier = \App\Models\User::where('role', 'supplier')->first();

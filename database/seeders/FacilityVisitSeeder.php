@@ -62,22 +62,5 @@ class FacilityVisitSeeder extends Seeder
                 ]);
             }
         }
-
-        // Also create a sample visit for a manufacturer (if exists)
-        $manufacturerUser = User::where('role', 'manufacturer')->first();
-        if ($manufacturerUser) {
-            FacilityVisit::create([
-                'user_id' => $manufacturerUser->id,
-                'company_name' => $manufacturerUser->company_name ?? $manufacturerUser->name,
-                'contact_person' => $manufacturerUser->name,
-                'contact_email' => $manufacturerUser->email,
-                'visit_type' => 'Partnership Meeting',
-                'purpose' => 'To discuss supply chain partnership opportunities',
-                'location' => $manufacturerUser->address ?? 'TBD',
-                'visit_date' => Carbon::now()->addDays(5),
-                'requested_date' => Carbon::now(),
-                'status' => 'pending',
-            ]);
-        }
     }
 }
