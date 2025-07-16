@@ -796,9 +796,19 @@ Route::prefix('retailer')->middleware(\App\Http\Middleware\PreventBackAfterLogou
     Route::get('/orders', [RetailerController::class, 'orderForm'])->name('retailer.order-placement');
     Route::post('/orders', [RetailerController::class, 'submitOrder'])->name('retailer.orders.submit');
 
+    Route::get('/reports', function () {
+        return view('dashboards.retailer.reports');
+    })->name('retailer.reports');
+
     Route::get('/notifications', function () {
         return view('dashboards.retailer.notifications');
     })->name('retailer.notifications');
+
+    Route::get('/chat', function () {
+        // You may want to fetch $users for the chat sidebar here
+        $users = [];
+        return view('dashboards.retailer.chat', compact('users'));
+    })->name('retailer.chat');
 });
 
 // Chat routes
