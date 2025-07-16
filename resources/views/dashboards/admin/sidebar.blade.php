@@ -1,5 +1,5 @@
 <a href="/admin/dashboard" class="nav-item {{ request()->is('admin/dashboard') ? 'active' : '' }}">
-    <i class="fas fa-home"></i> Admin Dashboard
+    <i class="fas fa-home"></i> Control Panel
 </a>
 <a href="{{ route('admin.user-management') }}" class="nav-item {{ request()->is('admin/user-management*') ? 'active' : '' }}">
     <i class="fas fa-users-cog"></i> User Management
@@ -22,12 +22,12 @@
 <a href="/admin/reports" class="nav-item {{ request()->is('admin/reports') ? 'active' : '' }}">
     <i class="fas fa-file-alt"></i> Reports
 </a>
+<a href="{{ route('admin.chat') }}" class="nav-item {{ request()->routeIs('admin.chat') ? 'active' : '' }}">
+    <i class="fas fa-comments"></i> Chat
+</a> 
 <a href="/admin/settings" class="nav-item {{ request()->is('admin/settings') ? 'active' : '' }}">
     <i class="fas fa-cog"></i> Settings
 </a>
 <a href="/admin/backups" class="nav-item {{ request()->is('admin/backups') ? 'active' : '' }}">
     <i class="fas fa-database"></i> Backup
 </a>
-<a href="{{ route('admin.chat') }}" class="nav-item {{ request()->routeIs('admin.chat') ? 'active' : '' }}">
-    <i class="fas fa-comments"></i> Chat
-</a> 

@@ -4,6 +4,13 @@
 
 @push('styles')
     @vite(['resources/css/admin.css'])
+    <style>
+    /* Remove background from backup item container */
+    .backup-item {
+        background: transparent !important;
+        /* If there's a box-shadow or border-radius you want to keep, add them here */
+    }
+    </style>
 @endpush
 
 @section('sidebar-content')
@@ -12,7 +19,7 @@
 
 @section('content')
   <div class="content-card">
-    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-database"></i> Backups</h2>
+    <h2 style="color: var(--primary) !important; font-size: 2rem; font-weight: bold; margin-bottom: 1.5rem;"><i class="fas fa-database"></i> Backups</h2>
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
     @endif
@@ -60,28 +67,52 @@
         </div>
     </div>
 
-    <!-- Manual Backup Creation -->
+    <!-- What is being backed up -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h2>Create Manual Backup</h2>
+            <h2 style="font-size: 1.5rem; color: var(--secondary);">What Gets Backed Up?</h2>
         </div>
         <div class="card-body">
-            <p style="margin-bottom: 1rem; color: #6c757d;">
-                Create a new backup of your database and application files. This is useful before making major changes to your system.
-            </p>
-            <form action="{{ route('admin.backups.create') }}" method="POST">
+            <ul style="margin-bottom:1rem; font-size: 1.1rem;">
+                <li><strong>Database:</strong> All tables and data in your main database.</li>
+                <li><strong>Application Files:</strong> All code, configuration, and resources (excluding <code>vendor/</code> and <code>node_modules/</code>).</li>
+                <li><strong>Storage Files:</strong> Uploaded files and user-generated content.</li>
+            </ul>
+            <form action="{{ route('admin.backups.create') }}" method="POST" style="margin-bottom:0;">
                 @csrf
+                <div style="display:flex; flex-wrap:wrap; gap:2rem; align-items:center; margin-bottom:1rem;">
+                    <label><input type="checkbox" name="backup_database" value="1" checked> Database</label>
+                    <label><input type="checkbox" name="backup_files" value="1" checked> Application Files</label>
+                    <label><input type="checkbox" name="backup_storage" value="1" checked> Storage Files</label>
+                </div>
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-plus-circle"></i> Create Backup Now
                 </button>
             </form>
+            <div style="margin-top:0.7rem; color:#64748b; font-size:0.98rem;">
+                <i class="fas fa-info-circle"></i> Unchecked items will be excluded from this backup only.
+            </div>
+        </div>
+    </div>
+
+    <!-- Storage Usage Progress Bar -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 style="font-size: 1.5rem;">Backup Storage Usage</h2>
+        </div>
+        <div class="card-body">
+            <div style="margin-bottom:0.7rem; color:#64748b;">Total: 1.5G &nbsp; Used: 160K &nbsp; Available: 1.5G</div>
+            <div style="background:#e5e7eb; border-radius:8px; height:22px; width:100%; overflow:hidden;">
+                <div style="background:linear-gradient(90deg,#2563eb,#22d3ee); width:1%; height:100%; border-radius:8px;"></div>
+            </div>
+            <div style="margin-top:0.3rem; color:#2563eb; font-weight:600;">1% used</div>
         </div>
     </div>
 
     <!-- Backup List -->
     <div class="card">
         <div class="card-header">
-            <h2>Available Backups</h2>
+            <h2 style="font-size: 1.5rem;">Available Backups</h2>
         </div>
         <div class="card-body">
             @if(count($backups) > 0)

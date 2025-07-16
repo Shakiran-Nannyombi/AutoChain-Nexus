@@ -164,7 +164,7 @@
 <script>
 let selectedUserId = null;
 let selectedUserData = null;
-let currentUserId = '{{ auth()->id() ?? session('user_id') }}';
+let currentUserId = "{{ auth()->id() ?? session('user_id') }}";
 
 function formatTimestamp(ts) {
   if (!ts) return '';
@@ -180,14 +180,14 @@ function renderMessages(messages, currentUserId) {
     let html = '';
     messages.forEach(msg => {
         const messageId = msg.id || Math.random().toString(36).substr(2, 9);
-        html += `<div class=\"chat-message-row${msg.is_me ? ' me' : ''}\" style=\"margin-bottom:10px; position: relative;\" data-message-id=\"${messageId}\" data-db-id=\"${msg.id}\">` +
-            (msg.is_me ? '' : `<div class=\"avatar\">${msg.user_initial || msg.sender_name?.charAt(0) || ''}</div>`) +
-            `<div class=\"chat-message${msg.is_me ? ' me' : ''}\" style=\"${msg.is_me ? 'background:#2563eb;color:#fff;' : ''} position: relative;\">` +
-            `<div class=\"message-content\">${msg.message.replace(/(@\\w+)/g, '<span style=\\'color:#22c55e;font-weight:600;\\'>$1<\\/span>')}</div>` +
-            `<div class=\"meta\" style=\"font-size:0.85rem;color:#94a3b8;margin-top:6px;text-align:right;\">${msg.is_me ? 'You' : msg.sender_name}, ${formatTimestamp(msg.created_at)}</div>` +
-            (msg.is_me ? `<div class=\"message-actions\" style=\"position: absolute; top: 5px; right: 5px;\">` +
-                `<button type=\"button\" class=\"edit-message-btn\" data-db-id=\"${msg.id}\" style=\"background: none; border: none; color: inherit; font-size: 0.8rem; margin-right: 5px; cursor: pointer;\" title=\"Edit\">✏️</button>` +
-                `<button type=\"button\" class=\"delete-message-btn\" data-db-id=\"${msg.id}\" style=\"background: none; border: none; color: inherit; font-size: 0.8rem; cursor: pointer;\" title=\"Delete\">🗑️</button>` +
+        html += `<div class="chat-message-row${msg.is_me ? ' me' : ''}" style="margin-bottom:10px; position: relative;" data-message-id="${messageId}" data-db-id="${msg.id}">` +
+            (msg.is_me ? '' : `<div class="avatar">${msg.user_initial || (msg.sender_name && msg.sender_name.charAt(0)) || ''}</div>`) +
+            `<div class="chat-message${msg.is_me ? ' me' : ''}" style="${msg.is_me ? 'background:#2563eb;color:#fff;' : ''} position: relative;">` +
+            `<div class="message-content">${msg.message.replace(/(@\\w+)/g, '<span style=\'color:#22c55e;font-weight:600;\'>$1<\/span>')}</div>` +
+            `<div class="meta" style="font-size:0.85rem;color:#94a3b8;margin-top:6px;text-align:right;">${msg.is_me ? 'You' : msg.sender_name}, ${formatTimestamp(msg.created_at)}</div>` +
+            (msg.is_me ? `<div class="message-actions" style="position: absolute; top: 5px; right: 5px;">` +
+                `<button type="button" class="edit-message-btn" data-db-id="${msg.id}" style="background: none; border: none; color: inherit; font-size: 0.8rem; margin-right: 5px; cursor: pointer;" title="Edit">✏️</button>` +
+                `<button type="button" class="delete-message-btn" data-db-id="${msg.id}" style="background: none; border: none; color: inherit; font-size: 0.8rem; cursor: pointer;" title="Delete">🗑️</button>` +
               `</div>` : '') +
             `</div>` +
             `</div>`;
@@ -296,45 +296,52 @@ const chatInput = document.getElementById('chat-input');
 const fileUploadBtn = document.getElementById('file-upload-btn');
 const fileInput = document.getElementById('file-input');
 
-userList?.addEventListener('click', function(e) {
-  const link = e.target.closest('.user-chat-link');
-  if (!link) return;
-  e.preventDefault();
-  const role = link.closest('li').getAttribute('data-role');
-  const name = link.querySelector('.user-name')?.textContent || '';
-  const avatarEl = link.querySelector('.avatar');
-  // Hide all demo chats
-  demoChats.querySelectorAll('.demo-chat').forEach(dc => dc.style.display = 'none');
-  if (role && demoChats.querySelector('.demo-chat[data-role="' + role + '"]')) {
-    demoChats.style.display = '';
-    welcomeMessage.style.display = 'none';
-    chatHeaderArea.style.display = 'flex';
-    chatInputForm.style.display = 'flex';
-    demoChats.querySelector('.demo-chat[data-role="' + role + '"]').style.display = '';
-    // Update header avatar/name/status
-    document.getElementById('chat-header-name').textContent = name;
-    // Clone avatar node for header
-    const headerAvatar = document.getElementById('chat-header-avatar');
-    headerAvatar.innerHTML = '';
-    if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
-    document.getElementById('chat-header-status').textContent = 'Online';
-  } else {
-    demoChats.style.display = 'none';
-    welcomeMessage.style.display = '';
-    chatHeaderArea.style.display = 'none';
-    chatInputForm.style.display = 'none';
-    document.getElementById('chat-header-name').textContent = '';
-    document.getElementById('chat-header-avatar').innerHTML = '';
-    document.getElementById('chat-header-status').textContent = '';
-  }
-});
+if (userList) {
+  userList.addEventListener('click', function(e) {
+    const link = e.target.closest('.user-chat-link');
+    if (!link) return;
+    e.preventDefault();
+    const role = link.closest('li').getAttribute('data-role');
+    const userNameEl = link.querySelector('.user-name');
+    const name = userNameEl ? userNameEl.textContent : '';
+    const avatarEl = link.querySelector('.avatar');
+    // Hide all demo chats
+    demoChats.querySelectorAll('.demo-chat').forEach(dc => dc.style.display = 'none');
+    if (role && demoChats.querySelector('.demo-chat[data-role="' + role + '"]')) {
+      demoChats.style.display = '';
+      welcomeMessage.style.display = 'none';
+      chatHeaderArea.style.display = 'flex';
+      chatInputForm.style.display = 'flex';
+      demoChats.querySelector('.demo-chat[data-role="' + role + '"]').style.display = '';
+      // Update header avatar/name/status
+      document.getElementById('chat-header-name').textContent = name;
+      // Clone avatar node for header
+      const headerAvatar = document.getElementById('chat-header-avatar');
+      headerAvatar.innerHTML = '';
+      if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
+      document.getElementById('chat-header-status').textContent = 'Online';
+    } else {
+      demoChats.style.display = 'none';
+      welcomeMessage.style.display = '';
+      chatHeaderArea.style.display = 'none';
+      chatInputForm.style.display = 'none';
+      document.getElementById('chat-header-name').textContent = '';
+      document.getElementById('chat-header-avatar').innerHTML = '';
+      document.getElementById('chat-header-status').textContent = '';
+    }
+  });
+}
 // Emoji picker logic
-emojiBtn?.addEventListener('click', function() {
-  emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
-});
+if (emojiBtn) {
+  emojiBtn.addEventListener('click', function() {
+    emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+  });
+}
 document.addEventListener('click', function(e) {
-  if (!emojiPicker.contains(e.target) && !emojiBtn.contains(e.target)) {
-    emojiPicker.style.display = 'none';
+  if (emojiPicker && emojiBtn) {
+    if (!emojiPicker.contains(e.target) && !emojiBtn.contains(e.target)) {
+      emojiPicker.style.display = 'none';
+    }
   }
 });
 emojiPicker.querySelectorAll('.emoji-btn').forEach(btn => {
@@ -345,19 +352,23 @@ emojiPicker.querySelectorAll('.emoji-btn').forEach(btn => {
   });
 });
 // File upload logic
-fileUploadBtn?.addEventListener('click', function() {
-  fileInput.click();
-});
-fileInput?.addEventListener('change', function() {
-  if (fileInput.files.length > 0) {
-    alert('File selected: ' + fileInput.files[0].name + ' (Demo only, not uploaded)');
-    fileInput.value = '';
-  }
-});
+if (fileUploadBtn) {
+  fileUploadBtn.addEventListener('click', function() {
+    fileInput.click();
+  });
+}
+if (fileInput) {
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files.length > 0) {
+      alert('File selected: ' + fileInput.files[0].name + ' (Demo only, not uploaded)');
+      fileInput.value = '';
+    }
+  });
+}
 // Send button logic (demo)
 document.getElementById('chat-input-form').addEventListener('submit', function(e) {
   e.preventDefault();
   chatInput.value = '';
 });
 </script>
-@endpush 
+@endpush

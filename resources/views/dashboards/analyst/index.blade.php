@@ -97,6 +97,10 @@
             </div>
         </div>
 
+        <div class="mb-3">
+            <a href="{{ route('analyst.myApplications') }}" class="btn btn-primary">My Applications</a>
+        </div>
+
         <!-- Recent Reports -->
         <div style="margin-bottom: 2rem;">
             <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">

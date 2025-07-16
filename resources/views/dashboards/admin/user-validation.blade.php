@@ -12,8 +12,9 @@
 
 @section('content')
   <div class="content-card">
-    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Validation Center</h2>
-    <br>
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"> 
+        <i class="fas fa-user-check"></i> User Validation Center
+    </h2>
 
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
@@ -47,14 +48,28 @@
         </div>
     </div>
 
+    <!-- User Role Tabs -->
+    <div class="role-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+        <button type="button" class="tab-btn active" onclick="showRole('all')">All</button>
+        <button type="button" class="tab-btn" onclick="showRole('vendor')">Vendor</button>
+        <button type="button" class="tab-btn" onclick="showRole('manufacturer')">Manufacturer</button>
+        <button type="button" class="tab-btn" onclick="showRole('supplier')">Supplier</button>
+        <button type="button" class="tab-btn" onclick="showRole('retailer')">Retailer</button>
+        <button type="button" class="tab-btn" onclick="showRole('analyst')">Analyst</button>
+    </div>
+    <style>
+        .tab-btn { padding: 0.5rem 1.5rem; border: none; background: #eee; cursor: pointer; border-radius: 5px; font-weight: 600; color: #16610E; transition: background 0.2s, color 0.2s; }
+        .tab-btn.active { background: var(--primary, #16610E); color: #fff; }
+    </style>
+
     <!-- Pending Applications List -->
     <div class="card" style="margin-top: 2rem;">
         <div class="card-header">
-            <h2>Pending User Applications</h2>
+            <h2 style=" color: #F97A00; font-size: 1.3rem;">Pending User Applications</h2>
         </div>
         <div class="card-body">
             @forelse ($pendingUsers as $user)
-                <div class="application-card-new">
+                <div class="application-card-new" data-role="{{ strtolower($user->role) }}">
                     <div class="application-header-new">
                         <div class="company-info-new">
                             <h3>{{ $user->company ?? $user->name }}</h3>
@@ -188,7 +203,31 @@
 
 @push('scripts')
 <script>
+function showRole(role) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (role === 'all') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+    } else if (role === 'vendor') {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+    } else if (role === 'manufacturer') {
+        document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+    } else if (role === 'supplier') {
+        document.querySelector('.tab-btn:nth-child(4)').classList.add('active');
+    } else if (role === 'retailer') {
+        document.querySelector('.tab-btn:nth-child(5)').classList.add('active');
+    } else if (role === 'analyst') {
+        document.querySelector('.tab-btn:nth-child(6)').classList.add('active');
+    }
+    document.querySelectorAll('.application-card-new').forEach(card => {
+        if (role === 'all') {
+            card.style.display = '';
+        } else {
+            card.style.display = (card.dataset.role === role) ? '' : 'none';
+        }
+    });
+}
 document.addEventListener('DOMContentLoaded', function () {
+    showRole('all');
     const userModal = document.getElementById('viewUserModal');
     const validationModal = document.getElementById('validationModal');
     

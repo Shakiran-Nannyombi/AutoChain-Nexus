@@ -99,6 +99,9 @@
             </div>
         </div>
     </div>
+    <div class="mb-3">
+        <a href="{{ route('manufacturer.analystApplications') }}" class="btn btn-primary">Analyst Applications</a>
+    </div>
      <!-- Customer Segmentation Analytics Section -->
      <div style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow); margin-bottom: 2rem;">
         <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
