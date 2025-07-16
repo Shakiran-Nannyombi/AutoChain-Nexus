@@ -103,57 +103,61 @@
                     </div>
                     <div class="application-footer-new">
                         <div class="validation-score-new">
-                            @if($user->validation_score !== null)
-                                <div class="score-breakdown">
-                                    <div class="score-item">
-                                        <span class="score-label">Overall:</span>
-                                        <span class="score-value {{ $user->validation_score >= 70 ? 'score-pass' : 'score-fail' }}">
-                                            {{ $user->validation_score }}%
-                                        </span>
+                            @if($user->role === 'vendor')
+                                @if($user->validation_score !== null)
+                                    <div class="score-breakdown">
+                                        <div class="score-item">
+                                            <span class="score-label">Overall:</span>
+                                            <span class="score-value {{ $user->validation_score >= 70 ? 'score-pass' : 'score-fail' }}">
+                                                {{ $user->validation_score }}%
+                                            </span>
+                                        </div>
+                                        @if($user->financial_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Financial:</span>
+                                                <span class="score-value">{{ $user->financial_score }}/30</span>
+                                            </div>
+                                        @endif
+                                        @if($user->reputation_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Reputation:</span>
+                                                <span class="score-value">{{ $user->reputation_score }}/25</span>
+                                            </div>
+                                        @endif
+                                        @if($user->compliance_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Compliance:</span>
+                                                <span class="score-value">{{ $user->compliance_score }}/25</span>
+                                            </div>
+                                        @endif
+                                        @if($user->profile_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Profile:</span>
+                                                <span class="score-value">{{ $user->profile_score }}/15</span>
+                                            </div>
+                                        @endif
                                     </div>
-                                    @if($user->financial_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Financial:</span>
-                                            <span class="score-value">{{ $user->financial_score }}/30</span>
+                                    @if($user->auto_visit_scheduled)
+                                        <div class="visit-scheduled-badge">
+                                            <i class="fas fa-calendar-check"></i> Visit Scheduled
                                         </div>
                                     @endif
-                                    @if($user->reputation_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Reputation:</span>
-                                            <span class="score-value">{{ $user->reputation_score }}/25</span>
-                                        </div>
-                                    @endif
-                                    @if($user->compliance_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Compliance:</span>
-                                            <span class="score-value">{{ $user->compliance_score }}/25</span>
-                                        </div>
-                                    @endif
-                                    @if($user->profile_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Profile:</span>
-                                            <span class="score-value">{{ $user->profile_score }}/15</span>
-                                        </div>
-                                    @endif
-                                </div>
-                                @if($user->auto_visit_scheduled)
-                                    <div class="visit-scheduled-badge">
-                                        <i class="fas fa-calendar-check"></i> Visit Scheduled
-                                    </div>
+                                @else
+                                    <span>Validation Score: <strong>Not Run</strong></span>
                                 @endif
-                            @else
-                                <span>Validation Score: <strong>Not Run</strong></span>
                             @endif
                         </div>
                         <div class="action-buttons-new">
                             <a href="#" class="btn-action-new btn-view-details" data-url="{{ route('admin.user.show', $user) }}">View Details</a>
-                            @if($user->validation_score !== null)
+                            @if($user->validation_score !== null && $user->role === 'vendor')
                                 <a href="#" class="btn-action-new btn-view-validation" data-user-id="{{ $user->id }}">View Validation</a>
                             @endif
+                            @if($user->role === 'vendor')
                             <form action="{{ route('admin.user.validate', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-run-validation">Run Validation</button>
                             </form>
+                            @endif
                             @if($user->role !== 'vendor')
                             <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf

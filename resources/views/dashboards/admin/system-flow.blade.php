@@ -166,72 +166,81 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-        // Pie Chart: Active vs Inactive Users
-        const userStatusPie = document.getElementById('userStatusPie').getContext('2d');
-        new Chart(userStatusPie, {
-            type: 'pie',
+    // Define the variables outside of the chart configuration
+    const stats = {
+        activeUsers: {{ (int)($stats['activeUsers'] ?? 100) }},
+        inactiveUsers: {{ (int)($stats['inactiveUsers'] ?? 5) }}
+    };
+    
+    // Pie Chart: Active vs Inactive Users
+    const userStatusPie = document.getElementById('userStatusPie').getContext('2d');
+    
+    new Chart(userStatusPie, {
+        type: 'pie',
+        data: {
+            labels: ['Active', 'Inactive'],
+            datasets: [{
+                data: [
+                    stats.activeUsers,
+                    stats.inactiveUsers
+                ],
+                backgroundColor: ['#22c55e', '#f87171'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: true, position: 'bottom' }
+            }
+        }
+    });
+    
+    // Demo engagement data for different periods (all months start from January)
+    const engagementData = {
+        1: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [75, 82, 77, 85] },
+        2: { labels: ['W1-Jan', 'W2-Jan', 'W3-Jan', 'W4-Jan', 'W1-Feb', 'W2-Feb', 'W3-Feb', 'W4-Feb'], data: [72, 80, 78, 85, 77, 83, 81, 78] },
+        3: { labels: ['W1-Jan', 'W2-Jan', 'W3-Jan', 'W4-Jan', 'W1-Feb', 'W2-Feb', 'W3-Feb', 'W4-Feb', 'W1-Mar', 'W2-Mar', 'W3-Mar', 'W4-Mar'], data: [70, 82, 74, 86, 75, 77, 88, 80, 79, 81, 82, 80] },
+        4: { labels: Array.from({length: 16}, (_, i) => 'W' + (i+1) + '-' + ['Jan','Feb','Mar','Apr'][Math.floor(i/4)]), data: [68, 80, 72, 84, 73, 85, 77, 88, 76, 78, 80, 91, 79, 80, 82, 93] },
+        5: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], data: [75, 88, 80, 77, 89] },
+        6: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], data: [72, 85, 78, 90, 77, 89] },
+        12: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], data: [68, 80, 72, 84, 73, 85, 77, 88, 76, 78, 80, 91] }
+    };
+    
+    // Initial chart
+    let engagementBarChart;
+    function renderEngagementChart(period) {
+        const ctx = document.getElementById('engagementBar').getContext('2d');
+        if (engagementBarChart) engagementBarChart.destroy();
+        engagementBarChart = new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: ['Active', 'Inactive'],
+                labels: engagementData[period].labels,
                 datasets: [{
-                    data: [
-                        {{ $stats['activeUsers'] ?? 100 }},
-                        {{ $stats['inactiveUsers'] ?? 5 }}
-                    ],
-                    backgroundColor: ['#22c55e', '#f87171'],
-                    borderWidth: 1
+                    label: 'Engagement %',
+                    data: engagementData[period].data,
+                    backgroundColor: '#2563eb',
+                    borderRadius: 6
                 }]
             },
             options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { stepSize: 10 }
+                    }
+                },
                 plugins: {
-                    legend: { display: true, position: 'bottom' }
+                    legend: { display: false }
                 }
             }
         });
-        // Demo engagement data for different periods (all months start from January)
-        const engagementData = {
-            1: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [75, 82, 77, 85] },
-            2: { labels: ['W1-Jan', 'W2-Jan', 'W3-Jan', 'W4-Jan', 'W1-Feb', 'W2-Feb', 'W3-Feb', 'W4-Feb'], data: [72, 80, 78, 85, 77, 83, 81, 78] },
-            3: { labels: ['W1-Jan', 'W2-Jan', 'W3-Jan', 'W4-Jan', 'W1-Feb', 'W2-Feb', 'W3-Feb', 'W4-Feb', 'W1-Mar', 'W2-Mar', 'W3-Mar', 'W4-Mar'], data: [70, 82, 74, 86, 75, 77, 88, 80, 79, 81, 82, 80] },
-            4: { labels: Array.from({length: 16}, (_, i) => 'W' + (i+1) + '-' + ['Jan','Feb','Mar','Apr'][Math.floor(i/4)]), data: [68, 80, 72, 84, 73, 85, 77, 88, 76, 78, 80, 91, 79, 80, 82, 93] },
-            5: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], data: [75, 88, 80, 77, 89] },
-            6: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], data: [72, 85, 78, 90, 77, 89] },
-            12: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], data: [68, 80, 72, 84, 73, 85, 77, 88, 76, 78, 80, 91] }
-        };
-        // Initial chart
-        let engagementBarChart;
-        function renderEngagementChart(period) {
-            const ctx = document.getElementById('engagementBar').getContext('2d');
-            if (engagementBarChart) engagementBarChart.destroy();
-            engagementBarChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: engagementData[period].labels,
-                    datasets: [{
-                        label: 'Engagement %',
-                        data: engagementData[period].data,
-                        backgroundColor: '#2563eb',
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: { stepSize: 10 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-        }
-        // Initial render (12 months)
-        renderEngagementChart(12);
-        document.getElementById('engagementPeriod').addEventListener('change', function() {
-            renderEngagementChart(this.value);
-        });
+    }
+    // Initial render (12 months)
+    renderEngagementChart(12);
+    document.getElementById('engagementPeriod').addEventListener('change', function() {
+        renderEngagementChart(this.value);
+    });
         </script>
     </div>
     <div id="tab-content-supplier" class="tab-content" style="display: none;">

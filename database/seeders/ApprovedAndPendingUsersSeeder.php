@@ -1542,6 +1542,10 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             if (!isset($user['updated_at'])) {
                 $user['updated_at'] = now();
             }
+            // Only vendors keep their supporting_documents, others get an empty array
+            if (!isset($user['role']) || $user['role'] !== 'vendor') {
+                $user['supporting_documents'] = json_encode([]);
+            }
         }
         unset($user);
 
@@ -1603,7 +1607,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             ],
         ];
         foreach ($pendingUsers as $user) {
-            if (isset($userDocs[$user->email])) {
+            if ($user->role === 'vendor' && isset($userDocs[$user->email])) {
                 foreach ($userDocs[$user->email] as $doc) {
                     \App\Models\UserDocument::create([
                         'user_id' => $user->id,

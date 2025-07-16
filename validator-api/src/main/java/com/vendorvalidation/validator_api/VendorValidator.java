@@ -68,14 +68,41 @@ public class VendorValidator {
                     validationLog.append("Invalid format for '").append(docPath).append("'. ");
                     break; 
                 } else {
-                    // Process document and extract data
                     Map<String, Object> docData = docProcessor.processDocument(docPath);
-                    if (!docData.isEmpty()) {
-                        extractedData.putAll(docData);
-                        validationLog.append("Successfully processed '").append(docPath).append("'. ");
+                    System.out.println("DEBUG: Extracted data from " + docPath + ": " + docData);
+                    // --- FIXED MERGE LOGIC ---
+                    for (String key : docData.keySet()) {
+                        Object value = docData.get(key);
+                        if (value instanceof Map) {
+                            // Only merge if the map is not empty
+                            Map<?, ?> newMap = (Map<?, ?>) value;
+                            if (!newMap.isEmpty()) {
+                                // If we already have a map for this key, merge them
+                                if (extractedData.containsKey(key) && extractedData.get(key) instanceof Map) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<Object, Object> existingMap = (Map<Object, Object>) extractedData.get(key);
+                                    existingMap.putAll((Map<?, ?>) value);
+                                } else {
+                                    extractedData.put(key, value);
+                                }
+                            }
+                        } else if (value != null) {
+                            extractedData.put(key, value);
+                        }
                     }
+                    validationLog.append("Successfully processed '").append(docPath).append("'. ");
                 }
             }
+        }
+        System.out.println("DEBUG: Final merged extractedData: " + extractedData);
+
+        // --- ENFORCE REQUIRED DOCUMENT TYPES ---
+        boolean hasFinancial = extractedData.containsKey("financial_data") && extractedData.get("financial_data") instanceof Map && !((Map<?, ?>)extractedData.get("financial_data")).isEmpty();
+        boolean hasCompliance = extractedData.containsKey("compliance_data") && extractedData.get("compliance_data") instanceof Map && !((Map<?, ?>)extractedData.get("compliance_data")).isEmpty();
+
+        if (!hasFinancial || !hasCompliance) {
+            finalScore = 0;
+            validationLog.append("Missing required financial or compliance document data. Validation failed. ");
         }
         
         if (allFilesValid) {

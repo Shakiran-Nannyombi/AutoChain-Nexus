@@ -92,7 +92,7 @@
                                 <label for="address">Company Address <span class="required-asterisk">*</span></label>
                                 <input id="address" type="text" name="address" value="{{ old('address') }}" required>
                             </div>
-                            <div class="form-group-full">
+                            <div class="form-group-full" id="supporting-documents-group">
                                 <label style="font-weight:700; color:var(--text); margin-bottom:0.5rem;">Supporting Documents <span class="required-asterisk">*</span></label>
                                 <div class="custom-upload-box">
                                     <input type="file" id="supporting_documents" name="supporting_documents[]" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none;">
@@ -175,15 +175,23 @@
             });
             const roleSelect = document.getElementById('role');
             const manufacturerGroup = document.getElementById('manufacturer-select-group');
+            const supportingDocsGroup = document.getElementById('supporting-documents-group');
             roleSelect.addEventListener('change', function() {
                 if (this.value === 'vendor') {
                     manufacturerGroup.style.display = '';
+                    supportingDocsGroup.style.display = '';
                 } else {
                     manufacturerGroup.style.display = 'none';
+                    supportingDocsGroup.style.display = 'none';
                 }
             });
+            // Initial state
             if (roleSelect.value === 'vendor') {
                 manufacturerGroup.style.display = '';
+                supportingDocsGroup.style.display = '';
+            } else {
+                manufacturerGroup.style.display = 'none';
+                supportingDocsGroup.style.display = 'none';
             }
         });
     </script>

@@ -174,7 +174,10 @@ class UserController extends Controller
             'company' => $user->company,
             'phone' => $user->phone,
             'address' => $user->address,
-            'documentPaths' => $user->documents->pluck('file_path')->all(),
+            // Send absolute paths for document files
+            'documentPaths' => $user->documents->map(function($doc) {
+                return base_path('storage/app/public/sample_documents/' . basename($doc->file_path));
+            })->all(),
         ];
 
         try {
