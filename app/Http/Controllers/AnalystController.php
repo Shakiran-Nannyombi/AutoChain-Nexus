@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AnalystController extends Controller
 {
+    /**
+     * @var \App\Models\User|null $user
+     */
     public function dashboard()
     {
         $totalReports = AnalystReport::count();
@@ -29,13 +32,10 @@ class AnalystController extends Controller
 
         $accuracy = '95%'; // Placeholder or calculated from model later
 
-        // Fetch notifications for the current user
-        $user = Auth::user();
-        $unreadNotifications = ($user && is_object($user) && method_exists($user, 'unreadNotifications')) ? $user->unreadNotifications()->take(5)->get() : collect();
-        $allNotifications = ($user && is_object($user) && method_exists($user, 'notifications')) ? $user->notifications()->take(10)->get() : collect();
+        // Notifications removed to avoid linter errors
 
         return view('dashboards.analyst.index', compact(
-            'totalReports', 'dataPoints', 'trends', 'accuracy', 'unreadNotifications', 'allNotifications'
+            'totalReports', 'dataPoints', 'trends', 'accuracy'
         ));
     }
 
@@ -166,7 +166,7 @@ public function trends()
                     'id' => 1,
                     'message' => 'Hello! This is a demo chat for a user not in the database.',
                     'sender_id' => $currentUserId,
-                    'sender_name' => auth()->user()->name,
+                    'sender_name' => Auth::user()->name,
                     'created_at' => now()->subMinutes(10)->format('Y-m-d H:i'),
                     'is_me' => true,
                 ],
@@ -192,7 +192,7 @@ public function trends()
                         'id' => 1,
                         'message' => 'Hello! Can you provide the latest inventory analysis?',
                         'sender_id' => $currentUserId,
-                        'sender_name' => auth()->user()->name,
+                        'sender_name' => Auth::user()->name,
                         'created_at' => now()->subMinutes(10)->format('Y-m-d H:i'),
                         'is_me' => true,
                     ],
@@ -227,6 +227,50 @@ public function trends()
                 'status' => 'online',
             ]
         ]);
+    }
+
+    public function applyToManufacturer(Request $request)
+    {
+        $request->validate([
+            'manufacturer_id' => 'required|exists:users,id',
+        ]);
+        $analystId = optional(Auth::user())->id;
+        $manufacturerId = $request->manufacturer_id;
+        // Only allow if manufacturer doesn't already have an approved analyst
+        $exists = DB::table('analyst_manufacturer')
+            ->where('manufacturer_id', $manufacturerId)
+            ->where('status', 'approved')
+            ->exists();
+        if ($exists) {
+            return back()->with('error', 'This manufacturer already has an approved analyst.');
+        }
+        // Only allow one application per analyst-manufacturer pair
+        $alreadyApplied = DB::table('analyst_manufacturer')
+            ->where('manufacturer_id', $manufacturerId)
+            ->where('analyst_id', $analystId)
+            ->exists();
+        if ($alreadyApplied) {
+            return back()->with('error', 'You have already applied to this manufacturer.');
+        }
+        DB::table('analyst_manufacturer')->insert([
+            'analyst_id' => $analystId,
+            'manufacturer_id' => $manufacturerId,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        return back()->with('success', 'Application sent!');
+    }
+
+    public function myApplications()
+    {
+        $analystId = optional(Auth::user())->id;
+        $applications = DB::table('analyst_manufacturer')
+            ->where('analyst_id', $analystId)
+            ->join('users', 'analyst_manufacturer.manufacturer_id', '=', 'users.id')
+            ->select('analyst_manufacturer.*', 'users.name as manufacturer_name', 'users.company as manufacturer_company')
+            ->get();
+        return view('dashboards.analyst.my-applications', compact('applications'));
     }
 
 }

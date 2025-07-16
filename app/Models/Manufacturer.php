@@ -41,4 +41,16 @@ class Manufacturer extends Authenticatable
     {
         return $this->belongsTo(User::class);
     }
+
+    public function analyst()
+    {
+        return $this->belongsToMany(
+            Analyst::class,
+            'analyst_manufacturer',
+            'manufacturer_id', // Foreign key on analyst_manufacturer
+            'analyst_id',      // Foreign key on analyst_manufacturer
+            'user_id',         // Local key on manufacturers
+            'user_id'          // Local key on analysts
+        )->withPivot('status')->withTimestamps();
+    }
 }

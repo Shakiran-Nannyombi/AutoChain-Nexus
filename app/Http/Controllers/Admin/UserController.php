@@ -179,7 +179,7 @@ class UserController extends Controller
 
         try {
             // Make the HTTP request to the validation API
-            $response = Http::post('http://localhost:8080/api/v1/validate', $vendorData);
+            $response = Http::post('http://localhost:8084/api/v1/validate', $vendorData);
 
             if ($response->successful()) {
                 $result = $response->json();

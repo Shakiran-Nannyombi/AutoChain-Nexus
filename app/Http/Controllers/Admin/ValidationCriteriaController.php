@@ -54,7 +54,7 @@ class ValidationCriteriaController extends Controller
         $rules = ValidationRule::where('status', 'active')->get();
 
         try {
-            $response = Http::post('http://localhost:8080/api/v1/sync-rules', $rules->toArray());
+            $response = Http::post('http://localhost:8084/api/v1/sync-rules', $rules->toArray());
 
             if ($response->successful()) {
                 return back()->with('success', 'Rules synced with backend successfully!');

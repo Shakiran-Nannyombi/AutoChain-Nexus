@@ -461,4 +461,47 @@ class ManufacturerDashboardController extends Controller
         $delivery->delete(); // Placeholder for closing the order
         return back()->with('success', 'Order marked as delivered and closed.');
     }
+
+    public function analystApplications()
+    {
+        $manufacturerId = optional(Auth::user())->id;
+        $applications = DB::table('analyst_manufacturer')
+            ->where('manufacturer_id', $manufacturerId)
+            ->join('users', 'analyst_manufacturer.analyst_id', '=', 'users.id')
+            ->select('analyst_manufacturer.*', 'users.name as analyst_name', 'users.company as analyst_company', 'users.profile_photo as analyst_photo')
+            ->get();
+        return view('dashboards.manufacturer.analyst-applications', compact('applications'));
+    }
+
+    public function approveAnalyst($applicationId)
+    {
+        $manufacturerId = optional(Auth::user())->id;
+        $application = DB::table('analyst_manufacturer')->where('id', $applicationId)->where('manufacturer_id', $manufacturerId)->first();
+        if (!$application) {
+            return back()->with('error', 'Application not found.');
+        }
+        // Approve this application
+        DB::table('analyst_manufacturer')->where('id', $applicationId)->update(['status' => 'approved', 'updated_at' => now()]);
+        // Optionally reject all other pending applications for this manufacturer
+        DB::table('analyst_manufacturer')->where('manufacturer_id', $manufacturerId)->where('id', '!=', $applicationId)->where('status', 'pending')->update(['status' => 'rejected', 'updated_at' => now()]);
+        return back()->with('success', 'Analyst approved!');
+    }
+
+    public function rejectAnalyst($applicationId)
+    {
+        $manufacturerId = optional(Auth::user())->id;
+        $application = DB::table('analyst_manufacturer')->where('id', $applicationId)->where('manufacturer_id', $manufacturerId)->first();
+        if (!$application) {
+            return back()->with('error', 'Application not found.');
+        }
+        DB::table('analyst_manufacturer')->where('id', $applicationId)->update(['status' => 'rejected', 'updated_at' => now()]);
+        return back()->with('success', 'Analyst rejected.');
+    }
+
+    public function viewAnalystPortfolio($analystId)
+    {
+        $analyst = \App\Models\User::findOrFail($analystId);
+        // You can fetch more details or reports as needed
+        return view('dashboards.manufacturer.analyst-portfolio', compact('analyst'));
+    }
 }

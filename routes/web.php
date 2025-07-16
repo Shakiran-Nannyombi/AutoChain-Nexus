@@ -507,6 +507,8 @@ Route::middleware(['admin', \App\Http\Middleware\PreventBackAfterLogout::class])
     Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('admin.backups.download');
     Route::delete('/backups/{filename}', [BackupController::class, 'delete'])->name('admin.backups.delete');
     Route::post('/backups/{filename}/restore', [BackupController::class, 'restore'])->name('admin.backups.restore');
+    Route::get('/reports/{report}/view', [DashboardController::class, 'viewReport'])->name('admin.reports.view');
+    Route::get('/reports/{report}/download', [DashboardController::class, 'downloadReport'])->name('admin.reports.download');
 });
 
 Route::get('/manufacturer/dashboard', [ManufacturerDashboardController::class, 'index'])
@@ -576,6 +578,20 @@ Route::prefix('analyst')->middleware(\App\Http\Middleware\PreventBackAfterLogout
         return view('dashboards.analyst.chat', compact('users'));
     })->name('analyst.chat');
     Route::get('/analyst/chat/messages/{userId}', [App\Http\Controllers\AnalystController::class, 'messages']);
+});
+
+// Analyst application routes
+Route::middleware(['auth', 'role:analyst'])->group(function () {
+    Route::post('/analyst/apply', [App\Http\Controllers\AnalystController::class, 'applyToManufacturer'])->name('analyst.applyToManufacturer');
+    Route::get('/analyst/applications', [App\Http\Controllers\AnalystController::class, 'myApplications'])->name('analyst.myApplications');
+});
+
+// Manufacturer analyst management routes
+Route::middleware(['auth', 'role:manufacturer'])->group(function () {
+    Route::get('/manufacturer/analyst-applications', [App\Http\Controllers\ManufacturerDashboardController::class, 'analystApplications'])->name('manufacturer.analystApplications');
+    Route::get('/manufacturer/analyst-approve/{id}', [App\Http\Controllers\ManufacturerDashboardController::class, 'approveAnalyst'])->name('manufacturer.approveAnalyst');
+    Route::get('/manufacturer/analyst-reject/{id}', [App\Http\Controllers\ManufacturerDashboardController::class, 'rejectAnalyst'])->name('manufacturer.rejectAnalyst');
+    Route::get('/manufacturer/analyst-portfolio/{id}', [App\Http\Controllers\ManufacturerDashboardController::class, 'viewAnalystPortfolio'])->name('manufacturer.viewAnalystPortfolio');
 });
 
 // Logout route
