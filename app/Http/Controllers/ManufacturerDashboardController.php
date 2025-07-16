@@ -395,7 +395,31 @@ class ManufacturerDashboardController extends Controller
         ->groupBy('segment')
         ->get();
 
-        return view('dashboards.manufacturer.index', compact('customerSegmentCounts', 'segmentNames', 'segmentSummaries'));
+        // Vendor Segmentation Analytics
+        $vendorSegmentCounts = DB::table('vendors')
+            ->select('segment', DB::raw('COUNT(*) as count'))
+            ->groupBy('segment')
+            ->get();
+        $vendorSegmentSummaries = DB::table('vendors')
+            ->select('segment',
+                DB::raw('AVG(total_value) as avg_total_value'),
+                DB::raw('AVG(total_orders) as avg_orders'),
+                DB::raw('AVG(recency_days) as avg_recency'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->leftJoin(DB::raw('(
+                SELECT v.id as vendor_id,
+                       COUNT(vo.id) as total_orders,
+                       COALESCE(SUM(vo.quantity * p.price), 0) as total_value,
+                       DATEDIFF(NOW(), MAX(vo.ordered_at)) as recency_days
+                FROM vendors v
+                LEFT JOIN vendor_orders vo ON v.user_id = vo.vendor_id
+                LEFT JOIN products p ON vo.product = p.name
+                GROUP BY v.id
+            ) as stats'), 'vendors.id', '=', 'stats.vendor_id')
+            ->groupBy('segment')
+            ->get();
+        return view('dashboards.manufacturer.index', compact('customerSegmentCounts', 'segmentNames', 'segmentSummaries', 'vendorSegmentCounts', 'vendorSegmentSummaries'));
     }
 
     public function updateProcessFlowItem(Request $request)

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->text('product_categories')->nullable();
             $table->text('service_areas')->nullable();
             $table->string('contract_terms')->nullable();
+            $table->string('segment')->nullable(); // Vendor segmentation
             $table->timestamps();
         });
     }

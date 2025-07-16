@@ -1,19 +1,14 @@
 /* Manufacturer-specific styles */
 :root {
-    --primary: #16610E;
-    --primary-light: #82d48a;
-    --secondary: #F97A00;
-    --accent: #FED16A;
-    --blue: #1976D2;
-    --text-dark: #222;
-    --text-light: #666;
+    --primary: #2196f3;
+    --primary-light: #42a5f5;
+    --primary-dark: #1565c0;
+    --success: #198754;
+    --danger: #dc3545;
+    --info: #0dcaf0;
     --background: #fff;
-    --text: #333333;
-    --text2: #FFF4A4;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --success: #38c172;
-    --danger: #e3342f;
-    --warning: #ffed4a;
+    --text-main: #222;
+    --text-light: #e3e3e3;
 }
 .page-header-manufacturer {
     font-size: 2rem;
@@ -22,4 +17,116 @@
     margin-bottom: 1.5rem;
     letter-spacing: 0.5px;
     padding-left: 1rem;
+}
+
+/* Modal and Portfolio Styles - Landscape Layout */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    overflow-y: auto;
+}
+.modal-overlay.active { display: block; }
+.modal-content {
+    background: var(--background);
+    border-radius: 12px;
+    max-width: 900px;
+    min-width: 350px;
+    margin: 40px auto;
+    padding: 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: visible;
+    max-height: 90vh;
+}
+.modal-close {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    font-size: 1.5rem;
+    color: #888;
+    cursor: pointer;
+    z-index: 10;
+}
+.portfolio-left {
+    background: var(--accent);
+    color: var(--primary-light);
+    width: 320px;
+    min-width: 220px;
+    padding: 2.2rem 1.5rem 2.2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.portfolio-left h2 {
+    margin: 0 0 0.2rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+}
+.portfolio-left .fas {
+    font-size: 2.1rem;
+    margin-right: 12px;
+}
+.portfolio-left .subtitle {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+}
+.portfolio-contact {
+    font-size: 1rem;
+    color: var(--text);
+    margin-top: 1.2rem;
+}
+.portfolio-contact div {
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+}
+.portfolio-contact i {
+    margin-right: 7px;
+    color: var(--primary-light);
+}
+.portfolio-right {
+    flex: 1;
+    padding: 2.2rem 2.2rem 2.2rem 2rem;
+    background: var(--background);
+    color: var(--text-main);
+    overflow-y: auto;
+    max-height: 80vh;
+}
+.portfolio-summary {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    color: #333;
+}
+.portfolio-section {
+    margin-bottom: 1.2rem;
+}
+.portfolio-section-title {
+    background: var(--accent);
+    color:black;
+    display: inline-block;
+    border-radius: 6px;
+    padding: 0.2rem 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 1.08rem;
+}
+.portfolio-list {
+    margin: 0.2rem 0 0 0;
+    padding-left: 1.2rem;
+}
+@media (max-width: 1000px) {
+    .modal-content { flex-direction: column; max-width: 98vw; }
+    .portfolio-left, .portfolio-right { width: 100%; min-width: 0; padding: 1.2rem; }
+    .portfolio-right { max-height: 40vh; }
 } 

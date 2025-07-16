@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             ApprovedAndPendingUsersSeeder::class,
+            VendorSeeder::class,
             ValidationRuleSeeder::class,
             FacilityVisitSeeder::class,
             AnalystSampleDataSeeder::class,
@@ -30,6 +31,7 @@ class DatabaseSeeder extends Seeder
             CustomersTableSeeder::class,
             PurchasesTableSeeder::class,
             ManufacturerOrdersSeeder::class,
+            VendorOrderSeeder::class,
         ]);
 
         // Seed demo communications for active connections

@@ -842,4 +842,5 @@ Route::middleware(['user_or_admin'])->group(function () {
     Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
 });
 
-Route::post('/vendor/orders/create', [App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
+Route::get('/vendor-segments/import', [\App\Http\Controllers\VendorAnalyticsController::class, 'importSegments'])->name('vendor.segments.import');
+Route::get('/vendor-segments/summary', [\App\Http\Controllers\VendorAnalyticsController::class, 'segmentationSummary'])->name('vendor.segments.summary');

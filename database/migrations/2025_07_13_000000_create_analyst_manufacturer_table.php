@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('manufacturer_id')->constrained('users')->onDelete('cascade');
             $table->string('status')->default('pending'); // pending, approved, rejected
             $table->timestamps();
-            $table->unique('manufacturer_id');
+            $table->unique(['analyst_id', 'manufacturer_id']);
         });
     }
 

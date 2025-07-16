@@ -12,6 +12,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\EnsureUserIsAuthenticated;
 use App\Http\Middleware\UpdateLastSeen;
 use App\Http\Middleware\PreventBackAfterLogout;
+use App\Http\Middleware\RoleMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -70,5 +71,6 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'auth.shared' => \App\Http\Middleware\EnsureUserIsAuthenticated::class,
         'prevent.back' => \App\Http\Middleware\PreventBackAfterLogout::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
 } 
