@@ -135,7 +135,7 @@
                 <tbody>
                     @foreach($vendorAnalytics as $i => $vendor)
                         @php $vendorId = isset($vendor['user_id']) ? $vendor['user_id'] : ($vendor['name'] ?? $i); @endphp
-                        <tr>
+                    <tr>
                             <td>{{ $vendor['name'] ?? 'Vendor #' . $vendorId }}</td>
                             <td>{{ $segmentLabels[isset($vendor['segment']) ? $vendor['segment'] : null] ?? 'Unsegmented' }}</td>
                             <td>{{ $vendor['total_orders'] }}</td>
@@ -158,7 +158,7 @@
                                     <strong>Last Order:</strong> {{ $vendor['last_order_date'] ?? 'N/A' }}
                                 </div>
                             </td>
-                        </tr>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -174,7 +174,7 @@
             <div style="flex: 2 1 400px; min-width: 350px;">
                 <h4 style="color: var(--primary);">Top 5 Products (All Vendors)</h4>
                 <canvas id="topProductsBarChart" height="180"></canvas>
-            </div>
+                </div>
         </div>
     </div>
     <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 0.5rem;">
@@ -296,7 +296,7 @@
                     document.getElementById('segmentationStatus').textContent = 'Segmentation failed: ' + err;
                     btn.disabled = false;
                     btn.textContent = 'Run Segmentation';
-                });
+            });
         });
     </script>
 @endsection 
