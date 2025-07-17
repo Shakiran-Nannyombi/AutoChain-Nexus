@@ -405,3 +405,30 @@ html, body {
 .sidebar-overlay.open {
     display: block;
 }
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.order-table th, .order-table td {
+    border: 1px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.order-table th {
+    background: #f8f8f8;
+    font-weight: 600;
+}
+
+.order-table tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.order-table td:last-child, .order-table th:last-child {
+    text-align: center;
+    min-width: 140px;
+}

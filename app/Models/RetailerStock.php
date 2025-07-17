@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class RetailerStock extends Model
 {
     protected $fillable = [
-        'retailer_id', 'car_model', 'vendor_name', 'quantity_received', 'status',
+        'retailer_id', 'car_model', 'vendor_name', 'quantity_received', 'status', 'vendor_id',
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
     ];
 
     public function retailer()

@@ -10,6 +10,14 @@
     <link rel="stylesheet" href="{{ asset('css/manufacturer.css') }}">
 @endpush
 
+@php
+    $segmentNames = [
+        1 => 'At Risk',
+        2 => 'High Value Customers',
+        3 => 'occasional Customers',
+    ];
+@endphp
+
 @section('content')
     <div class="content-card">
         <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
@@ -43,7 +51,7 @@
                     </div>
                     <i class="fas fa-cubes" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
-            </div>
+                    </div>
             <div style="background: linear-gradient(135deg, var(--secondary), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>

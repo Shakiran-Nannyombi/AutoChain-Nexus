@@ -15,6 +15,11 @@ class UserDocument extends Model
         'file_path'
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

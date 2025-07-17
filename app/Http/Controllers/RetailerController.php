@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\RetailerStock;
 use App\Models\RetailerSale;
 use App\Models\RetailerOrder;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\RetailerNotification;
 
 class RetailerController extends Controller
 {
@@ -88,13 +90,49 @@ class RetailerController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
-        RetailerOrder::create([
+        // Get a random vendor to assign the order to
+        $vendor = User::where('role', 'vendor')->where('status', 'approved')->inRandomOrder()->first();
+        
+        if (!$vendor) {
+            return back()->with('error', 'No vendors available to process your order.');
+        }
+
+        $order = RetailerOrder::create([
             'retailer_id' => Auth::id(),
+            'vendor_id' => $vendor->id,
             'customer_name' => $request->customer_name,
             'car_model' => $request->car_model,
-            'quantity' => $request->quantity
+            'quantity' => $request->quantity,
+            'status' => 'pending',
+            'ordered_at' => now(),
+            'total_amount' => $request->quantity * rand(25000, 50000) // Random price for demo
         ]);
 
-        return back()->with('success', 'Order placed.');
+        // Notify the retailer
+        Auth::user()->notify(new \App\Notifications\RetailerNotification(
+            'Order Placed', 
+            'Your order #' . $order->id . ' has been placed and is pending confirmation.'
+        ));
+
+        return back()->with('success', 'Order placed successfully and assigned to vendor.');
+    }
+
+    public function viewOrders() {
+        $retailerId = Auth::id();
+        $orders = RetailerOrder::where('retailer_id', $retailerId)
+            ->with('vendor')
+            ->orderByDesc('created_at')
+            ->get();
+        
+        return view('dashboards.retailer.orders', compact('orders'));
+    }
+
+    public function orderDetail($id) {
+        $retailerId = Auth::id();
+        $order = RetailerOrder::where('retailer_id', $retailerId)
+            ->with('vendor')
+            ->findOrFail($id);
+        
+        return view('dashboards.retailer.order-detail', compact('order'));
     }
 }

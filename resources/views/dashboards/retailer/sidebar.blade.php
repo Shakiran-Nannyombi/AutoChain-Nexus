@@ -8,7 +8,10 @@
     <i class="fas fa-edit"></i> Sales Update
 </a>
 <a href="{{ route('retailer.order-placement') }}" class="nav-item{{ request()->is('retailer/order-placement') ? ' active' : '' }}">
-    <i class="fas fa-shopping-cart"></i> Order Placement
+    <i class="fas fa-shopping-cart"></i> Place Order
+</a>
+<a href="{{ route('retailer.orders') }}" class="nav-item{{ request()->is('retailer/my-orders*') ? ' active' : '' }}">
+    <i class="fas fa-list"></i> My Orders
 </a>
 <a href="{{ route('user.reports') }}" class="nav-item{{ request()->is('user/reports') ? ' active' : '' }}">
     <i class="fas fa-file-alt"></i> Reports

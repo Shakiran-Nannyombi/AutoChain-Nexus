@@ -19,7 +19,11 @@
 </a>
 
 <a href="{{ route('vendor.orders') }}" class="nav-item {{ request()->is('vendor/orders*') ? 'active' : '' }}">
-    <i class="fas fa-shopping-cart"></i> Orders
+    <i class="fas fa-shopping-cart"></i> Orders to Manufacturers
+</a>
+
+<a href="{{ route('vendor.retailer-orders.index') }}" class="nav-item {{ request()->is('vendor/retailer-orders*') ? 'active' : '' }}">
+    <i class="fas fa-list-check"></i> Retailer Orders
 </a>
 
 <a href="{{ route('vendor.analytics') }}" class="nav-item {{ request()->is('vendor/analytics*') ? 'active' : '' }}">

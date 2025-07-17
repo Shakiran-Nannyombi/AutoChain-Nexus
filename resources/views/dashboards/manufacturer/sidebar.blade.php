@@ -8,7 +8,10 @@
     <i class="fas fa-list-alt"></i> Checklists
 </a>
 <a href="/manufacturer/orders" class="nav-item {{ request()->is('manufacturer/orders*') ? 'active' : '' }}">
-    <i class="fas fa-shopping-cart"></i> Orders
+    <i class="fas fa-shopping-cart"></i> Supplier Orders
+</a>
+<a href="/manufacturer/vendor-orders" class="nav-item {{ request()->is('manufacturer/vendor-orders*') ? 'active' : '' }}">
+    <i class="fas fa-truck"></i> Vendor Orders
 </a>
 <a href="/manufacturer/material-receipt" class="nav-item {{ request()->is('manufacturer/material-receipt*') ? 'active' : '' }}">
     <i class="fas fa-truck-loading"></i> Material Receipt

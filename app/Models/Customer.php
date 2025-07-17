@@ -24,6 +24,11 @@ class Customer extends Model
         return $this->hasMany(Purchase::class);
     }
 
+    public function vendors()
+    {
+        return $this->hasManyThrough(\App\Models\User::class, \App\Models\Purchase::class, 'customer_id', 'id', 'id', 'vendor_id');
+    }
+
     /**
      * Recommend products based on customer segmentation.
      * 

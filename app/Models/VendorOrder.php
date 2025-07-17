@@ -15,12 +15,36 @@ class VendorOrder extends Model
         'manufacturer_id',
         'vendor_id',
         'product',
+        'product_name',
+        'product_category',
         'quantity',
+        'unit_price',
+        'total_amount',
         'status',
         'ordered_at',
+        'accepted_at',
+        'rejected_at',
+        'rejection_reason',
+        'notes',
+        'delivery_address',
+        'expected_delivery_date',
     ];
 
-    protected $dates = [
-        'ordered_at',
+    protected $casts = [
+        'ordered_at' => 'datetime',
+        'accepted_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'expected_delivery_date' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
+
+    public function vendor()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'vendor_id');
+    }
+    public function manufacturer()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'manufacturer_id');
+    }
 } 

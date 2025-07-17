@@ -6,9 +6,14 @@
 @section('content')
     <h1 class="page-header">Order Placement</h1>
     <div class="content-card">
-        <h2 style="color: var(--deep-purple); margin-bottom: 1.5rem; font-size: 1.8rem;">
-            <i class="fas fa-shopping-bag"></i> Place a Customer Order
-        </h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="color: var(--deep-purple); font-size: 1.8rem; margin: 0;">
+                <i class="fas fa-shopping-bag"></i> Place a Customer Order
+            </h2>
+            <a href="{{ route('retailer.orders') }}" class="button" style="background: #007bff; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600;">
+                <i class="fas fa-list"></i> View My Orders
+            </a>
+        </div>
 
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>

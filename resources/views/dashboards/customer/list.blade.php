@@ -9,7 +9,7 @@
 @section('content')
 @php
     $segmentNames = [
-        1 => 'Occasional Buyers',
+        1 => 'At Risk',
         2 => 'High Value Customers',
         3 => 'At Risk Customers',
     ];

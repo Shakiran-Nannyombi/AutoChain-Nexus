@@ -113,7 +113,7 @@ $recentActivities) && $recentActivities->count())
 
     @php
         $segmentNames = [
-            1 => 'Occasional Buyers',
+            1 => 'At Risk',
             2 => 'High Value Customers',
             3 => 'At Risk Customers',
         ];
@@ -163,6 +163,6 @@ $recentActivities) && $recentActivities->count())
             </table>
         </div>
         @endif
+        </div>
     </div>
-</div>
 @endsection 

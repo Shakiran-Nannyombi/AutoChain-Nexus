@@ -69,33 +69,33 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
         return back()->withErrors([
             'email' => 'Your account is not approved yet.',
         ]);
-    }
-    // Log in the user with Laravel Auth
-    Auth::login($user);
-    // Store user info in session
-    session([
-        'user_id' => $user->id,
-        'user_name' => $user->name,
-        'user_email' => $user->email,
+            }
+            // Log in the user with Laravel Auth
+            Auth::login($user);
+        // Store user info in session
+        session([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
         'user_role' => $user->role
-    ]);
-    // Redirect to role-specific dashboard
+        ]);
+        // Redirect to role-specific dashboard
     switch ($user->role) {
-        case 'admin':
-            return redirect('/admin/dashboard');
-        case 'manufacturer':
-            return redirect('/manufacturer/dashboard');
-        case 'supplier':
-            return redirect('/supplier/dashboard');
-        case 'vendor':
-            return redirect('/vendor/dashboard');
-        case 'retailer':
-            return redirect('/retailer/dashboard');
-        case 'analyst':
-            return redirect('/analyst/dashboard');
-        default:
-            return redirect('/dashboard');
-    }
+            case 'admin':
+                return redirect('/admin/dashboard');
+            case 'manufacturer':
+                return redirect('/manufacturer/dashboard');
+            case 'supplier':
+                return redirect('/supplier/dashboard');
+            case 'vendor':
+                return redirect('/vendor/dashboard');
+            case 'retailer':
+                return redirect('/retailer/dashboard');
+            case 'analyst':
+                return redirect('/analyst/dashboard');
+            default:
+                return redirect('/dashboard');
+        }
 });
 
 // Register page
@@ -267,8 +267,8 @@ Route::post('/login', function (Illuminate\Http\Request $request) {
     // Authenticate user by email and password only
     $user = \App\Models\User::where('email', $email)->first();
     if (!$user || !password_verify($password, $user->password)) {
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
         ]);
     }
     // Optionally check if user is approved
@@ -671,6 +671,14 @@ Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterL
     Route::get('/orders', [\App\Http\Controllers\ManufacturerDashboardController::class, 'orders'])->name('manufacturer.orders');
     Route::post('/orders/remake/{id}', [\App\Http\Controllers\ManufacturerDashboardController::class, 'remakeOrder'])->name('manufacturer.remake.order');
     Route::post('/material-receipt/delivered/{id}', [\App\Http\Controllers\ManufacturerDashboardController::class, 'orderDelivered'])->name('manufacturer.order.delivered');
+    
+    // Vendor Orders Management
+    Route::get('/vendor-orders', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'index'])->name('manufacturer.vendor-orders');
+    Route::get('/vendor-orders/{id}', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'show'])->name('manufacturer.vendor-orders.show');
+    Route::post('/vendor-orders/{id}/accept', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'accept'])->name('manufacturer.vendor-orders.accept');
+    Route::post('/vendor-orders/{id}/reject', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'reject'])->name('manufacturer.vendor-orders.reject');
+    Route::put('/vendor-orders/{id}/notes', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'updateNotes'])->name('manufacturer.vendor-orders.notes');
+    Route::get('/vendor-orders/products', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'getProducts'])->name('manufacturer.vendor-orders.products');
 });
 
 // Supplier dashboard routes
@@ -688,12 +696,41 @@ Route::prefix('supplier')->middleware(\App\Http\Middleware\PreventBackAfterLogou
 // Vendor dashboard routes
 Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\VendorDashboardController::class, 'index'])->name('vendor.dashboard');
-    Route::get('/warehouse', function () { return view('dashboards.vendor.warehouse'); })->name('vendor.warehouse');
-    Route::get('/delivery', function () { return view('dashboards.vendor.delivery'); })->name('vendor.delivery');
-    Route::get('/tracking', function () { return view('dashboards.vendor.tracking'); })->name('vendor.tracking');
-    Route::get('/settings', function () { return view('dashboards.vendor.settings'); })->name('vendor.settings');
-    Route::get('/products', function () { return view('dashboards.vendor.products'); })->name('vendor.products');
-    Route::get('/orders', function () { return view('dashboards.vendor.orders'); })->name('vendor.orders');
+    Route::get('/warehouse', [\App\Http\Controllers\VendorWarehouseController::class, 'index'])->name('vendor.warehouse');
+    Route::post('/warehouse/update-stock/{productId}', [\App\Http\Controllers\VendorWarehouseController::class, 'updateStock'])->name('vendor.warehouse.update-stock');
+    Route::get('/delivery', [\App\Http\Controllers\VendorDeliveryController::class, 'index'])->name('vendor.delivery');
+    Route::post('/delivery/update-status/{stockId}', [\App\Http\Controllers\VendorDeliveryController::class, 'updateDeliveryStatus'])->name('vendor.delivery.update-status');
+    Route::post('/delivery/schedule', [\App\Http\Controllers\VendorDeliveryController::class, 'scheduleDelivery'])->name('vendor.delivery.schedule');
+    Route::get('/tracking', [\App\Http\Controllers\VendorTrackingController::class, 'index'])->name('vendor.tracking');
+    Route::get('/tracking/{stockId}', [\App\Http\Controllers\VendorTrackingController::class, 'getDeliveryDetails'])->name('vendor.tracking.details');
+    Route::get('/settings', [\App\Http\Controllers\VendorSettingsController::class, 'index'])->name('vendor.settings');
+    Route::post('/settings/update-profile', [\App\Http\Controllers\VendorSettingsController::class, 'updateProfile'])->name('vendor.settings.update-profile');
+    Route::post('/settings/change-password', [\App\Http\Controllers\VendorSettingsController::class, 'changePassword'])->name('vendor.settings.change-password');
+    Route::post('/settings/update-company', [\App\Http\Controllers\VendorSettingsController::class, 'updateCompany'])->name('vendor.settings.update-company');
+    Route::post('/settings/upload-document', [\App\Http\Controllers\VendorSettingsController::class, 'uploadDocument'])->name('vendor.settings.upload-document');
+    Route::get('/settings/download-document/{documentId}', [\App\Http\Controllers\VendorSettingsController::class, 'downloadDocument'])->name('vendor.settings.download-document');
+    Route::delete('/settings/delete-document/{documentId}', [\App\Http\Controllers\VendorSettingsController::class, 'deleteDocument'])->name('vendor.settings.delete-document');
+    Route::post('/settings/update-notifications', [\App\Http\Controllers\VendorSettingsController::class, 'updateNotifications'])->name('vendor.settings.update-notifications');
+    Route::delete('/settings/delete-account', [\App\Http\Controllers\VendorSettingsController::class, 'deleteAccount'])->name('vendor.settings.delete-account');
+    Route::get('/products', [\App\Http\Controllers\VendorProductController::class, 'index'])->name('vendor.products');
+    Route::get('/products/create', [\App\Http\Controllers\VendorProductController::class, 'create'])->name('vendor.products.create');
+    Route::post('/products', [\App\Http\Controllers\VendorProductController::class, 'store'])->name('vendor.products.store');
+    Route::get('/products/{id}/edit', [\App\Http\Controllers\VendorProductController::class, 'edit'])->name('vendor.products.edit');
+    Route::put('/products/{id}', [\App\Http\Controllers\VendorProductController::class, 'update'])->name('vendor.products.update');
+    Route::delete('/products/{id}', [\App\Http\Controllers\VendorProductController::class, 'destroy'])->name('vendor.products.destroy');
+    Route::get('/orders', [\App\Http\Controllers\VendorOrderController::class, 'index'])->name('vendor.orders');
+    Route::post('/orders/create', [\App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
+    Route::put('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'update'])->name('vendor.orders.update');
+    Route::delete('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'destroy'])->name('vendor.orders.destroy');
+    
+    // Retailer Orders Management
+    Route::get('/retailer-orders', [\App\Http\Controllers\VendorRetailerOrderController::class, 'index'])->name('vendor.retailer-orders.index');
+    Route::get('/retailer-orders/{id}', [\App\Http\Controllers\VendorRetailerOrderController::class, 'show'])->name('vendor.retailer-orders.show');
+    Route::post('/retailer-orders/{id}/confirm', [\App\Http\Controllers\VendorRetailerOrderController::class, 'confirm'])->name('vendor.retailer-orders.confirm');
+    Route::post('/retailer-orders/{id}/reject', [\App\Http\Controllers\VendorRetailerOrderController::class, 'reject'])->name('vendor.retailer-orders.reject');
+    Route::post('/retailer-orders/{id}/ship', [\App\Http\Controllers\VendorRetailerOrderController::class, 'ship'])->name('vendor.retailer-orders.ship');
+    Route::post('/retailer-orders/{id}/deliver', [\App\Http\Controllers\VendorRetailerOrderController::class, 'deliver'])->name('vendor.retailer-orders.deliver');
+    Route::put('/retailer-orders/{id}/notes', [\App\Http\Controllers\VendorRetailerOrderController::class, 'updateNotes'])->name('vendor.retailer-orders.notes');
     Route::get('/analytics', [\App\Http\Controllers\VendorAnalyticsController::class, 'dashboard'])->name('vendor.analytics');
     // Vendor chat route (now renders the Blade view directly and passes $users)
     Route::get('/chats', function () {
@@ -732,6 +769,11 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::delete('/chats/{chat}', [\App\Http\Controllers\ChatController::class, 'destroy'])->name('chats.destroy');
     Route::get('/chats/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getChatMessages'])->name('chats.messages');
     Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
+    Route::get('/profile', [\App\Http\Controllers\VendorProfileController::class, 'edit'])->name('vendor.profile');
+    Route::post('/profile', [\App\Http\Controllers\VendorProfileController::class, 'update'])->name('vendor.profile.update');
+    Route::post('/profile/password', [\App\Http\Controllers\VendorProfileController::class, 'updatePassword'])->name('vendor.profile.password');
+    Route::post('/profile/documents', [\App\Http\Controllers\VendorProfileController::class, 'uploadDocuments'])->name('vendor.profile.documents');
+    Route::get('/products/by-manufacturer/{manufacturerId}', [\App\Http\Controllers\VendorOrderController::class, 'getManufacturerProducts'])->name('vendor.products.by-manufacturer');
 });
 
 // Retailer dashboard routes
@@ -747,6 +789,8 @@ Route::prefix('retailer')->middleware(\App\Http\Middleware\PreventBackAfterLogou
 
     Route::get('/orders', [RetailerController::class, 'orderForm'])->name('retailer.order-placement');
     Route::post('/orders', [RetailerController::class, 'submitOrder'])->name('retailer.orders.submit');
+    Route::get('/my-orders', [RetailerController::class, 'viewOrders'])->name('retailer.orders');
+    Route::get('/my-orders/{id}', [RetailerController::class, 'orderDetail'])->name('retailer.order-detail');
 
     Route::get('/notifications', function () {
         return view('dashboards.retailer.notifications');
@@ -768,4 +812,15 @@ Route::middleware(['user_or_admin'])->group(function () {
     Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
 });
 
-Route::post('/vendor/orders/create', [App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
+// Customer routes (public access)
+Route::prefix('customer')->name('customer.')->group(function () {
+    Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/browse-products', [CustomerController::class, 'browseProducts'])->name('browse.products');
+    Route::get('/product/{id}', [CustomerController::class, 'showProduct'])->name('product.show');
+    Route::post('/place-order', [CustomerController::class, 'placeOrder'])->name('place.order');
+    Route::get('/order-confirmation/{id}', [CustomerController::class, 'orderConfirmation'])->name('order.confirmation');
+    Route::get('/track-order', [CustomerController::class, 'trackOrder'])->name('track.order');
+    Route::post('/track-order', [CustomerController::class, 'trackOrder'])->name('track.order.post');
+});
+
+

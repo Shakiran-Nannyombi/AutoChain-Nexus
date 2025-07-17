@@ -61,6 +61,8 @@ class User extends Authenticatable
         'extracted_data' => 'array',
         'validated_at' => 'datetime',
         'auto_visit_scheduled' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function documents()
