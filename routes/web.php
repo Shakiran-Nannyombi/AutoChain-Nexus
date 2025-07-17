@@ -886,20 +886,5 @@ Route::middleware(['user_or_admin'])->group(function () {
     Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
 });
 
-<<<<<<< HEAD
-// Customer routes (public access)
-Route::prefix('customer')->name('customer.')->group(function () {
-    Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
-    Route::get('/browse-products', [CustomerController::class, 'browseProducts'])->name('browse.products');
-    Route::get('/product/{id}', [CustomerController::class, 'showProduct'])->name('product.show');
-    Route::post('/place-order', [CustomerController::class, 'placeOrder'])->name('place.order');
-    Route::get('/order-confirmation/{id}', [CustomerController::class, 'orderConfirmation'])->name('order.confirmation');
-    Route::get('/track-order', [CustomerController::class, 'trackOrder'])->name('track.order');
-    Route::post('/track-order', [CustomerController::class, 'trackOrder'])->name('track.order.post');
-});
-
-
-=======
 Route::get('/vendor-segments/import', [\App\Http\Controllers\VendorAnalyticsController::class, 'importSegments'])->name('vendor.segments.import');
 Route::get('/vendor-segments/summary', [\App\Http\Controllers\VendorAnalyticsController::class, 'segmentationSummary'])->name('vendor.segments.summary');
->>>>>>> c68b8e0148e12445670715c10c12137215b0e64f
