@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\RetailerStock;
 use App\Models\RetailerSale;
 use App\Models\RetailerOrder;
+use App\Models\Vendor;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,9 @@ class RetailerController extends Controller
         $stocks = RetailerStock::with('vendor')->where('retailer_id', $retailerId)->get();
         return view('dashboards.retailer.stock-overview', compact('stocks'));
     }
+
+    
+
 
     public function acceptStock($id) {
         RetailerStock::where('id', $id)->update(['status' => 'accepted']);
@@ -80,51 +84,56 @@ class RetailerController extends Controller
     }
 
     public function orderForm() {
-        return view('dashboards.retailer.order-placement');
-    }
+    $vendors = User::where('role', 'vendor')->where('status', 'approved')->get();
+    return view('dashboards.retailer.order-placement', compact('vendors'));
+}
+
 
     public function submitOrder(Request $request) {
-        $request->validate([
-            'customer_name' => 'required',
-            'car_model' => 'required',
-            'quantity' => 'required|integer|min:1'
-        ]);
+    $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'car_model' => 'required|string|max:255',
+        'quantity' => 'required|integer|min:1',
+        'vendor_id' => 'required|exists:users,id'
+    ]);
 
-        // Get a random vendor to assign the order to
-        $vendor = User::where('role', 'vendor')->where('status', 'approved')->inRandomOrder()->first();
-        
-        if (!$vendor) {
-            return back()->with('error', 'No vendors available to process your order.');
-        }
+    $vendor = User::where('id', $request->vendor_id)
+                  ->where('role', 'vendor')
+                  ->where('status', 'approved')
+                  ->first();
 
-        $order = RetailerOrder::create([
-            'retailer_id' => Auth::id(),
-            'vendor_id' => $vendor->id,
-            'customer_name' => $request->customer_name,
-            'car_model' => $request->car_model,
-            'quantity' => $request->quantity,
-            'status' => 'pending',
-            'ordered_at' => now(),
-            'total_amount' => $request->quantity * rand(25000, 50000) // Random price for demo
-        ]);
-
-        // Notify the retailer
-        Auth::user()->notify(new \App\Notifications\RetailerNotification(
-            'Order Placed', 
-            'Your order #' . $order->id . ' has been placed and is pending confirmation.'
-        ));
-
-        return back()->with('success', 'Order placed successfully and assigned to vendor.');
+    if (!$vendor) {
+        return back()->with('error', 'Selected vendor is not available.');
     }
+
+    $order = RetailerOrder::create([
+        'retailer_id' => Auth::id(),
+        'vendor_id' => $vendor->id,
+        'customer_name' => $request->customer_name,
+        'car_model' => $request->car_model,
+        'quantity' => $request->quantity,
+        'status' => 'pending',
+        'ordered_at' => now(),
+        'total_amount' => $request->quantity * rand(25000, 50000) // demo price logic
+    ]);
+
+    Auth::user()->notify(new \App\Notifications\RetailerNotification(
+        'Order Placed', 
+        'Your order #' . $order->id . ' to vendor ' . $vendor->name . ' has been placed and is pending confirmation.'
+    ));
+
+    return back()->with('success', 'Order placed successfully and sent to ' . $vendor->name . '.');
+}
+
 
     public function viewOrders() {
         $retailerId = Auth::id();
-        $orders = RetailerOrder::where('retailer_id', $retailerId)
+        $retailerOrders = RetailerOrder::where('retailer_id', $retailerId)
             ->with('vendor')
             ->orderByDesc('created_at')
             ->get();
         
-        return view('dashboards.retailer.orders', compact('orders'));
+        return view('dashboards.retailer.orders', compact('retailerOrders'));
     }
 
     public function orderDetail($id) {

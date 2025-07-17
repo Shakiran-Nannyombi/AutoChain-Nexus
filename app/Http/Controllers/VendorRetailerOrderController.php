@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use App\Models\VendorActivity;
 use App\Notifications\VendorNotification;
 use App\Notifications\RetailerNotification;
+use Illuminate\Support\Facades\Log;
+
 
 class VendorRetailerOrderController extends Controller
 {
@@ -125,37 +127,58 @@ class VendorRetailerOrderController extends Controller
 
     // Mark order as delivered
     public function deliver(Request $request, $id)
-    {
-        $vendorId = Auth::id();
-        $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
-        
-        $order->update([
-            'status' => 'delivered',
-            'delivered_at' => Carbon::now(),
-        ]);
+{
+    $vendorId = Auth::id();
+    $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
 
-        // Log activity
-        VendorActivity::create([
-            'vendor_id' => $vendorId,
-            'activity' => 'Delivered retailer order',
-            'details' => 'Order ID: ' . $order->id . ' has been delivered successfully.',
-        ]);
+    // Update order status and delivery time
+    $order->update([
+        'status' => 'delivered',
+        'delivered_at' => now(),
+        'notes' => $this->appendNote($order->notes, 'Delivered: ' . ($request->input('delivery_notes') ?? 'Order delivered')),
+    ]);
 
-        // Notify retailer
-        $retailer = User::find($order->retailer_id);
-        if ($retailer) {
-            $retailer->notify(new RetailerNotification(
-                'Order Delivered', 
-                'Your order #' . $order->id . ' has been delivered successfully.'
-            ));
-        }
+      Log::info("Creating RetailerStock for order ID: {$order->id}");
 
-        return response()->json([
-            'success' => true, 
-            'message' => 'Order marked as delivered!', 
-            'order' => $order
-        ]);
+    // Create retailer stock record
+    $stock = \App\Models\RetailerStock::create([
+        'retailer_id' => $order->retailer_id,
+        'vendor_id' => $vendorId,
+        'vendor_name' => Auth::user()->name,
+        'car_model' => $order->car_model,
+        'quantity_received' => $order->quantity,
+        'status' => 'pending', // So the retailer can accept/reject
+    ]);
+
+     Log::info("RetailerStock created with ID: {$stock->id}");
+
+    // Log vendor activity
+    VendorActivity::create([
+        'vendor_id' => $vendorId,
+        'activity' => 'Delivered retailer order',
+        'details' => 'Order ID: ' . $order->id . ' has been delivered and added to stock.',
+    ]);
+
+    // Notify retailer
+    $retailer = User::find($order->retailer_id);
+    if ($retailer) {
+        $retailer->notify(new RetailerNotification(
+            'Stock Pending Confirmation',
+            'Your order #' . $order->id . ' has been delivered and is pending your confirmation in stock.'
+        ));
     }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Order marked as delivered and stock record created!',
+        'order' => $order
+    ]);
+}
+
+private function appendNote($existing, $new)
+{
+    return ($existing ? $existing . "\n" : '') . $new;
+}
 
     // Reject a retailer order
     public function reject(Request $request, $id)
@@ -180,11 +203,13 @@ class VendorRetailerOrderController extends Controller
             'details' => 'Order ID: ' . $order->id . ', Reason: ' . $validated['rejection_reason'],
         ]);
 
+       
+
         // Notify retailer
         $retailer = User::find($order->retailer_id);
         if ($retailer) {
             $retailer->notify(new RetailerNotification(
-                'Order Rejected', 
+                'Order Rejected',
                 'Your order #' . $order->id . ' has been rejected. Reason: ' . $validated['rejection_reason']
             ));
         }

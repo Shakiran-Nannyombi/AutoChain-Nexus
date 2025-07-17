@@ -18,9 +18,23 @@
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
 
         <form action="{{ route('retailer.orders.submit') }}" method="POST" style="margin-bottom: 2rem;">
             @csrf
+
+            <div style="margin-bottom: 1rem;">
+                <label for="vendor_id" style="display: block; margin-bottom: 0.5rem;">Select Vendor</label>
+                <select name="vendor_id" id="vendor_id" class="form-control" required>
+                    <option value="">-- Choose a Vendor --</option>
+                    @foreach ($vendors as $vendor)
+                        <option value="{{ $vendor->id }}">{{ $vendor->name }} ({{ $vendor->email }})</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div style="margin-bottom: 1rem;">
                 <label for="customer_name" style="display: block; margin-bottom: 0.5rem;">Customer Name</label>
                 <input type="text" name="customer_name" id="customer_name" class="form-control" required>
@@ -39,4 +53,4 @@
             <button type="submit" class="btn btn-primary">Submit Order</button>
         </form>
     </div>
-@endsection 
+@endsection

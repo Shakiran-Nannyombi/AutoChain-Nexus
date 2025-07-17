@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             ManufacturerOrdersSeeder::class,
             CustomerSegmentDemoSeeder::class, // Add this line
             VarietyCustomerPurchaseSeeder::class, // Add this line
+            //VendorOrderSeeder::class,
         ]);
 
         // Seed demo communications for active connections
