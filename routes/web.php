@@ -844,6 +844,7 @@ Route::prefix('retailer')->middleware(\App\Http\Middleware\PreventBackAfterLogou
     Route::get('/dashboard', [RetailerController::class, 'dashboard'])->name('retailer.dashboard');
 
     Route::get('/stock-overview', [RetailerController::class, 'stockOverview'])->name('retailer.stock-overview');
+    //Route::get('/retailer/stock', [RetailerController::class, 'viewStock'])->name('retailer.stock-overview');
     Route::post('/stock/accept/{id}', [RetailerController::class, 'acceptStock'])->name('retailer.stock.accept');
     Route::post('/stock/reject/{id}', [RetailerController::class, 'rejectStock'])->name('retailer.stock.reject');
 

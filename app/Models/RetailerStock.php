@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RetailerStock extends Model
 {
+    use HasFactory;
+    
     protected $fillable = [
         'retailer_id', 'car_model', 'vendor_name', 'quantity_received', 'status', 'vendor_id',
     ];
@@ -25,7 +27,4 @@ class RetailerStock extends Model
 {
     return $this->belongsTo(User::class, 'vendor_id');
 }
-
-use HasFactory;
-
 }
