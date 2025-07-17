@@ -37,5 +37,5 @@ df['segment'] = kmeans.fit_predict(features)
 
 # Output segments
 output = df[['vendor_id', 'segment']]
-output.to_csv('ml/vendor_segments.csv', index=False)
+output.to_csv('vendor_segments.csv', index=False)
 print('Segmentation complete. Output: ml/vendor_segments.csv') 

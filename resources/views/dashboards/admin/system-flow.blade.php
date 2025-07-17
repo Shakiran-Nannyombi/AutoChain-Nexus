@@ -166,14 +166,10 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-    // Define the variables outside of the chart configuration
-    const stats = {
-        activeUsers: {{ (int)($stats['activeUsers'] ?? 100) }},
-        inactiveUsers: {{ (int)($stats['inactiveUsers'] ?? 5) }}
-    };
-    
     // Pie Chart: Active vs Inactive Users
     const userStatusPie = document.getElementById('userStatusPie').getContext('2d');
+    const activeUsers = {{ (int)($stats['activeUsers'] ?? 100) }};
+    const inactiveUsers = {{ (int)($stats['inactiveUsers'] ?? 5) }};
     
     new Chart(userStatusPie, {
         type: 'pie',
@@ -181,8 +177,8 @@
             labels: ['Active', 'Inactive'],
             datasets: [{
                 data: [
-                    stats.activeUsers,
-                    stats.inactiveUsers
+                    activeUsers,
+                    inactiveUsers
                 ],
                 backgroundColor: ['#22c55e', '#f87171'],
                 borderWidth: 1

@@ -55,28 +55,32 @@ class ManufacturerOrdersSeeder extends Seeder
         ]);
 
         // Demo Vendor Orders (vendor_orders table)
-        DB::table('vendor_orders')->insert([
-            [
-                'manufacturer_id' => 1, // adjust as needed
-                'vendor_id' => 4, // adjust as needed
-                'product' => 'Packaging Boxes',
-                'quantity' => 100,
-                'status' => 'fulfilled',
-                'ordered_at' => Carbon::now()->subDays(1),
-                'created_at' => Carbon::now()->subDays(1),
-                'updated_at' => Carbon::now()->subDays(1),
-            ],
-            [
-                'manufacturer_id' => 1,
-                'vendor_id' => 5,
-                'product' => 'Labels',
-                'quantity' => 500,
-                'status' => 'pending',
-                'ordered_at' => Carbon::now()->subDays(3),
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-        ]);
+        $manufacturerUserId = DB::table('users')->where('role', 'manufacturer')->where('status', 'approved')->value('id');
+        $vendorUserIds = DB::table('users')->where('role', 'vendor')->where('status', 'approved')->pluck('id');
+        if ($manufacturerUserId && $vendorUserIds->count() >= 2) {
+            DB::table('vendor_orders')->insert([
+                [
+                    'manufacturer_id' => $manufacturerUserId,
+                    'vendor_id' => $vendorUserIds[0],
+                    'product' => 'Packaging Boxes',
+                    'quantity' => 100,
+                    'status' => 'fulfilled',
+                    'ordered_at' => Carbon::now()->subDays(1),
+                    'created_at' => Carbon::now()->subDays(1),
+                    'updated_at' => Carbon::now()->subDays(1),
+                ],
+                [
+                    'manufacturer_id' => $manufacturerUserId,
+                    'vendor_id' => $vendorUserIds[1],
+                    'product' => 'Labels',
+                    'quantity' => 500,
+                    'status' => 'pending',
+                    'ordered_at' => Carbon::now()->subDays(3),
+                    'created_at' => Carbon::now()->subDays(3),
+                    'updated_at' => Carbon::now()->subDays(3),
+                ],
+            ]);
+        }
 
         // Demo Confirmed Deliveries (fulfilled orders)
         DB::table('deliveries')->insert([

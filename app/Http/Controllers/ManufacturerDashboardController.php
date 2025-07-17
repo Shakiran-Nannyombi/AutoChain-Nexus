@@ -12,6 +12,10 @@ use App\Models\VendorOrder;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 
 class ManufacturerDashboardController extends Controller
 {
@@ -372,54 +376,135 @@ class ManufacturerDashboardController extends Controller
 
     public function index()
     {
-        $customerSegmentCounts = Customer::select('segment', DB::raw('count(*) as count'))
-            ->whereNotNull('segment')
-            ->groupBy('segment')
+        // Get all vendors with their segments
+        $vendors = DB::table('vendors')->get();
+        $vendorIds = $vendors->pluck('user_id')->toArray();
+
+        // Get all vendor orders
+        $orders = DB::table('vendor_orders')
+            ->whereIn('vendor_id', $vendorIds)
             ->get();
 
-        // Use the same segment names as admin
-        $segmentNames = [
-            1 => 'Occasional Buyers',
-            2 => 'High Value Customers',
-            3 => 'At Risk Customers',
+        // Get product prices
+        $productPrices = DB::table('products')->pluck('price', 'name');
+
+        // Group vendors by segment
+        $segments = $vendors->groupBy('segment');
+        $segmentAnalytics = [];
+        $vendorAnalytics = [];
+
+        foreach ($segments as $segment => $segmentVendors) {
+            $segmentVendorIds = $segmentVendors->pluck('user_id')->toArray();
+            $segmentOrders = $orders->whereIn('vendor_id', $segmentVendorIds);
+
+            // --- Segment-level analytics ---
+            $totalOrders = $segmentOrders->count();
+            $totalVendors = count($segmentVendorIds);
+            $totalValue = $segmentOrders->sum(function($order) use ($productPrices) {
+                return $order->quantity * ($productPrices[$order->product] ?? 0);
+            });
+            $avgOrderValue = $totalOrders > 0 ? $totalValue / $totalOrders : 0;
+            $avgOrdersPerVendor = $totalVendors > 0 ? $totalOrders / $totalVendors : 0;
+            $recency = $segmentOrders->max('ordered_at') ? now()->diffInDays($segmentOrders->max('ordered_at')) : null;
+            $firstOrder = $segmentOrders->min('ordered_at');
+            $lastOrder = $segmentOrders->max('ordered_at');
+            $fulfilled = $segmentOrders->where('status', 'fulfilled')->count();
+            $cancelled = $segmentOrders->where('status', 'cancelled')->count();
+            $fulfillmentRate = $totalOrders > 0 ? round($fulfilled / $totalOrders * 100, 2) : 0;
+            $cancellationRate = $totalOrders > 0 ? round($cancelled / $totalOrders * 100, 2) : 0;
+            $ordersByMonth = $segmentOrders->groupBy(function($order) { return \Carbon\Carbon::parse($order->ordered_at)->format('Y-m'); });
+            $orderFrequency = $ordersByMonth->count() > 0 ? round($totalOrders / $ordersByMonth->count(), 2) : 0;
+            // Most ordered product (segment)
+            $productCounts = $segmentOrders->groupBy('product')->map->count();
+            $mostOrderedProduct = $productCounts->sortDesc()->keys()->first();
+            $top3Products = $productCounts->sortDesc()->take(3)->toArray();
+
+            $segmentAnalytics[$segment ?? 'Unsegmented'] = [
+                'total_orders' => $totalOrders,
+                'total_value' => $totalValue,
+                'avg_order_value' => $avgOrderValue,
+                'avg_orders_per_vendor' => $avgOrdersPerVendor,
+                'recency_days' => $recency,
+                'first_order' => $firstOrder,
+                'last_order' => $lastOrder,
+                'fulfillment_rate' => $fulfillmentRate,
+                'cancellation_rate' => $cancellationRate,
+                'order_frequency_per_month' => $orderFrequency,
+                'most_ordered_product' => $mostOrderedProduct,
+                'top3_products' => $top3Products,
+                'vendor_count' => $totalVendors,
+            ];
+
+            // --- Per-vendor analytics ---
+            foreach ($segmentVendors as $vendor) {
+                $vendorOrders = $orders->where('vendor_id', $vendor->user_id);
+                $vendorTotalOrders = $vendorOrders->count();
+                $vendorTotalValue = $vendorOrders->sum(function($order) use ($productPrices) {
+                    return $order->quantity * ($productPrices[$order->product] ?? 0);
+                });
+                $vendorAvgOrderValue = $vendorTotalOrders > 0 ? $vendorTotalValue / $vendorTotalOrders : 0;
+                $vendorRecency = $vendorOrders->max('ordered_at') ? now()->diffInDays($vendorOrders->max('ordered_at')) : null;
+                $vendorFirstOrder = $vendorOrders->min('ordered_at');
+                $vendorLastOrder = $vendorOrders->max('ordered_at');
+                $vendorFulfilled = $vendorOrders->where('status', 'fulfilled')->count();
+                $vendorCancelled = $vendorOrders->where('status', 'cancelled')->count();
+                $vendorFulfillmentRate = $vendorTotalOrders > 0 ? round($vendorFulfilled / $vendorTotalOrders * 100, 2) : 0;
+                $vendorCancellationRate = $vendorTotalOrders > 0 ? round($vendorCancelled / $vendorTotalOrders * 100, 2) : 0;
+                $vendorOrdersByMonth = $vendorOrders->groupBy(function($order) { return \Carbon\Carbon::parse($order->ordered_at)->format('Y-m'); });
+                $vendorOrderFrequency = $vendorOrdersByMonth->count() > 0 ? round($vendorTotalOrders / $vendorOrdersByMonth->count(), 2) : 0;
+                $vendorProductCounts = $vendorOrders->groupBy('product')->map->count();
+                $vendorMostOrderedProduct = $vendorProductCounts->sortDesc()->keys()->first();
+                $vendorTop3Products = $vendorProductCounts->sortDesc()->take(3)->toArray();
+
+                $vendorAnalytics[$vendor->id] = [
+                    'vendor' => $vendor,
+                    'total_orders' => $vendorTotalOrders,
+                    'total_value' => $vendorTotalValue,
+                    'avg_order_value' => $vendorAvgOrderValue,
+                    'recency_days' => $vendorRecency,
+                    'first_order' => $vendorFirstOrder,
+                    'last_order' => $vendorLastOrder,
+                    'fulfillment_rate' => $vendorFulfillmentRate,
+                    'cancellation_rate' => $vendorCancellationRate,
+                    'order_frequency_per_month' => $vendorOrderFrequency,
+                    'most_ordered_product' => $vendorMostOrderedProduct,
+                    'top3_products' => $vendorTop3Products,
+                ];
+            }
+        }
+
+        // Compute top products across all vendors
+        $topProducts = $orders->groupBy('product')->map(function($orders) {
+            return $orders->count();
+        })->sortDesc()->take(5)->toArray();
+
+        // Segment labels and colors for charts
+        $segmentLabels = [
+            0 => 'Gold',
+            1 => 'Silver',
+            2 => 'Bronze',
+            null => 'Unsegmented',
+        ];
+        $segmentColors = [
+            0 => '#4CAF50',
+            1 => '#2196F3',
+            2 => '#FFC107',
+            null => '#BDBDBD',
         ];
 
-        $segmentSummaries = Customer::select(
-            'segment',
-            DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
-            DB::raw('AVG((SELECT COUNT(*) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
-            DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
-            DB::raw('COUNT(*) as count')
-        )
-        ->whereNotNull('segment')
-        ->groupBy('segment')
-        ->get();
-
-        // Vendor Segmentation Analytics
-        $vendorSegmentCounts = DB::table('vendors')
-            ->select('segment', DB::raw('COUNT(*) as count'))
-            ->groupBy('segment')
-            ->get();
-        $vendorSegmentSummaries = DB::table('vendors')
-            ->select('segment',
-                DB::raw('AVG(total_value) as avg_total_value'),
-                DB::raw('AVG(total_orders) as avg_orders'),
-                DB::raw('AVG(recency_days) as avg_recency'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->leftJoin(DB::raw('(
-                SELECT v.id as vendor_id,
-                       COUNT(vo.id) as total_orders,
-                       COALESCE(SUM(vo.quantity * p.price), 0) as total_value,
-                       DATEDIFF(NOW(), MAX(vo.ordered_at)) as recency_days
-                FROM vendors v
-                LEFT JOIN vendor_orders vo ON v.user_id = vo.vendor_id
-                LEFT JOIN products p ON vo.product = p.name
-                GROUP BY v.id
-            ) as stats'), 'vendors.id', '=', 'stats.vendor_id')
-            ->groupBy('segment')
-            ->get();
-        return view('dashboards.manufacturer.index', compact('customerSegmentCounts', 'segmentNames', 'segmentSummaries', 'vendorSegmentCounts', 'vendorSegmentSummaries'));
+        $vendorSegmentNames = [
+            0 => 'Top Vendors',
+            1 => 'Growth Vendors',
+            2 => 'New/Low Activity Vendors',
+        ];
+        return view('dashboards.manufacturer.index', [
+            'segmentAnalytics' => $segmentAnalytics,
+            'vendorAnalytics' => $vendorAnalytics,
+            'vendorSegmentNames' => $vendorSegmentNames,
+            'segmentLabels' => $segmentLabels,
+            'segmentColors' => $segmentColors,
+            'topProducts' => $topProducts,
+        ]);
     }
 
     public function updateProcessFlowItem(Request $request)
@@ -527,5 +612,98 @@ class ManufacturerDashboardController extends Controller
         $analyst = \App\Models\User::findOrFail($analystId);
         // You can fetch more details or reports as needed
         return view('dashboards.manufacturer.analyst-portfolio', compact('analyst'));
+    }
+
+    public function exportAnalyticsPdf()
+    {
+        // Gather analytics as in index()
+        $vendors = DB::table('vendors')->get();
+        $vendorIds = $vendors->pluck('user_id')->toArray();
+        $orders = DB::table('vendor_orders')->whereIn('vendor_id', $vendorIds)->get();
+        $productPrices = DB::table('products')->pluck('price', 'name');
+        $segments = $vendors->groupBy('segment');
+        $segmentLabels = [0 => 'Gold', 1 => 'Silver', 2 => 'Bronze', null => 'Unsegmented'];
+        $segmentColors = [0 => '#4CAF50', 1 => '#2196F3', 2 => '#FFC107', null => '#BDBDBD'];
+        $segmentAnalytics = [];
+        $vendorAnalytics = [];
+        foreach ($segments as $segment => $segmentVendors) {
+            $segmentVendorIds = $segmentVendors->pluck('user_id')->toArray();
+            $segmentOrders = $orders->whereIn('vendor_id', $segmentVendorIds);
+            $segmentAnalytics[$segment] = [
+                'count' => count($segmentVendorIds),
+                'total_orders' => $segmentOrders->count(),
+                'total_value' => $segmentOrders->sum(function($o) use ($productPrices) {
+                    return $productPrices[$o->product] ?? 0 * $o->quantity;
+                }),
+            ];
+        }
+        foreach ($vendors as $vendor) {
+            $vendorOrders = $orders->where('vendor_id', $vendor->user_id);
+            $products = $vendorOrders->pluck('product');
+            $top3 = $products->countBy()->sortDesc()->take(3)->keys()->toArray();
+            $mostOrdered = $top3[0] ?? 'N/A';
+            $totalValue = $vendorOrders->sum(function($o) use ($productPrices) {
+                return ($productPrices[$o->product] ?? 0) * $o->quantity;
+            });
+            $vendorAnalytics[] = [
+                'name' => $vendor->name ?? ('Vendor #' . $vendor->user_id),
+                'segment' => $segmentLabels[$vendor->segment] ?? 'Unsegmented',
+                'total_orders' => $vendorOrders->count(),
+                'most_ordered_product' => $mostOrdered,
+                'top_3_products' => $top3,
+                'total_value' => $totalValue,
+            ];
+        }
+        // Top 5 products overall
+        $topProducts = $orders->groupBy('product')->map(function($orders) {
+            return $orders->count();
+        })->sortDesc()->take(5)->toArray();
+        // Generate charts as images using QuickChart.io
+        $segmentChartConfig = [
+            'type' => 'pie',
+            'data' => [
+                'labels' => array_values($segmentLabels),
+                'datasets' => [[
+                    'data' => array_map(fn($d) => $d['count'], $segmentAnalytics),
+                    'backgroundColor' => array_values($segmentColors),
+                ]],
+            ],
+            'options' => [
+                'plugins' => ['legend' => ['position' => 'bottom']],
+                'responsive' => true,
+            ],
+        ];
+        $segmentChartUrl = 'https://quickchart.io/chart?c=' . urlencode(json_encode($segmentChartConfig));
+        $segmentChartImg = base64_encode(Http::get($segmentChartUrl)->body());
+        $topProductsChartConfig = [
+            'type' => 'bar',
+            'data' => [
+                'labels' => array_keys($topProducts),
+                'datasets' => [[
+                    'label' => 'Orders',
+                    'data' => array_values($topProducts),
+                    'backgroundColor' => ['#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0'],
+                ]],
+            ],
+            'options' => [
+                'plugins' => ['legend' => ['display' => false]],
+                'responsive' => true,
+                'scales' => ['y' => ['beginAtZero' => true]],
+            ],
+        ];
+        $topProductsChartUrl = 'https://quickchart.io/chart?c=' . urlencode(json_encode($topProductsChartConfig));
+        $topProductsChartImg = base64_encode(Http::get($topProductsChartUrl)->body());
+        // Render PDF
+        $pdf = Pdf::loadView('dashboards.manufacturer.pdf-report', [
+            'segmentAnalytics' => $segmentAnalytics,
+            'vendorAnalytics' => $vendorAnalytics,
+            'segmentLabels' => $segmentLabels,
+            'segmentChartImg' => $segmentChartImg,
+            'topProductsChartImg' => $topProductsChartImg,
+            'topProducts' => $topProducts,
+        ]);
+        $fileName = 'reports/vendor_analytics_' . now()->format('Ymd_His') . '.pdf';
+        Storage::disk('public')->put($fileName, $pdf->output());
+        return response()->download(storage_path('app/public/' . $fileName));
     }
 }

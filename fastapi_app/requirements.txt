@@ -1,0 +1,9 @@
+     fastapi
+     pydantic
+     pandas
+     prophet
+     scikit-learn
+     sqlalchemy
+     pymysql
+     requests
+     uvicorn

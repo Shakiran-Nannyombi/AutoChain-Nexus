@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             ApprovedAndPendingUsersSeeder::class,
             VendorSeeder::class,
+            ManufacturerSeeder::class,
             ValidationRuleSeeder::class,
             FacilityVisitSeeder::class,
             AnalystSampleDataSeeder::class,

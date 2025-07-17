@@ -4,6 +4,8 @@ from pydantic import BaseModel
 import pandas as pd
 from prophet import Prophet
 from fastapi.middleware.cors import CORSMiddleware
+import subprocess
+import requests
 
 
 app = FastAPI()
@@ -74,3 +76,20 @@ def forecast_demand(request: ForecastRequest):
 
     output = output.rename(columns={'ds': 'Month', 'yhat': 'Predicted'})
     return output.to_dict(orient="records")
+
+@app.post("/segment-vendors")
+def segment_vendors():
+    try:
+        # Run the segmentation script
+        script_path = os.path.abspath(os.path.join(base_dir, '..', 'ml', 'vendor_segmentation.py'))
+        result = subprocess.run(['python3', script_path], capture_output=True, text=True)
+        if result.returncode != 0:
+            return {"success": False, "error": f"Segmentation script failed: {result.stderr}"}
+        # Call the Laravel import endpoint
+        import_url = "http://127.0.0.1:8000/vendor-segments/import"
+        import_resp = requests.get(import_url)
+        if import_resp.status_code != 200 or not import_resp.json().get('message', '').startswith('Segments imported'):
+            return {"success": False, "error": f"Import failed: {import_resp.text}"}
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
