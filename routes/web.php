@@ -674,8 +674,7 @@ Route::post('/admin/login', function (Request $request) {
     ]);
 })->name('admin.login.submit');
 
-Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])
-    ->name('customer.dashboard');
+// Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
 Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'list'])->name('customer.list');
 Route::get('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'show'])->name('customer.show');
@@ -888,3 +887,14 @@ Route::middleware(['user_or_admin'])->group(function () {
 
 Route::get('/vendor-segments/import', [\App\Http\Controllers\VendorAnalyticsController::class, 'importSegments'])->name('vendor.segments.import');
 Route::get('/vendor-segments/summary', [\App\Http\Controllers\VendorAnalyticsController::class, 'segmentationSummary'])->name('vendor.segments.summary');
+
+// Customer routes (public access)
+Route::prefix('customer')->name('customer.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\CustomerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/browse-products', [\App\Http\Controllers\CustomerController::class, 'browseProducts'])->name('browse.products');
+    Route::get('/product/{id}', [\App\Http\Controllers\CustomerController::class, 'showProduct'])->name('product.show');
+    Route::post('/place-order', [\App\Http\Controllers\CustomerController::class, 'placeOrder'])->name('place.order');
+    Route::get('/order-confirmation/{id}', [\App\Http\Controllers\CustomerController::class, 'orderConfirmation'])->name('order.confirmation');
+    Route::get('/track-order', [\App\Http\Controllers\CustomerController::class, 'trackOrder'])->name('track.order');
+    Route::post('/track-order', [\App\Http\Controllers\CustomerController::class, 'trackOrder'])->name('track.order.post');
+});
