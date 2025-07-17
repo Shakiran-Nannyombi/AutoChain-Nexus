@@ -62,10 +62,11 @@ class VendorOrderController extends Controller
         }
 
         // Verify manufacturer exists
-        $manufacturer = User::where('id', $validated['partner_id'])           ->where('role', 'manufacturer')
-            ->where('status', 'active')
+        $manufacturer = User::where('id', $validated['partner_id'])
+            ->where('role', 'manufacturer')
+            ->where('status', 'approved')
             ->first();
-            
+        
         if (!$manufacturer) {
             return response()->json(['success' => false, 'message' => 'Manufacturer not found.'], 404);
         }
