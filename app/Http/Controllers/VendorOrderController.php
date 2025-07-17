@@ -24,7 +24,7 @@ class VendorOrderController extends Controller
             
         // Get all manufacturers for the dropdown
         $manufacturers = User::where('role', 'manufacturer')
-            ->where('status', 'active')
+            ->where('status', 'approved')
             ->orderBy('name')
             ->get(['id', 'name', 'company']);          
             
