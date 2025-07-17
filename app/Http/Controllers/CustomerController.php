@@ -95,8 +95,18 @@ class CustomerController extends Controller
             ->where('stock', '>', 0)
             ->take(4)
             ->get();
-        
-        return view('dashboards.customer.product-detail', compact('product', 'relatedProducts'));
+
+        // Get all retailer stocks for this product
+        $retailerStocks = \App\Models\RetailerStock::where('car_model', $product->name)
+            ->where('status', 'accepted')
+            ->with('retailer')
+            ->get();
+
+        // Only show retailers who have accepted stock for this product
+        $retailers = $retailerStocks->pluck('retailer')->unique('id')->values();
+        $retailerStocksGrouped = $retailerStocks->groupBy('retailer_id');
+
+        return view('dashboards.customer.product-detail', compact('product', 'relatedProducts', 'retailerStocksGrouped', 'retailers'));
     }
 
     public function placeOrder(Request $request)
@@ -111,10 +121,20 @@ class CustomerController extends Controller
             'retailer_id' => 'required|exists:users,id'
         ]);
 
-        // Check if product has enough stock
         $product = Product::findOrFail($request->product_id);
-        if ($product->stock < $request->quantity) {
-            return back()->with('error', 'Insufficient stock available.');
+
+        // Check if retailer has enough stock for this product
+        $retailerStock = \App\Models\RetailerStock::where('retailer_id', $request->retailer_id)
+            ->where('car_model', $product->name)
+            ->where('status', 'accepted')
+            ->sum('quantity_received');
+
+        $orderedQty = CustomerOrder::where('retailer_id', $request->retailer_id)
+            ->where('product_id', $product->id)
+            ->sum('quantity');
+
+        if ($retailerStock - $orderedQty < $request->quantity) {
+            return back()->with('error', 'Insufficient stock at this retailer.');
         }
 
         // Create or find customer
@@ -124,7 +144,7 @@ class CustomerController extends Controller
                 'name' => $request->customer_name,
                 'phone' => $request->customer_phone,
                 'address' => $request->customer_address,
-                'segment' => rand(1, 3) // Random segment for new customers
+                'segment' => 3 // Default to At Risk Customers for new
             ]
         );
 
@@ -143,8 +163,20 @@ class CustomerController extends Controller
             'order_date' => now()
         ]);
 
-        // Reduce product stock
-        $product->decrement('stock', $request->quantity);
+        // Dynamic segmentation logic
+        $totalOrders = CustomerOrder::where('customer_id', $customer->id)->count();
+        $totalSpent = CustomerOrder::where('customer_id', $customer->id)->sum('total_amount');
+        if ($totalOrders >= 10 || $totalSpent > 100000) {
+            $customer->segment = 2; // High Value Customers
+        } elseif ($totalOrders >= 3) {
+            $customer->segment = 1; // Occasional Buyers
+        } else {
+            $customer->segment = 3; // At Risk Customers
+        }
+        $customer->save();
+
+        // (Optional) If you want to also decrement global product stock, uncomment:
+        // $product->decrement('stock', $request->quantity);
 
         return redirect()->route('customer.order.confirmation', $order->id)
             ->with('success', 'Order placed successfully!');

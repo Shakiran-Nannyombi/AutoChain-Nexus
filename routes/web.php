@@ -893,6 +893,9 @@ Route::prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\CustomerController::class, 'dashboard'])->name('dashboard');
     Route::get('/browse-products', [\App\Http\Controllers\CustomerController::class, 'browseProducts'])->name('browse.products');
     Route::get('/product/{id}', [\App\Http\Controllers\CustomerController::class, 'showProduct'])->name('product.show');
+    Route::get('/place-order', function() {
+        return redirect()->route('customer.dashboard')->with('info', 'Please select a product to place an order.');
+    });
     Route::post('/place-order', [\App\Http\Controllers\CustomerController::class, 'placeOrder'])->name('place.order');
     Route::get('/order-confirmation/{id}', [\App\Http\Controllers\CustomerController::class, 'orderConfirmation'])->name('order.confirmation');
     Route::get('/track-order', [\App\Http\Controllers\CustomerController::class, 'trackOrder'])->name('track.order');

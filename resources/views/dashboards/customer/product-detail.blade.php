@@ -22,10 +22,6 @@
                         <strong style="color: var(--primary);">Price:</strong>
                         <p style="color: var(--accent); font-weight:600;">${{ number_format($product->price, 2) }}</p>
                     </div>
-                    <div class="col-6">
-                        <strong style="color: var(--primary);">Stock:</strong>
-                        <p style="color: var(--success); font-weight:600;">{{ $product->stock }} units</p>
-                    </div>
                     @if($product->vendor)
                     <div class="col-6">
                         <strong style="color: var(--primary);">Vendor:</strong>
@@ -35,7 +31,6 @@
                 </div>
 
                 <!-- Order Form -->
-                @if($product->stock > 0)
                 <form method="POST" action="{{ route('customer.place.order') }}" style="border-top: 1px solid #eee; padding-top:2rem;">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -55,7 +50,7 @@
                         </div>
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Quantity *</label>
-                            <input type="number" name="quantity" min="1" max="{{ $product->stock }}" value="1" class="form-control" required>
+                            <input type="number" name="quantity" min="1" id="orderQuantity" value="1" class="form-control" required>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -64,24 +59,18 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Select Retailer *</label>
-                        <select name="retailer_id" class="form-control" required>
+                        <select name="retailer_id" id="retailerSelect" class="form-control" required>
                             <option value="">Choose a retailer...</option>
-                            @foreach(\App\Models\User::where('role', 'retailer')->where('status', 'approved')->get() as $retailer)
+                            @foreach($retailers as $retailer)
                                 <option value="{{ $retailer->id }}">{{ $retailer->name }}{{ $retailer->company ? ' (' . $retailer->company . ')' : '' }}</option>
                             @endforeach
                         </select>
+                        <div id="retailerStockInfo" style="margin-top: 0.5rem; color: var(--success); font-weight: 600;"></div>
                     </div>
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-shopping-cart"></i> Place Order - ${{ number_format($product->price, 2) }}
                     </button>
                 </form>
-                @else
-                <div class="alert alert-danger text-center mt-4">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h4 class="mt-2">Out of Stock</h4>
-                    <p>This product is currently out of stock. Please check back later.</p>
-                </div>
-                @endif
             </div>
         </div>
 
@@ -102,4 +91,26 @@
         @endif
     </div>
 </div>
+<script>
+    const retailerStocks = @json($retailerStocksGrouped);
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('retailerSelect');
+        const stockInfo = document.getElementById('retailerStockInfo');
+        const quantityInput = document.getElementById('orderQuantity');
+        select.addEventListener('change', function () {
+            const retailerId = this.value;
+            if (retailerId && retailerStocks[retailerId]) {
+                let total = 0;
+                retailerStocks[retailerId].forEach(stock => {
+                    total += stock.quantity_received;
+                });
+                stockInfo.textContent = `Stock at this retailer: ${total} units`;
+                quantityInput.max = total;
+            } else {
+                stockInfo.textContent = '';
+                quantityInput.max = '';
+            }
+        });
+    });
+</script>
 @endsection
