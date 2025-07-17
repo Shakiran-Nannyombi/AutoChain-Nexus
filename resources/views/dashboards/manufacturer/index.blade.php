@@ -220,7 +220,7 @@
         // Pie Chart for Segment Distribution
         const segmentPieCtx = document.getElementById('segmentPieChart').getContext('2d');
         const segmentLabels = @json(array_values($segmentLabels));
-        const segmentCounts = @json(array_values(array_map(fn($d) => isset($d['count']) ? $d['count'] : 0, $segmentAnalytics)));
+        const segmentCounts = @json(array_values(array_map(function($d) { return isset($d['count']) ? $d['count'] : 0; }, $segmentAnalytics)));
         const segmentColors = @json(array_values($segmentColors));
         new Chart(segmentPieCtx, {
             type: 'pie',
