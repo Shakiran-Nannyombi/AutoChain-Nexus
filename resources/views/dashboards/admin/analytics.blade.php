@@ -36,7 +36,7 @@
     <div class="modern-analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 2.5rem; margin-bottom: 2.5rem;">
       <!-- User Roles Donut/Progress Circles Row -->
       <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; width: 100%; margin-bottom: 2.5rem;">
-        <h3 style="margin-bottom: 2rem; font-size: 1.1rem; color: var(--primary); font-weight: 600; text-align: center;">User Roles Overview</h3>
+        <h3 style="margin-bottom: 2rem; font-size: 1.8rem; color: black; font-weight: 600; text-align: center;">User Roles Overview</h3>
         <div style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 2.5rem;">
           <div style="display: flex; flex-direction: row; gap: 2.5rem;">
             <div style="display: flex; flex-direction: column; align-items: center;">
@@ -85,17 +85,17 @@
     </div>
     <!-- New Users (Last 7 Days) ECharts Bar Chart Card -->
     <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; width: 100%; margin-bottom: 2.5rem;">
-      <h3 style="margin-bottom: 1.2rem; font-size: 1.1rem; color: var(--primary); font-weight: 600; text-align: left;">New Users (Last 7 Days)</h3>
+      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: var(--secondary); font-weight: 600; text-align: left;">New Users (Last 7 Days)</h3>
       <div id="newUsersBarChart" style="width: 100%; min-width: 320px; height: 320px;"></div>
                 </div>
     <!-- User Sessions Per Month (Last 12 Months) Line Chart Card -->
     <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; width: 100%; margin-bottom: 2.5rem;">
-      <h3 style="margin-bottom: 1.2rem; font-size: 1.1rem; color: var(--primary); font-weight: 600; text-align: left;">User Sessions Per Month (Last 12 Months)</h3>
+      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: #F97A00; font-weight: 600; text-align: left;">User Sessions Per Month (Last 12 Months)</h3>
       <div id="userSessionsLineChart" style="width: 100%; min-width: 320px; height: 320px; border: 1px solid #eee;"></div>
             </div>
     <!-- Login Activity Area Chart Card -->
     <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; width: 100%; margin-bottom: 2.5rem;">
-      <h3 style="margin-bottom: 1.2rem; font-size: 1.1rem; color: var(--primary); font-weight: 600; text-align: left;">Login activity</h3>
+      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: #482607; font-weight: 600; text-align: left;">Login activity</h3>
       <div id="loginActivityChart" style="width: 100%; min-width: 320px; height: 320px; border: 1px solid #eee;"></div>
     </div>
     <!-- The rest of your analytics page content (session charts, etc.) can follow here -->

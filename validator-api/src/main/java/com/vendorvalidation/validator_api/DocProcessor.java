@@ -41,7 +41,9 @@ public class DocProcessor {
             if (filePath.toLowerCase().endsWith(".pdf")) {
                 try (PDDocument document = PDDocument.load(file)) {
                     PDFTextStripper stripper = new PDFTextStripper();
-                    return stripper.getText(document);
+                    String text = stripper.getText(document);
+                    System.out.println("DEBUG: Extracted text (first 500 chars): " + text.substring(0, Math.min(500, text.length())));
+                    return text;
                 }
             }
             

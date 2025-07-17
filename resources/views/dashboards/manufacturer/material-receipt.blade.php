@@ -10,7 +10,7 @@
     <div class="content-card">
         <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-truck-loading"></i> Material Receipt</h2>
         @if($deliveries->isEmpty())
-            <div style="text-align:center; color: var(--primary); font-size: 1.1rem; padding: 2rem 0;">
+        <div style="text-align:center; color: var(--primary); font-size: 1.1rem; padding: 2rem 0;">
                 No material deliveries have been received yet.
             </div>
         @else
@@ -52,7 +52,7 @@
                 </tbody>
             </table>
         @endif
-    </div>
+        </div>
     @if(isset($confirmedOrders) && $confirmedOrders->count())
     <div class="content-card" style="margin-top:2.5rem;">
         <h3 style="color: var(--primary); margin-bottom: 1rem;">Confirmed Orders</h3>

@@ -23,6 +23,7 @@ class Vendor extends Authenticatable
         'product_categories',
         'service_areas',
         'contract_terms',
+        'segment', // Vendor segmentation
     ];
 
     protected $hidden = [

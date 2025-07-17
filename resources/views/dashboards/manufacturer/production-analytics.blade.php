@@ -84,9 +84,9 @@
     new Chart(stageDistributionCtx, {
         type: 'pie',
         data: {
-            labels: @json($stageLabels),
+            labels: JSON.parse('{!! json_encode($stageLabels) !!}'),
             datasets: [{
-                data: @json($stageData),
+                data: JSON.parse('{!! json_encode($stageData) !!}'),
                 backgroundColor: ['#A78BFA', '#6366F1', '#3B82F6', '#10B981', '#06B6D4', '#EF4444', '#6B7280'],
             }]
         },
@@ -106,13 +106,17 @@
 
     // Average Stage Duration Bar Chart
     const stageDurationCtx = document.getElementById('stageDurationChart').getContext('2d');
+    const averageStageDurations = JSON.parse('{!! json_encode($averageStageDurations) !!}');
+    const stageDurationLabels = Object.keys(averageStageDurations).map(key => key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()));
+    const stageDurationData = Object.values(averageStageDurations);
+
     new Chart(stageDurationCtx, {
         type: 'bar',
         data: {
-            labels: Object.keys(@json($averageStageDurations)).map(key => key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())),
+            labels: stageDurationLabels,
             datasets: [{
                 label: 'Average Duration (Minutes)',
-                data: Object.values(@json($averageStageDurations)),
+                data: stageDurationData,
                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
@@ -146,10 +150,10 @@
     new Chart(productionRateCtx, {
         type: 'line',
         data: {
-            labels: @json($productionRateLabels),
+            labels: JSON.parse('{!! json_encode($productionRateLabels) !!}'),
             datasets: [{
                 label: 'Completed Items',
-                data: @json($productionRateData),
+                data: JSON.parse('{!! json_encode($productionRateData) !!}'),
                 backgroundColor: 'rgba(153, 102, 255, 0.2)',
                 borderColor: 'rgba(153, 102, 255, 1)',
                 borderWidth: 1,
@@ -181,10 +185,10 @@
     new Chart(failureTrendCtx, {
         type: 'line',
         data: {
-            labels: @json($failureTrendLabels),
+            labels: JSON.parse('{!! json_encode($failureTrendLabels) !!}'),
             datasets: [{
                 label: 'Failed Items',
-                data: @json($failureTrendData),
+                data: JSON.parse('{!! json_encode($failureTrendData) !!}'),
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1,

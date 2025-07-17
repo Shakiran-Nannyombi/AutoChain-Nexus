@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\RetailerOrder;
 use App\Models\RetailerStock;
-use App\Models\Product;
-use Illuminate\Support\Facades\DB;
 
 class VendorAnalyticsController extends Controller
 {
@@ -74,5 +72,29 @@ class VendorAnalyticsController extends Controller
             'allNotifications' => collect(),
             'topSellingItems' => $topSellingItems,
         ]);
+    }
+
+    public function importSegments()
+    {
+        $path = base_path('ml/vendor_segments.csv');
+        if (!file_exists($path)) {
+            return response()->json(['error' => 'Segment file not found'], 404);
+        }
+        $rows = array_map('str_getcsv', file($path));
+        $header = array_shift($rows);
+        foreach ($rows as $row) {
+            $data = array_combine($header, $row);
+            DB::table('vendors')->where('id', $data['vendor_id'])->update(['segment' => $data['segment']]);
+        }
+        return response()->json(['message' => 'Segments imported successfully']);
+    }
+
+    public function segmentationSummary()
+    {
+        $summary = DB::table('vendors')
+            ->select('segment', DB::raw('COUNT(*) as count'))
+            ->groupBy('segment')
+            ->get();
+        return response()->json($summary);
     }
 } 

@@ -41,4 +41,28 @@ class Analyst extends Authenticatable
     {
         return $this->belongsTo(User::class);
     }
+
+    public function manufacturer()
+    {
+        return $this->hasOneThrough(
+            Manufacturer::class,
+            'analyst_manufacturer',
+            'analyst_id', // Foreign key on analyst_manufacturer
+            'user_id',    // Foreign key on manufacturers
+            'user_id',    // Local key on analysts
+            'manufacturer_id' // Local key on analyst_manufacturer
+        );
+    }
+
+    public function manufacturers()
+    {
+        return $this->belongsToMany(
+            Manufacturer::class,
+            'analyst_manufacturer',
+            'analyst_id', // Foreign key on analyst_manufacturer
+            'manufacturer_id', // Foreign key on analyst_manufacturer
+            'user_id', // Local key on analysts
+            'user_id'  // Local key on manufacturers
+        )->withPivot('status')->withTimestamps();
+    }
 }

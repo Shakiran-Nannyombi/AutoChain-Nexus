@@ -13,12 +13,9 @@
 <a href="{{ route('retailer.orders') }}" class="nav-item{{ request()->is('retailer/my-orders*') ? ' active' : '' }}">
     <i class="fas fa-list"></i> My Orders
 </a>
-<a href="{{ route('user.reports') }}" class="nav-item{{ request()->is('user/reports') ? ' active' : '' }}">
+<a href="{{ route('retailer.reports') }}" class="nav-item{{ request()->is('retailer/reports') ? ' active' : '' }}">
     <i class="fas fa-file-alt"></i> Reports
 </a>
-<a href="{{ route('chats.index') }}" class="nav-item {{ request()->routeIs('chats.*') ? 'active' : '' }}">
+<a href="{{ route('retailer.chat') }}" class="nav-item{{ request()->is('retailer/chat') ? ' active' : '' }}">
     <i class="fas fa-comments"></i> Chat
-</a>
-<a href="{{ route('retailer.notifications') }}" class="nav-item{{ request()->is('retailer/notifications') ? ' active' : '' }}">
-    <i class="fas fa-bell"></i> Notifications
 </a>

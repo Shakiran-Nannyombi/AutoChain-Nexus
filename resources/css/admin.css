@@ -63,9 +63,9 @@
 }
 
 .card-title {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 600;
-    color: var(--primary);
+    color: var(--secondary);
     margin-bottom: 1rem;
 }
 
@@ -1682,13 +1682,13 @@
   background: var(--background);
   border-radius: 14px;
   box-shadow: var(--shadow);
-  padding: 2rem 2.5rem;
-  margin: 2rem auto;
+  padding: 1rem 1.5rem;
+  margin: 1rem auto;
   max-width: 1400px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #fbf9f9;
 }
 
 @media (max-width: 768px) {

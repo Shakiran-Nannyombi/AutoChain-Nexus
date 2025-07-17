@@ -12,7 +12,9 @@
 
 @section('content')
   <div class="content-card">
-    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Management</h2>
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">
+        <i class="fas fa-users-cog"></i> User Management
+    </h2>
     <!-- Stats Cards -->
     <div class="stats-container" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
         <div class="stat-card" style="background: linear-gradient(135deg, #174ea6 0%, #2563eb 100%); color: #fff; box-shadow: 0 2px 8px rgba(23,78,166,0.12); border-radius: 14px; padding: 1.5rem; flex: 1; display: flex; align-items: center;">
@@ -73,9 +75,19 @@
         </form>
     </div>
 
+    <!-- All Users List Tabs -->
+    <div class="user-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+        <button type="button" class="tab-btn active" onclick="showUsers('active')">Active Users</button>
+        <button type="button" class="tab-btn" onclick="showUsers('inactive')">Inactive Users</button>
+    </div>
+    <style>
+        .tab-btn { padding: 0.5rem 1.5rem; border: none; background: #eee; cursor: pointer; border-radius: 5px; font-weight: 600; color: #16610E; transition: background 0.2s, color 0.2s; }
+        .tab-btn.active { background: var(--primary, #16610E); color: #fff; }
+    </style>
+
     <!-- All Users List -->
     <div class="user-list-card">
-        <h2 class="card-title" style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-users"></i> All Users ({{ $users->count() }})</h2>
+        <h2 class="card-title" style="color: var(--secondary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-users"></i> All Users ({{ $users->count() }})</h2>
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -83,7 +95,7 @@
         @endif
         @if($users->count() > 0)
             @foreach($users as $user)
-                <div class="user-item">
+                <div class="user-item" data-status="{{ $user->status == 'approved' ? 'active' : 'inactive' }}">
                     <div class="user-info-main">
                         <div class="user-details">
                             <span class="user-name">{{ $user->company_name ?? $user->name }}</span>
@@ -112,7 +124,7 @@
                             <i class="fas fa-eye"></i> View
                         </button>
                         <a href="{{ route('admin.user.edit', $user) }}" class="btn-action btn-edit"><i class="fas fa-pencil-alt"></i> Edit</a>
-                        <form action="{{ route('admin.user.destroy', $user) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                        <form action="{{ route('admin.user.destroy', $user) }}" method="POST" style="display:inline;" class="delete-form">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-action btn-delete"><i class="fas fa-trash"></i> Delete</button>
@@ -137,12 +149,36 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteUserModal" class="modal" style="display:none;">
+        <div class="modal-content" style="padding: 1.5rem 2rem; border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); background: #fff; max-width: 400px; margin: 6rem auto; position: relative; text-align: center;">
+            <h3 style="color: var(--primary, #16610E); font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem;">Delete User?</h3>
+            <p style="margin-bottom: 2rem; color: #333;">Are you sure you want to delete this user? This action cannot be undone.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="cancelUserDelete" type="button" style="padding: 0.6rem 1.5rem; border-radius: 6px; border: none; background: #eee; color: #222; font-weight: 600; cursor: pointer;">Cancel</button>
+                <button id="confirmUserDelete" type="button" style="padding: 0.6rem 1.5rem; border-radius: 6px; border: none; background: var(--primary, #16610E); color: #fff; font-weight: 600; cursor: pointer;">Delete</button>
+            </div>
+        </div>
+    </div>
   </div>
 @endsection
 
 @push('scripts')
 <script>
+function showUsers(status) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (status === 'active') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+    } else {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+    }
+    document.querySelectorAll('.user-item').forEach(card => {
+        card.style.display = (card.dataset.status === status) ? '' : 'none';
+    });
+}
 document.addEventListener('DOMContentLoaded', function () {
+    showUsers('active');
     const filterForm = document.getElementById('filterForm');
     const searchInput = filterForm.querySelector('input[name="search"]');
     const roleSelect = filterForm.querySelector('select[name="role"]');
@@ -228,6 +264,31 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('click', (event) => {
         if (event.target == modal) {
             hideModal();
+        }
+    });
+
+    let userFormToDelete = null;
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            userFormToDelete = form;
+            document.getElementById('deleteUserModal').style.display = 'block';
+        });
+    });
+    document.getElementById('cancelUserDelete').onclick = function() {
+        document.getElementById('deleteUserModal').style.display = 'none';
+        userFormToDelete = null;
+    };
+    document.getElementById('confirmUserDelete').onclick = function() {
+        if (userFormToDelete) {
+            userFormToDelete.submit();
+            document.getElementById('deleteUserModal').style.display = 'none';
+        }
+    };
+    window.addEventListener('click', (event) => {
+        if (event.target == document.getElementById('deleteUserModal')) {
+            document.getElementById('deleteUserModal').style.display = 'none';
+            userFormToDelete = null;
         }
     });
 });

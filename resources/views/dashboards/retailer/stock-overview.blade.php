@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title', 'Stock Overview')
+@section('title', 'Retailer Dashboard')
 @section('sidebar-content')
     @include('dashboards.retailer.sidebar')
 @endsection

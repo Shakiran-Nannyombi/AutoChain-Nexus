@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             ApprovedAndPendingUsersSeeder::class,
+            VendorSeeder::class,
             ValidationRuleSeeder::class,
             FacilityVisitSeeder::class,
             AnalystSampleDataSeeder::class,
@@ -30,27 +31,13 @@ class DatabaseSeeder extends Seeder
             CustomersTableSeeder::class,
             PurchasesTableSeeder::class,
             ManufacturerOrdersSeeder::class,
+<<<<<<< HEAD
             CustomerSegmentDemoSeeder::class, // Add this line
             VarietyCustomerPurchaseSeeder::class, // Add this line
+=======
+            VendorOrderSeeder::class,
+>>>>>>> c68b8e0148e12445670715c10c12137215b0e64f
         ]);
-
-        $roles = ['manufacturer', 'supplier', 'vendor', 'retailer', 'analyst'];
-
-        foreach ($roles as $role) {
-            User::firstOrCreate(
-                ['email' => $role . '@example.com'],
-                [
-                    'name' => ucfirst($role) . ' User',
-                    'password' => Hash::make('password'),
-                    'role' => $role,
-                    'status' => 'pending',
-                    'company' => ucfirst($role) . ' Company',
-                    'phone' => '123-456-7890',
-                    'address' => '123 ' . ucfirst($role) . ' Street',
-                    'profile_photo' => 'images/profile.jpeg',
-                ]
-            );
-        }
 
         // Seed demo communications for active connections
         $manufacturer = \App\Models\User::where('role', 'manufacturer')->first();

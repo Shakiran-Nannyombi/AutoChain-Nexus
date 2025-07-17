@@ -148,17 +148,24 @@ class DashboardController extends Controller
         }
 
         // --- Stats Cards Data ---
-        $validationApiHealthy = $this->checkApiHealth('http://localhost:8080/api/v1/health');
+        $validationApiHealthy = $this->checkApiHealth('http://localhost:8084/api/v1/health');
         $emailApiHealthy = $this->checkApiHealth('http://localhost:8082/api/v1/health');
         $systemHealth = ($validationApiHealthy && $emailApiHealthy) ? 98 : 50;
 
         $bottlenecksCount = FacilityVisit::where('status', 'pending')->where('created_at', '<', now()->subWeek())->count();
 
+        $pendingValidations = \App\Models\User::where('status', 'pending')->count();
+        $visitsScheduled = \App\Models\FacilityVisit::whereIn('status', ['pending', 'approved'])->count();
+        $visitsCompleted = \App\Models\FacilityVisit::where('status', 'completed')->count();
         $stats = [
             'activeUsers' => $componentData['manufacturers']['count'] + $componentData['suppliers']['count'] + $componentData['vendors']['count'] + $componentData['retailers']['count'] + $componentData['analysts']['count'],
             'systemHealth' => $systemHealth,
             'activeConnections' => max(0, $activeConnections),
             'bottlenecks' => $bottlenecksCount,
+            'pendingValidations' => $pendingValidations,
+            'visitsScheduled' => $visitsScheduled,
+            'visitsCompleted' => $visitsCompleted,
+            // Add other stats as needed
         ];
 
         // --- Flow Performance Metrics ---
@@ -302,6 +309,44 @@ class DashboardController extends Controller
             ];
         }
 
+        // Fetch the most recent 5 active connections (sender and receiver names/roles)
+        $activeConnectionsList = \App\Models\Communication::with(['sender:id,name,role', 'receiver:id,name,role'])
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
+
+        // If fewer than 5, add demo connections
+        if ($activeConnectionsList->count() < 5) {
+            $demoConnections = collect([
+                (object)[
+                    'sender' => (object)['name' => 'Vendor Alpha', 'role' => 'vendor'],
+                    'receiver' => (object)['name' => 'Manufacturer Beta', 'role' => 'manufacturer'],
+                    'created_at' => now()->subMinutes(10),
+                ],
+                (object)[
+                    'sender' => (object)['name' => 'Retailer Gamma', 'role' => 'retailer'],
+                    'receiver' => (object)['name' => 'Supplier Delta', 'role' => 'supplier'],
+                    'created_at' => now()->subMinutes(20),
+                ],
+                (object)[
+                    'sender' => (object)['name' => 'Manufacturer Beta', 'role' => 'manufacturer'],
+                    'receiver' => (object)['name' => 'Analyst Zeta', 'role' => 'analyst'],
+                    'created_at' => now()->subMinutes(30),
+                ],
+                (object)[
+                    'sender' => (object)['name' => 'Supplier Delta', 'role' => 'supplier'],
+                    'receiver' => (object)['name' => 'Vendor Alpha', 'role' => 'vendor'],
+                    'created_at' => now()->subMinutes(40),
+                ],
+                (object)[
+                    'sender' => (object)['name' => 'Admin', 'role' => 'admin'],
+                    'receiver' => (object)['name' => 'Retailer Gamma', 'role' => 'retailer'],
+                    'created_at' => now()->subMinutes(50),
+                ],
+            ]);
+            $activeConnectionsList = $activeConnectionsList->concat($demoConnections)->take(5);
+        }
+
         return view('dashboards.admin.system-flow', compact(
             'stats',
             'componentData',
@@ -313,7 +358,8 @@ class DashboardController extends Controller
             'scheduledVisits',
             'flowStages',
             'recentActivities',
-            'notifications'
+            'notifications',
+            'activeConnectionsList' // pass to view
         ));
     }
 
@@ -550,8 +596,20 @@ class DashboardController extends Controller
 
     public function destroyReport(ScheduledReport $report)
     {
-        $report->delete();
-        return redirect()->route('admin.reports')->with('success', 'Scheduled report deleted successfully!');
+        try {
+            $report->delete();
+            $scheduledReports = ScheduledReport::all();
+            $userRoles = \App\Models\User::distinct()->pluck('role')->filter()->values();
+            $users = \App\Models\User::select('id', 'name', 'email', 'role')->get();
+            return view('dashboards.admin.reports', compact('scheduledReports', 'userRoles', 'users'))
+                ->with('warning', 'Scheduled report deleted. (Demo or real)');
+        } catch (\Exception $e) {
+            $scheduledReports = ScheduledReport::all();
+            $userRoles = \App\Models\User::distinct()->pluck('role')->filter()->values();
+            $users = \App\Models\User::select('id', 'name', 'email', 'role')->get();
+            return view('dashboards.admin.reports', compact('scheduledReports', 'userRoles', 'users'))
+                ->with('warning', 'Scheduled report does not exist or is demo data. Cannot delete.');
+        }
     }
 
     public function inventoryOverview()
@@ -769,5 +827,21 @@ class DashboardController extends Controller
             'message' => $request->message,
         ]);
         return response()->json(['status' => 'success', 'message' => 'Message sent!', 'data' => $chat]);
+    }
+
+    public function viewReport($report)
+    {
+        // For now, just show a simple view with the report id
+        return response()->view('dashboards.admin.report-view', ['reportId' => $report]);
+    }
+
+    public function downloadReport($report)
+    {
+        // For now, return a dummy file download (replace with real logic later)
+        $dummyPath = public_path('dummy-report.pdf');
+        if (!file_exists($dummyPath)) {
+            file_put_contents($dummyPath, 'This is a dummy PDF report for report ID: ' . $report);
+        }
+        return response()->download($dummyPath, 'report-' . $report . '.pdf');
     }
 }

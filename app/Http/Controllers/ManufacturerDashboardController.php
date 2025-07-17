@@ -395,7 +395,31 @@ class ManufacturerDashboardController extends Controller
         ->groupBy('segment')
         ->get();
 
-        return view('dashboards.manufacturer.index', compact('customerSegmentCounts', 'segmentNames', 'segmentSummaries'));
+        // Vendor Segmentation Analytics
+        $vendorSegmentCounts = DB::table('vendors')
+            ->select('segment', DB::raw('COUNT(*) as count'))
+            ->groupBy('segment')
+            ->get();
+        $vendorSegmentSummaries = DB::table('vendors')
+            ->select('segment',
+                DB::raw('AVG(total_value) as avg_total_value'),
+                DB::raw('AVG(total_orders) as avg_orders'),
+                DB::raw('AVG(recency_days) as avg_recency'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->leftJoin(DB::raw('(
+                SELECT v.id as vendor_id,
+                       COUNT(vo.id) as total_orders,
+                       COALESCE(SUM(vo.quantity * p.price), 0) as total_value,
+                       DATEDIFF(NOW(), MAX(vo.ordered_at)) as recency_days
+                FROM vendors v
+                LEFT JOIN vendor_orders vo ON v.user_id = vo.vendor_id
+                LEFT JOIN products p ON vo.product = p.name
+                GROUP BY v.id
+            ) as stats'), 'vendors.id', '=', 'stats.vendor_id')
+            ->groupBy('segment')
+            ->get();
+        return view('dashboards.manufacturer.index', compact('customerSegmentCounts', 'segmentNames', 'segmentSummaries', 'vendorSegmentCounts', 'vendorSegmentSummaries'));
     }
 
     public function updateProcessFlowItem(Request $request)
@@ -460,5 +484,48 @@ class ManufacturerDashboardController extends Controller
         $delivery = \App\Models\Delivery::findOrFail($id);
         $delivery->delete(); // Placeholder for closing the order
         return back()->with('success', 'Order marked as delivered and closed.');
+    }
+
+    public function analystApplications()
+    {
+        $manufacturerId = optional(Auth::user())->id;
+        $applications = DB::table('analyst_manufacturer')
+            ->where('manufacturer_id', $manufacturerId)
+            ->join('users', 'analyst_manufacturer.analyst_id', '=', 'users.id')
+            ->select('analyst_manufacturer.*', 'users.name as analyst_name', 'users.company as analyst_company', 'users.profile_photo as analyst_photo')
+            ->get();
+        return view('dashboards.manufacturer.analyst-applications', compact('applications'));
+    }
+
+    public function approveAnalyst($applicationId)
+    {
+        $manufacturerId = optional(Auth::user())->id;
+        $application = DB::table('analyst_manufacturer')->where('id', $applicationId)->where('manufacturer_id', $manufacturerId)->first();
+        if (!$application) {
+            return back()->with('error', 'Application not found.');
+        }
+        // Approve this application
+        DB::table('analyst_manufacturer')->where('id', $applicationId)->update(['status' => 'approved', 'updated_at' => now()]);
+        // Optionally reject all other pending applications for this manufacturer
+        DB::table('analyst_manufacturer')->where('manufacturer_id', $manufacturerId)->where('id', '!=', $applicationId)->where('status', 'pending')->update(['status' => 'rejected', 'updated_at' => now()]);
+        return back()->with('success', 'Analyst approved!');
+    }
+
+    public function rejectAnalyst($applicationId)
+    {
+        $manufacturerId = optional(Auth::user())->id;
+        $application = DB::table('analyst_manufacturer')->where('id', $applicationId)->where('manufacturer_id', $manufacturerId)->first();
+        if (!$application) {
+            return back()->with('error', 'Application not found.');
+        }
+        DB::table('analyst_manufacturer')->where('id', $applicationId)->update(['status' => 'rejected', 'updated_at' => now()]);
+        return back()->with('success', 'Analyst rejected.');
+    }
+
+    public function viewAnalystPortfolio($analystId)
+    {
+        $analyst = \App\Models\User::findOrFail($analystId);
+        // You can fetch more details or reports as needed
+        return view('dashboards.manufacturer.analyst-portfolio', compact('analyst'));
     }
 }

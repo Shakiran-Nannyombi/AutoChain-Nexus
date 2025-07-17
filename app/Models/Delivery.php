@@ -13,7 +13,7 @@ class Delivery extends Model
         'materials_delivered' => 'array',
     ];
 
-    use HasFactory;
+use HasFactory;
 
     public function supplier()
     {

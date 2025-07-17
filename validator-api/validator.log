@@ -1,0 +1,134 @@
+nohup: ignoring input
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.vendorvalidation:validator-api:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: com.fasterxml.jackson.core:jackson-databind:jar -> duplicate declaration of version (?) @ line 70, column 15
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] -----------------< com.vendorvalidation:validator-api >-----------------
+[INFO] Building validator-api 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.3:run (default-cli) > test-compile @ validator-api >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ validator-api ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ validator-api ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ validator-api ---
+[INFO] skip non existing resourceDirectory /opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ validator-api ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.5.3:run (default-cli) < test-compile @ validator-api <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.3:run (default-cli) @ validator-api ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-16T15:56:36.973+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Starting ValidatorApiApplication using Java 17.0.15 with PID 23239 (/opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api/target/classes started by dev-kiran in /opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api)
+2025-07-16T15:56:36.975+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : No active profile set, falling back to 1 default profile: "default"
+2025-07-16T15:56:36.998+03:00  INFO 23239 --- [validator-api] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-07-16T15:56:36.998+03:00  INFO 23239 --- [validator-api] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-07-16T15:56:37.542+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8084 (http)
+2025-07-16T15:56:37.550+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-16T15:56:37.551+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-07-16T15:56:37.585+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-07-16T15:56:37.586+03:00  INFO 23239 --- [validator-api] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 587 ms
+2025-07-16T15:56:38.060+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-07-16T15:56:38.075+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8084 (http) with context path '/'
+2025-07-16T15:56:38.081+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Started ValidatorApiApplication in 1.321 seconds (process running for 1.567)
+2025-07-16T15:56:39.245+03:00  INFO 23239 --- [validator-api] [nio-8084-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-16T15:56:39.246+03:00  INFO 23239 --- [validator-api] [nio-8084-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-07-16T15:56:39.247+03:00  INFO 23239 --- [validator-api] [nio-8084-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+Successfully synced 7 rules.
+Successfully synced 7 rules.
+Successfully synced 7 rules.
+Successfully synced 7 rules.
+Successfully synced 7 rules.
+2025-07-16T17:57:45.499+03:00  WARN 23239 --- [validator-api] [nio-8084-exec-3] o.a.p.p.font.FileSystemFontProvider      : New fonts found, font cache will be re-built
+2025-07-16T17:57:45.499+03:00  WARN 23239 --- [validator-api] [nio-8084-exec-3] o.a.p.p.font.FileSystemFontProvider      : Building on-disk font cache, this may take a while
+2025-07-16T17:57:46.905+03:00  WARN 23239 --- [validator-api] [nio-8084-exec-3] o.a.p.p.font.FileSystemFontProvider      : Finished building on-disk font cache, found 2064 fonts
+2025-07-16T17:57:46.922+03:00  WARN 23239 --- [validator-api] [nio-8084-exec-3] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font Symbol
+2025-07-16T17:57:46.923+03:00  WARN 23239 --- [validator-api] [nio-8084-exec-3] o.a.pdfbox.pdmodel.font.PDType1Font      : Using fallback font LiberationSans for base font ZapfDingbats
+2025-07-16T20:34:56.637+03:00  INFO 23239 --- [validator-api] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-07-16T20:34:56.673+03:00  INFO 23239 --- [validator-api] [       Thread-6] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-07-16T20:34:56.680+03:00  INFO 23239 --- [validator-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-16T20:34:56.967+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Starting ValidatorApiApplication using Java 17.0.15 with PID 23239 (/opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api/target/classes started by dev-kiran in /opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api)
+2025-07-16T20:34:56.967+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : No active profile set, falling back to 1 default profile: "default"
+2025-07-16T20:34:57.118+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8084 (http)
+2025-07-16T20:34:57.119+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-16T20:34:57.119+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-07-16T20:34:57.135+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-07-16T20:34:57.135+03:00  INFO 23239 --- [validator-api] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 164 ms
+2025-07-16T20:34:57.254+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-07-16T20:34:57.260+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8084 (http) with context path '/'
+2025-07-16T20:34:57.263+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Started ValidatorApiApplication in 0.323 seconds (process running for 16527.27)
+2025-07-16T20:34:57.265+03:00  INFO 23239 --- [validator-api] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-07-16T20:35:11.676+03:00  INFO 23239 --- [validator-api] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2025-07-16T20:35:11.678+03:00  INFO 23239 --- [validator-api] [       Thread-8] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-07-16T20:35:11.679+03:00  INFO 23239 --- [validator-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-07-16T20:35:11.739+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Starting ValidatorApiApplication using Java 17.0.15 with PID 23239 (/opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api/target/classes started by dev-kiran in /opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api)
+2025-07-16T20:35:11.740+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : No active profile set, falling back to 1 default profile: "default"
+2025-07-16T20:35:11.816+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8084 (http)
+2025-07-16T20:35:11.817+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-16T20:35:11.817+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-07-16T20:35:11.825+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-07-16T20:35:11.825+03:00  INFO 23239 --- [validator-api] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 84 ms
+2025-07-16T20:35:11.870+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-07-16T20:35:11.878+03:00  INFO 23239 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8084 (http) with context path '/'
+2025-07-16T20:35:11.880+03:00  INFO 23239 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Started ValidatorApiApplication in 0.149 seconds (process running for 16541.887)
+2025-07-16T20:35:11.880+03:00  INFO 23239 --- [validator-api] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-07-16T20:37:29.089+03:00  INFO 23239 --- [validator-api] [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-07-16T20:37:29.090+03:00  INFO 23239 --- [validator-api] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  04:40 h
+[INFO] Finished at: 2025-07-16T20:37:29+03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.3:run (default-cli) on project validator-api: Process terminated with exit code: 143 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

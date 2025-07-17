@@ -8,10 +8,10 @@
 
 @section('content')
 <div class="content-card dashboard-page">
-    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-tachometer-alt"></i> Overview</h2>
+    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-tachometer-alt"></i> Overview of Controls</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             <!-- Quick Stats -->
-            <div style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(37,99,235,0.08);">
+            <div style="background: linear-gradient(135deg, #0b8850, #60a5fa); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(37,99,235,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $pendingUsers ?? 0 }}</div>
@@ -111,6 +111,7 @@ $recentActivities) && $recentActivities->count())
         </div>
     </div>
 
+<<<<<<< HEAD
     @php
         $segmentNames = [
             1 => 'At Risk',
@@ -164,5 +165,7 @@ $recentActivities) && $recentActivities->count())
         </div>
         @endif
         </div>
+=======
+>>>>>>> c68b8e0148e12445670715c10c12137215b0e64f
     </div>
 @endsection 

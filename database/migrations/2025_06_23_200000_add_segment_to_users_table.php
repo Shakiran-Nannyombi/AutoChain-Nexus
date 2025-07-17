@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasColumn('users', 'segment')) {
-            Schema::table('users', function (Blueprint $table) {
-                $table->string('segment')->nullable()->after('role');
-            });
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('segment')->nullable()->after('role');
+        });
         }
     }
 

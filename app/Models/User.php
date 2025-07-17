@@ -9,8 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use App\Notifications\UserResetPasswordNotification;
 
 /**
- * @method \Illuminate\Database\Eloquent\Relations\MorphMany notifications()
+ * @property \Illuminate\Notifications\DatabaseNotificationCollection $notifications
  * @method \Illuminate\Notifications\DatabaseNotificationCollection unreadNotifications()
+ * @method \Illuminate\Notifications\DatabaseNotificationCollection notifications()
  */
 class User extends Authenticatable
 {

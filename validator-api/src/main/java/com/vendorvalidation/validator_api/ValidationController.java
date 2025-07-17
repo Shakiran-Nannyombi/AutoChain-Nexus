@@ -2,6 +2,8 @@ package com.vendorvalidation.validator_api;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 
 @RestController
@@ -32,5 +34,13 @@ public class ValidationController {
         } catch (Exception e) {
             return "{\"score\": 0, \"message\": \"Validation failed: " + e.getMessage() + "\"}";
         }
+    }
+
+    @GetMapping("/health")
+    public Map<String, String> health() {
+        Map<String, String> status = new HashMap<>();
+        status.put("status", "ok");
+        status.put("message", "Validator API is running");
+        return status;
     }
 } 

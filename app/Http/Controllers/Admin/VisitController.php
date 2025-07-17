@@ -24,7 +24,7 @@ class VisitController extends Controller
             'pending' => $visits->where('status', 'pending')->count(),
             'approved' => $visits->where('status', 'approved')->count(),
             'rejected' => $visits->where('status', 'rejected')->count(),
-            'this_week' => $visits->whereBetween('visit_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count(),
+            'this_week' => $visits->where('status', 'completed')->count(),
             'completed' => $visits->where('status', 'completed')->count(),
             'auto_scheduled' => User::where('auto_visit_scheduled', true)->where('role', 'vendor')->count(),
         ];

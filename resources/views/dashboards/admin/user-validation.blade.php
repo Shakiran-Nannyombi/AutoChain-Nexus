@@ -12,8 +12,9 @@
 
 @section('content')
   <div class="content-card">
-    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">User Validation Center</h2>
-    <br>
+    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"> 
+        <i class="fas fa-user-check"></i> User Validation Center
+    </h2>
 
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
@@ -47,14 +48,28 @@
         </div>
     </div>
 
+    <!-- User Role Tabs -->
+    <div class="role-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+        <button type="button" class="tab-btn active" onclick="showRole('all')">All</button>
+        <button type="button" class="tab-btn" onclick="showRole('vendor')">Vendor</button>
+        <button type="button" class="tab-btn" onclick="showRole('manufacturer')">Manufacturer</button>
+        <button type="button" class="tab-btn" onclick="showRole('supplier')">Supplier</button>
+        <button type="button" class="tab-btn" onclick="showRole('retailer')">Retailer</button>
+        <button type="button" class="tab-btn" onclick="showRole('analyst')">Analyst</button>
+    </div>
+    <style>
+        .tab-btn { padding: 0.5rem 1.5rem; border: none; background: #eee; cursor: pointer; border-radius: 5px; font-weight: 600; color: #16610E; transition: background 0.2s, color 0.2s; }
+        .tab-btn.active { background: var(--primary, #16610E); color: #fff; }
+    </style>
+
     <!-- Pending Applications List -->
     <div class="card" style="margin-top: 2rem;">
         <div class="card-header">
-            <h2>Pending User Applications</h2>
+            <h2 style=" color: #F97A00; font-size: 1.3rem;">Pending User Applications</h2>
         </div>
         <div class="card-body">
             @forelse ($pendingUsers as $user)
-                <div class="application-card-new">
+                <div class="application-card-new" data-role="{{ strtolower($user->role) }}">
                     <div class="application-header-new">
                         <div class="company-info-new">
                             <h3>{{ $user->company ?? $user->name }}</h3>
@@ -88,57 +103,61 @@
                     </div>
                     <div class="application-footer-new">
                         <div class="validation-score-new">
-                            @if($user->validation_score !== null)
-                                <div class="score-breakdown">
-                                    <div class="score-item">
-                                        <span class="score-label">Overall:</span>
-                                        <span class="score-value {{ $user->validation_score >= 70 ? 'score-pass' : 'score-fail' }}">
-                                            {{ $user->validation_score }}%
-                                        </span>
+                            @if($user->role === 'vendor')
+                                @if($user->validation_score !== null)
+                                    <div class="score-breakdown">
+                                        <div class="score-item">
+                                            <span class="score-label">Overall:</span>
+                                            <span class="score-value {{ $user->validation_score >= 70 ? 'score-pass' : 'score-fail' }}">
+                                                {{ $user->validation_score }}%
+                                            </span>
+                                        </div>
+                                        @if($user->financial_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Financial:</span>
+                                                <span class="score-value">{{ $user->financial_score }}/30</span>
+                                            </div>
+                                        @endif
+                                        @if($user->reputation_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Reputation:</span>
+                                                <span class="score-value">{{ $user->reputation_score }}/25</span>
+                                            </div>
+                                        @endif
+                                        @if($user->compliance_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Compliance:</span>
+                                                <span class="score-value">{{ $user->compliance_score }}/25</span>
+                                            </div>
+                                        @endif
+                                        @if($user->profile_score !== null)
+                                            <div class="score-item">
+                                                <span class="score-label">Profile:</span>
+                                                <span class="score-value">{{ $user->profile_score }}/15</span>
+                                            </div>
+                                        @endif
                                     </div>
-                                    @if($user->financial_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Financial:</span>
-                                            <span class="score-value">{{ $user->financial_score }}/30</span>
+                                    @if($user->auto_visit_scheduled)
+                                        <div class="visit-scheduled-badge">
+                                            <i class="fas fa-calendar-check"></i> Visit Scheduled
                                         </div>
                                     @endif
-                                    @if($user->reputation_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Reputation:</span>
-                                            <span class="score-value">{{ $user->reputation_score }}/25</span>
-                                        </div>
-                                    @endif
-                                    @if($user->compliance_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Compliance:</span>
-                                            <span class="score-value">{{ $user->compliance_score }}/25</span>
-                                        </div>
-                                    @endif
-                                    @if($user->profile_score !== null)
-                                        <div class="score-item">
-                                            <span class="score-label">Profile:</span>
-                                            <span class="score-value">{{ $user->profile_score }}/15</span>
-                                        </div>
-                                    @endif
-                                </div>
-                                @if($user->auto_visit_scheduled)
-                                    <div class="visit-scheduled-badge">
-                                        <i class="fas fa-calendar-check"></i> Visit Scheduled
-                                    </div>
+                                @else
+                                    <span>Validation Score: <strong>Not Run</strong></span>
                                 @endif
-                            @else
-                                <span>Validation Score: <strong>Not Run</strong></span>
                             @endif
                         </div>
                         <div class="action-buttons-new">
                             <a href="#" class="btn-action-new btn-view-details" data-url="{{ route('admin.user.show', $user) }}">View Details</a>
-                            @if($user->validation_score !== null)
+                            @if($user->validation_score !== null && $user->role === 'vendor')
                                 <a href="#" class="btn-action-new btn-view-validation" data-user-id="{{ $user->id }}">View Validation</a>
                             @endif
+                            @if($user->role === 'vendor')
                             <form action="{{ route('admin.user.validate', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn-action-new btn-run-validation">Run Validation</button>
                             </form>
+                            @endif
                             @if($user->role !== 'vendor')
                             <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" style="display:inline;">
                                 @csrf
@@ -188,7 +207,31 @@
 
 @push('scripts')
 <script>
+function showRole(role) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    if (role === 'all') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+    } else if (role === 'vendor') {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+    } else if (role === 'manufacturer') {
+        document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+    } else if (role === 'supplier') {
+        document.querySelector('.tab-btn:nth-child(4)').classList.add('active');
+    } else if (role === 'retailer') {
+        document.querySelector('.tab-btn:nth-child(5)').classList.add('active');
+    } else if (role === 'analyst') {
+        document.querySelector('.tab-btn:nth-child(6)').classList.add('active');
+    }
+    document.querySelectorAll('.application-card-new').forEach(card => {
+        if (role === 'all') {
+            card.style.display = '';
+        } else {
+            card.style.display = (card.dataset.role === role) ? '' : 'none';
+        }
+    });
+}
 document.addEventListener('DOMContentLoaded', function () {
+    showRole('all');
     const userModal = document.getElementById('viewUserModal');
     const validationModal = document.getElementById('validationModal');
     
