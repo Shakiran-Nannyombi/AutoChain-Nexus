@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\RetailerOrder;
 use App\Models\RetailerStock;
 
@@ -84,7 +85,19 @@ class VendorAnalyticsController extends Controller
         $header = array_shift($rows);
         foreach ($rows as $row) {
             $data = array_combine($header, $row);
-            DB::table('vendors')->where('id', $data['vendor_id'])->update(['segment' => $data['segment']]);
+            // Update all analytics fields in the vendors table
+            DB::table('vendors')->where('id', $data['vendor_id'])->update([
+                'name' => $data['name'],
+                'segment_name' => $data['segment_name'],
+                'total_orders' => $data['total_orders'],
+                'total_quantity' => $data['total_quantity'],
+                // Cast as string for currency-formatted values
+                'total_value' => (string) $data['total_value'],
+                'most_ordered_product' => $data['most_ordered_product'],
+                'order_frequency' => $data['order_frequency'],
+                'fulfillment_rate' => $data['fulfillment_rate'],
+                'cancellation_rate' => $data['cancellation_rate'],
+            ]);
         }
         return response()->json(['message' => 'Segments imported successfully']);
     }
@@ -92,8 +105,8 @@ class VendorAnalyticsController extends Controller
     public function segmentationSummary()
     {
         $summary = DB::table('vendors')
-            ->select('segment', DB::raw('COUNT(*) as count'))
-            ->groupBy('segment')
+            ->select('segment_name', DB::raw('COUNT(*) as count'))
+            ->groupBy('segment_name')
             ->get();
         return response()->json($summary);
     }

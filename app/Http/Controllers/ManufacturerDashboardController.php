@@ -354,6 +354,25 @@ class ManufacturerDashboardController extends Controller
         ));
     }
 
+    // PDF export for production reports
+    public function exportProductionReportsPdf(Request $request)
+    {
+        $query = ProcessFlow::query();
+        // Apply date filters
+        if ($request->has('start_date') && $request->input('start_date')) {
+            $query->whereDate('entered_stage_at', '>=', $request->input('start_date'));
+        }
+        if ($request->has('end_date') && $request->input('end_date')) {
+            $query->whereDate('entered_stage_at', '<=', $request->input('end_date'));
+        }
+        $processFlows = $query->get();
+        $totalItemsProcessed = $processFlows->count();
+        $totalCompletedItems = $processFlows->where('status', 'completed')->count();
+        $totalFailedItems = $processFlows->where('status', 'failed')->count();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact('processFlows', 'totalItemsProcessed', 'totalCompletedItems', 'totalFailedItems'));
+        return $pdf->download('production-report.pdf');
+    }
+
     public function quality_control()
     {
         return view('dashboards.manufacturer.quality-control');
@@ -376,131 +395,52 @@ class ManufacturerDashboardController extends Controller
 
     public function index()
     {
-        // Get all vendors with their segments
+        // Get all vendors with their analytics fields
         $vendors = DB::table('vendors')->get();
-        $vendorIds = $vendors->pluck('user_id')->toArray();
-
-        // Get all vendor orders
-        $orders = DB::table('vendor_orders')
-            ->whereIn('vendor_id', $vendorIds)
-            ->get();
-
-        // Get product prices
-        $productPrices = DB::table('products')->pluck('price', 'name');
-
-        // Group vendors by segment
-        $segments = $vendors->groupBy('segment');
         $segmentAnalytics = [];
         $vendorAnalytics = [];
-
+        $segmentLabels = [
+            'Platinum' => 'Platinum',
+            'Gold' => 'Gold',
+            'Silver' => 'Silver',
+        ];
+        $segmentColors = [
+            'Platinum' => '#E5C100',
+            'Gold' => '#FFD700',
+            'Silver' => '#C0C0C0',
+        ];
+        // Group vendors by segment_name
+        $segments = $vendors->groupBy('segment_name');
         foreach ($segments as $segment => $segmentVendors) {
-            $segmentVendorIds = $segmentVendors->pluck('user_id')->toArray();
-            $segmentOrders = $orders->whereIn('vendor_id', $segmentVendorIds);
-
-            // --- Segment-level analytics ---
-            $totalOrders = $segmentOrders->count();
-            $totalVendors = count($segmentVendorIds);
-            $totalValue = $segmentOrders->sum(function($order) use ($productPrices) {
-                return $order->quantity * ($productPrices[$order->product] ?? 0);
-            });
-            $avgOrderValue = $totalOrders > 0 ? $totalValue / $totalOrders : 0;
-            $avgOrdersPerVendor = $totalVendors > 0 ? $totalOrders / $totalVendors : 0;
-            $recency = $segmentOrders->max('ordered_at') ? now()->diffInDays($segmentOrders->max('ordered_at')) : null;
-            $firstOrder = $segmentOrders->min('ordered_at');
-            $lastOrder = $segmentOrders->max('ordered_at');
-            $fulfilled = $segmentOrders->where('status', 'fulfilled')->count();
-            $cancelled = $segmentOrders->where('status', 'cancelled')->count();
-            $fulfillmentRate = $totalOrders > 0 ? round($fulfilled / $totalOrders * 100, 2) : 0;
-            $cancellationRate = $totalOrders > 0 ? round($cancelled / $totalOrders * 100, 2) : 0;
-            $ordersByMonth = $segmentOrders->groupBy(function($order) { return \Carbon\Carbon::parse($order->ordered_at)->format('Y-m'); });
-            $orderFrequency = $ordersByMonth->count() > 0 ? round($totalOrders / $ordersByMonth->count(), 2) : 0;
-            // Most ordered product (segment)
-            $productCounts = $segmentOrders->groupBy('product')->map->count();
-            $mostOrderedProduct = $productCounts->sortDesc()->keys()->first();
-            $top3Products = $productCounts->sortDesc()->take(3)->toArray();
-
-            $segmentAnalytics[$segment ?? 'Unsegmented'] = [
-                'total_orders' => $totalOrders,
-                'total_value' => $totalValue,
-                'avg_order_value' => $avgOrderValue,
-                'avg_orders_per_vendor' => $avgOrdersPerVendor,
-                'recency_days' => $recency,
-                'first_order' => $firstOrder,
-                'last_order' => $lastOrder,
-                'fulfillment_rate' => $fulfillmentRate,
-                'cancellation_rate' => $cancellationRate,
-                'order_frequency_per_month' => $orderFrequency,
-                'most_ordered_product' => $mostOrderedProduct,
-                'top3_products' => $top3Products,
-                'vendor_count' => $totalVendors,
+            $segmentAnalytics[$segment] = [
+                'count' => $segmentVendors->count(),
+                'total_orders' => $segmentVendors->sum('total_orders'),
+                'total_value' => $segmentVendors->sum(function($vendor) {
+                    // Remove everything except digits and dots, then cast to float
+                    return (float) preg_replace('/[^\d.]/', '', $vendor->total_value);
+                }),
             ];
-
-            // --- Per-vendor analytics ---
-            foreach ($segmentVendors as $vendor) {
-                $vendorOrders = $orders->where('vendor_id', $vendor->user_id);
-                $vendorTotalOrders = $vendorOrders->count();
-                $vendorTotalValue = $vendorOrders->sum(function($order) use ($productPrices) {
-                    return $order->quantity * ($productPrices[$order->product] ?? 0);
-                });
-                $vendorAvgOrderValue = $vendorTotalOrders > 0 ? $vendorTotalValue / $vendorTotalOrders : 0;
-                $vendorRecency = $vendorOrders->max('ordered_at') ? now()->diffInDays($vendorOrders->max('ordered_at')) : null;
-                $vendorFirstOrder = $vendorOrders->min('ordered_at');
-                $vendorLastOrder = $vendorOrders->max('ordered_at');
-                $vendorFulfilled = $vendorOrders->where('status', 'fulfilled')->count();
-                $vendorCancelled = $vendorOrders->where('status', 'cancelled')->count();
-                $vendorFulfillmentRate = $vendorTotalOrders > 0 ? round($vendorFulfilled / $vendorTotalOrders * 100, 2) : 0;
-                $vendorCancellationRate = $vendorTotalOrders > 0 ? round($vendorCancelled / $vendorTotalOrders * 100, 2) : 0;
-                $vendorOrdersByMonth = $vendorOrders->groupBy(function($order) { return \Carbon\Carbon::parse($order->ordered_at)->format('Y-m'); });
-                $vendorOrderFrequency = $vendorOrdersByMonth->count() > 0 ? round($vendorTotalOrders / $vendorOrdersByMonth->count(), 2) : 0;
-                $vendorProductCounts = $vendorOrders->groupBy('product')->map->count();
-                $vendorMostOrderedProduct = $vendorProductCounts->sortDesc()->keys()->first();
-                $vendorTop3Products = $vendorProductCounts->sortDesc()->take(3)->toArray();
-
-                $vendorAnalytics[$vendor->id] = [
-                    'vendor' => $vendor,
-                    'total_orders' => $vendorTotalOrders,
-                    'total_value' => $vendorTotalValue,
-                    'avg_order_value' => $vendorAvgOrderValue,
-                    'recency_days' => $vendorRecency,
-                    'first_order' => $vendorFirstOrder,
-                    'last_order' => $vendorLastOrder,
-                    'fulfillment_rate' => $vendorFulfillmentRate,
-                    'cancellation_rate' => $vendorCancellationRate,
-                    'order_frequency_per_month' => $vendorOrderFrequency,
-                    'most_ordered_product' => $vendorMostOrderedProduct,
-                    'top3_products' => $vendorTop3Products,
-                ];
-            }
         }
-
-        // Compute top products across all vendors
+        foreach ($vendors as $vendor) {
+            $vendorAnalytics[] = [
+                'name' => $vendor->name,
+                'segment' => $vendor->segment_name,
+                'total_orders' => $vendor->total_orders,
+                'most_ordered_product' => $vendor->most_ordered_product,
+                'fulfillment_rate' => $vendor->fulfillment_rate,
+                'total_value' => $vendor->total_value,
+                'order_frequency' => $vendor->order_frequency,
+                'cancellation_rate' => $vendor->cancellation_rate,
+            ];
+        }
+        // Top 5 products overall
+        $orders = DB::table('vendor_orders')->get();
         $topProducts = $orders->groupBy('product')->map(function($orders) {
             return $orders->count();
         })->sortDesc()->take(5)->toArray();
-
-        // Segment labels and colors for charts
-        $segmentLabels = [
-            0 => 'Gold',
-            1 => 'Silver',
-            2 => 'Bronze',
-            null => 'Unsegmented',
-        ];
-        $segmentColors = [
-            0 => '#4CAF50',
-            1 => '#2196F3',
-            2 => '#FFC107',
-            null => '#BDBDBD',
-        ];
-
-        $vendorSegmentNames = [
-            0 => 'Top Vendors',
-            1 => 'Growth Vendors',
-            2 => 'New/Low Activity Vendors',
-        ];
         return view('dashboards.manufacturer.index', [
             'segmentAnalytics' => $segmentAnalytics,
             'vendorAnalytics' => $vendorAnalytics,
-            'vendorSegmentNames' => $vendorSegmentNames,
             'segmentLabels' => $segmentLabels,
             'segmentColors' => $segmentColors,
             'topProducts' => $topProducts,
@@ -544,12 +484,60 @@ class ManufacturerDashboardController extends Controller
         return response()->json(['message' => 'Process flow item updated successfully.']);
     }
 
-    public function orders()
+    public function orders(Request $request)
     {
         $manufacturerId = session('user_id') ?? Auth::id();
-        $supplierOrders = ChecklistRequest::where('manufacturer_id', $manufacturerId)->get();
-        $vendorOrders = VendorOrder::where('manufacturer_id', $manufacturerId)->get();
-        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders'));
+        $query = \App\Models\ChecklistRequest::where('manufacturer_id', $manufacturerId)->with('supplier');
+
+        // Filter by status
+        $status = $request->input('status');
+        if ($status && in_array($status, ['pending', 'fulfilled', 'cancelled'])) {
+            $query->where('status', $status);
+        }
+
+        // Filter by supplier name or email
+        $search = $request->input('search');
+        if ($search) {
+            $query->whereHas('supplier', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%") ;
+            });
+        }
+
+        $supplierOrders = $query->orderByDesc('created_at')->get();
+        $vendorOrdersQuery = \App\Models\VendorOrder::where('manufacturer_id', $manufacturerId);
+        $vendorStatus = $request->input('vendor_status');
+        if ($vendorStatus && in_array($vendorStatus, ['fulfilled', 'cancelled'])) {
+            $vendorOrdersQuery->where('status', $vendorStatus);
+        }
+        $vendorOrders = $vendorOrdersQuery->get();
+        $productPrices = \DB::table('products')->pluck('price', 'name');
+        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'search', 'status', 'productPrices'));
+    }
+
+    public function ordersPartial(Request $request)
+    {
+        $manufacturerId = session('user_id') ?? Auth::id();
+        $query = \App\Models\ChecklistRequest::where('manufacturer_id', $manufacturerId)->with('supplier');
+
+        // Filter by status
+        $status = $request->input('status');
+        if ($status && in_array($status, ['pending', 'fulfilled', 'cancelled'])) {
+            $query->where('status', $status);
+        }
+
+        // Filter by supplier name or email
+        $search = $request->input('search');
+        if ($search) {
+            $query->whereHas('supplier', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%") ;
+            });
+        }
+
+        $supplierOrders = $query->orderByDesc('created_at')->get();
+        // Return only the table rows as a Blade partial
+        return response()->view('dashboards.manufacturer.partials.supplier-orders-rows', compact('supplierOrders'));
     }
 
     public function remakeOrder($id)
@@ -621,7 +609,7 @@ class ManufacturerDashboardController extends Controller
         $vendorIds = $vendors->pluck('user_id')->toArray();
         $orders = DB::table('vendor_orders')->whereIn('vendor_id', $vendorIds)->get();
         $productPrices = DB::table('products')->pluck('price', 'name');
-        $segments = $vendors->groupBy('segment');
+        $segments = $vendors->groupBy('segment_name');
         $segmentLabels = [0 => 'Gold', 1 => 'Silver', 2 => 'Bronze', null => 'Unsegmented'];
         $segmentColors = [0 => '#4CAF50', 1 => '#2196F3', 2 => '#FFC107', null => '#BDBDBD'];
         $segmentAnalytics = [];
@@ -640,17 +628,15 @@ class ManufacturerDashboardController extends Controller
         foreach ($vendors as $vendor) {
             $vendorOrders = $orders->where('vendor_id', $vendor->user_id);
             $products = $vendorOrders->pluck('product');
-            $top3 = $products->countBy()->sortDesc()->take(3)->keys()->toArray();
-            $mostOrdered = $top3[0] ?? 'N/A';
+            $mostOrdered = $products->countBy()->sortDesc()->keys()->first() ?? 'N/A';
             $totalValue = $vendorOrders->sum(function($o) use ($productPrices) {
                 return ($productPrices[$o->product] ?? 0) * $o->quantity;
             });
             $vendorAnalytics[] = [
                 'name' => $vendor->name ?? ('Vendor #' . $vendor->user_id),
-                'segment' => $segmentLabels[$vendor->segment] ?? 'Unsegmented',
+                'segment' => $vendor->segment_name,
                 'total_orders' => $vendorOrders->count(),
                 'most_ordered_product' => $mostOrdered,
-                'top_3_products' => $top3,
                 'total_value' => $totalValue,
             ];
         }
@@ -705,5 +691,89 @@ class ManufacturerDashboardController extends Controller
         $fileName = 'reports/vendor_analytics_' . now()->format('Ymd_His') . '.pdf';
         Storage::disk('public')->put($fileName, $pdf->output());
         return response()->download(storage_path('app/public/' . $fileName));
+    }
+
+    public function vendorSegmentationPage()
+    {
+        // Get all vendors with their analytics fields
+        $vendors = DB::table('vendors')->get();
+        $segmentAnalytics = [];
+        $vendorAnalytics = [];
+        $segmentLabels = [
+            'Platinum' => 'Platinum',
+            'Gold' => 'Gold',
+            'Silver' => 'Silver',
+        ];
+        $segmentColors = [
+            'Platinum' => '#E5C100',
+            'Gold' => '#FFD700',
+            'Silver' => '#C0C0C0',
+        ];
+        // Group vendors by segment_name
+        $segments = $vendors->groupBy('segment_name');
+        foreach ($segments as $segment => $segmentVendors) {
+            $segmentAnalytics[$segment] = [
+                'count' => $segmentVendors->count(),
+                'total_orders' => $segmentVendors->sum('total_orders'),
+                'total_value' => $segmentVendors->sum(function($vendor) {
+                    // Remove everything except digits and dots, then cast to float
+                    return (float) preg_replace('/[^\d.]/', '', $vendor->total_value);
+                }),
+            ];
+        }
+        foreach ($vendors as $vendor) {
+            $vendorAnalytics[] = [
+                'name' => $vendor->name,
+                'segment' => $vendor->segment_name,
+                'total_orders' => $vendor->total_orders,
+                'most_ordered_product' => $vendor->most_ordered_product,
+                'fulfillment_rate' => $vendor->fulfillment_rate,
+                'total_value' => $vendor->total_value,
+                'order_frequency' => $vendor->order_frequency,
+                'cancellation_rate' => $vendor->cancellation_rate,
+            ];
+        }
+        // Top 5 products overall
+        $orders = DB::table('vendor_orders')->get();
+        $topProducts = $orders->groupBy('product')->map(function($orders) {
+            return $orders->count();
+        })->sortDesc()->take(5)->toArray();
+        return view('dashboards.manufacturer.vendor-segmentation', [
+            'segmentAnalytics' => $segmentAnalytics,
+            'vendorAnalytics' => $vendorAnalytics,
+            'segmentLabels' => $segmentLabels,
+            'segmentColors' => $segmentColors,
+            'topProducts' => $topProducts,
+        ]);
+    }
+
+    public function selectSalesAnalysis(Request $request)
+    {
+        $manufacturerId = Auth::id();
+        // Get analyst IDs assigned to this manufacturer
+        $analystIds = DB::table('analyst_manufacturer')
+            ->where('manufacturer_id', $manufacturerId)
+            ->where('status', 'approved')
+            ->pluck('analyst_id');
+        // Get sales analysis files uploaded by those analysts
+        $files = \App\Models\AnalystReport::where('type', 'sales')
+            ->whereIn('target_user_id', $analystIds)
+            ->orderByDesc('created_at')
+            ->get();
+        // Preview the most recent file (if any)
+        $preview = null;
+        if ($files->count() > 0) {
+            $file = $files->first();
+            $path = storage_path('app/public/' . $file->report_file);
+            if (file_exists($path)) {
+                if (str_ends_with($path, '.csv') || str_ends_with($path, '.txt')) {
+                    $preview = array_slice(file($path, FILE_IGNORE_NEW_LINES), 0, 10);
+                } elseif (str_ends_with($path, '.json')) {
+                    $json = json_decode(file_get_contents($path), true);
+                    $preview = array_slice($json, 0, 10);
+                }
+            }
+        }
+        return view('dashboards.manufacturer.select-sales-analysis', compact('files', 'preview'));
     }
 }

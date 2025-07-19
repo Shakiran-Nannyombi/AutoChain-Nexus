@@ -25,7 +25,8 @@ class AnalystReportController extends Controller
 
     public function create()
     {
-        return view('dashboards.analyst.create-reports');
+        $manufacturers = \App\Models\User::where('role', 'manufacturer')->orderBy('name')->get();
+        return view('dashboards.analyst.create-reports', compact('manufacturers'));
     }
 
 
@@ -148,6 +149,102 @@ public function store(Request $request)
     {
         // TODO: Implement actual logic and view
         return view('dashboards.analyst.performance-reports');
+    }
+
+    public function generate(Request $request)
+    {
+        $type = $request->input('type');
+        $dateFrom = $request->input('start_date');
+        $dateTo = $request->input('end_date');
+        $orderReportType = $request->input('order_report_type');
+        $manufacturerId = $request->input('manufacturer_id');
+        $reportData = null;
+        $headers = [];
+        $rows = [];
+
+        // Fetch all manufacturers for the selector
+        $manufacturers = \App\Models\User::where('role', 'manufacturer')->orderBy('name')->get();
+
+        if ($orderReportType === 'supplier_orders') {
+            $query = \App\Models\ChecklistRequest::query();
+            if ($manufacturerId) $query->where('manufacturer_id', $manufacturerId);
+            if ($dateFrom) $query->whereDate('created_at', '>=', $dateFrom);
+            if ($dateTo) $query->whereDate('created_at', '<=', $dateTo);
+            $orders = $query->orderBy('created_at', 'desc')->limit(50)->get();
+            $headers = ['Manufacturer', 'Supplier', 'Materials Requested', 'Status', 'Created At'];
+            foreach ($orders as $order) {
+                $materials = is_array($order->materials_requested) ? json_encode($order->materials_requested) : $order->materials_requested;
+                $rows[] = [
+                    optional($order->manufacturer)->name ?? 'N/A',
+                    optional($order->supplier)->name ?? 'N/A',
+                    $materials,
+                    $order->status,
+                    $order->created_at ? $order->created_at->format('Y-m-d') : '',
+                ];
+            }
+        } elseif ($orderReportType === 'vendor_orders') {
+            $query = \App\Models\VendorOrder::query();
+            if ($manufacturerId) $query->where('manufacturer_id', $manufacturerId);
+            if ($dateFrom) $query->whereDate('created_at', '>=', $dateFrom);
+            if ($dateTo) $query->whereDate('created_at', '<=', $dateTo);
+            $orders = $query->orderBy('created_at', 'desc')->limit(50)->get();
+            $headers = ['Manufacturer', 'Vendor', 'Product', 'Quantity', 'Status', 'Ordered At'];
+            foreach ($orders as $order) {
+                $rows[] = [
+                    optional($order->manufacturer)->name ?? 'N/A',
+                    optional($order->vendor)->name ?? 'N/A',
+                    $order->product_name ?? $order->product,
+                    $order->quantity,
+                    $order->status,
+                    $order->ordered_at ? $order->ordered_at->format('Y-m-d') : '',
+                ];
+            }
+        }
+        if ($headers && $rows) {
+            $queryString = http_build_query([
+                'type' => $type,
+                'start_date' => $dateFrom,
+                'end_date' => $dateTo,
+                'order_report_type' => $orderReportType,
+                'manufacturer_id' => $manufacturerId,
+            ]);
+            $reportData = [
+                'headers' => $headers,
+                'rows' => $rows,
+                'pdfUrl' => url('/analyst/reports/generate-pdf?' . $queryString),
+                'csvUrl' => url('/analyst/reports/generate-csv?' . $queryString),
+            ];
+        }
+        return view('dashboards.analyst.create-reports', compact('reportData', 'manufacturers'));
+    }
+
+    // Show upload form for sales analysis (analyst only)
+    public function showUploadForm()
+    {
+        return view('dashboards.analyst.upload-sales-analysis');
+    }
+
+    // Handle upload of sales analysis CSV/JSON (analyst only)
+    public function uploadSalesAnalysis(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string',
+            'summary' => 'required|string',
+            'file' => 'required|file|mimes:csv,txt,json',
+        ]);
+        $user = Auth::user();
+        $file = $request->file('file');
+        $filename = 'reports/' . uniqid() . '_' . $file->getClientOriginalName();
+        $file->storeAs('public', $filename);
+        $report = new AnalystReport();
+        $report->title = $request->title;
+        $report->type = 'sales';
+        $report->target_user_id = $user->id;
+        $report->target_role = $user->role;
+        $report->summary = $request->summary;
+        $report->report_file = $filename;
+        $report->save();
+        return redirect()->route('analyst.reports')->with('success', 'Sales analysis uploaded successfully.');
     }
 }
 

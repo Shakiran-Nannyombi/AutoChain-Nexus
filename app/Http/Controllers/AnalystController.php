@@ -39,41 +39,26 @@ class AnalystController extends Controller
         ));
     }
 
-    public function salesAnalysis()
-{
-    // Total sales by car model
-    $salesByModel = RetailerSale::select('car_model', DB::raw('SUM(quantity_sold) as total_sold'))
-        ->groupBy('car_model')
-        ->orderByDesc('total_sold')
-        ->get();
+    public function analytics() {
+        // Sales analytics
+        $totalSales = \App\Models\RetailerSale::sum('quantity_sold');
+        $salesByModel = \App\Models\RetailerSale::select('car_model', \DB::raw('SUM(quantity_sold) as total_sold'))
+            ->groupBy('car_model')->orderByDesc('total_sold')->get();
+        $salesByMonth = \App\Models\RetailerSale::select(\DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'), \DB::raw('SUM(quantity_sold) as total_sold'))
+            ->groupBy('month')->orderBy('month')->get();
 
-    // Monthly sales trend
-    $monthlySales = RetailerSale::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, SUM(quantity_sold) as total')
-        ->groupBy('month')
-        ->orderBy('month')
-        ->pluck('total', 'month')
-        ->toArray();
+        // Inventory analytics
+        $totalStock = \App\Models\RetailerStock::sum('quantity_received');
+        $stockByModel = \App\Models\RetailerStock::select('car_model', \DB::raw('SUM(quantity_received) as total_stock'))
+            ->groupBy('car_model')->orderByDesc('total_stock')->get();
+        $lowStockItems = \App\Models\RetailerStock::select('car_model', \DB::raw('SUM(quantity_received) as total_stock'))
+            ->groupBy('car_model')->having('total_stock', '<', 10)->get();
 
-    return view('dashboards.analyst.sales-analysis', compact('salesByModel', 'monthlySales'));
-}
-
-public function inventoryAnalysis()
-{
-    // Supplier materials
-    $supplierStocks = SupplierStock::select('material_name', DB::raw('SUM(quantity) as total_quantity'))
-        ->groupBy('material_name')
-        ->orderByDesc('total_quantity')
-        ->get();
-
-    // Retailer car stock
-    $retailerStocks = RetailerStock::select('car_model', DB::raw('SUM(quantity_received) as total_received'))
-        ->where('status', 'accepted')
-        ->groupBy('car_model')
-        ->orderByDesc('total_received')
-        ->get();
-
-    return view('dashboards.analyst.inventory-analysis', compact('supplierStocks', 'retailerStocks'));
-}
+        return view('dashboards.analyst.analytics', compact(
+            'totalSales', 'salesByModel', 'salesByMonth',
+            'totalStock', 'stockByModel', 'lowStockItems'
+        ));
+    }
 
 public function trends()
 {
@@ -273,4 +258,7 @@ public function trends()
         return view('dashboards.analyst.my-applications', compact('applications'));
     }
 
+    public function forecasting() {
+        return view('dashboards.analyst.forecasting');
+    }
 }
