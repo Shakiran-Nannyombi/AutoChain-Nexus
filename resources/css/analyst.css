@@ -152,6 +152,27 @@
     color: #b26a00;
 }
 
+/* Dashboard Content Card for Analyst (matches admin/manufacturer style) */
+.content-card {
+  background: var(--background);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 1rem 1.5rem;
+  margin: 1rem auto;
+  max-width: 1400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .content-card {
+    padding: 1.5rem 0.7rem;
+    border-radius: 8px;
+  }
+}
+
 @media (max-width: 900px) {
     .analyst-content {
         padding: 1.2rem 0.7rem 1rem 0.7rem;

@@ -55,7 +55,7 @@
         </div>
     @if(isset($confirmedOrders) && $confirmedOrders->count())
     <div class="content-card" style="margin-top:2.5rem;">
-        <h3 style="color: var(--primary); margin-bottom: 1rem;">Confirmed Orders</h3>
+        <h3 style="color: var(--secondary); font-size: 1.5rem; margin-bottom: 1rem; font-weight:bold;">Confirmed Orders</h3>
         <table style="width:100%; border-collapse: collapse;">
             <thead>
                 <tr style="background: #f5f5f5;">

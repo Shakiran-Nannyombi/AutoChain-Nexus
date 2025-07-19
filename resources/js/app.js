@@ -34,3 +34,50 @@ if (userId) {
 window.Alpine = Alpine;
 
 Alpine.start();
+
+// Responsive Orders Search Bar & Dropdown for Manufacturer Orders Page
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.querySelector('.orders-search-form');
+    if (!searchForm) return;
+
+    // Responsive: Expand search and dropdown to full width on small screens
+    function handleResponsiveOrdersSearch() {
+        if (window.innerWidth <= 700) {
+            searchForm.classList.add('mobile');
+        } else {
+            searchForm.classList.remove('mobile');
+        }
+    }
+    handleResponsiveOrdersSearch();
+    window.addEventListener('resize', handleResponsiveOrdersSearch);
+
+    // Optional: Toggle search bar visibility on very small screens
+    if (window.innerWidth <= 500) {
+        let toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'orders-search-toggle';
+        toggleBtn.innerHTML = '<i class="fas fa-search"></i> Filter';
+        searchForm.parentNode.insertBefore(toggleBtn, searchForm);
+        searchForm.style.display = 'none';
+        toggleBtn.addEventListener('click', function() {
+            if (searchForm.style.display === 'none') {
+                searchForm.style.display = 'flex';
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> Close';
+            } else {
+                searchForm.style.display = 'none';
+                toggleBtn.innerHTML = '<i class="fas fa-search"></i> Filter';
+            }
+        });
+        // Hide form if window is resized up
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 500) {
+                searchForm.style.display = 'flex';
+                if (toggleBtn) toggleBtn.style.display = 'none';
+            } else {
+                searchForm.style.display = 'none';
+                if (toggleBtn) toggleBtn.style.display = 'inline-block';
+            }
+        });
+    }
+});

@@ -8,77 +8,76 @@
 
 @section('content')
     <div class="content-card">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-cubes"></i> Inventory Status</h2>
-        <!-- All existing content below this line should be inside this content-card div -->
-    <!-- Inventory Summary -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Raw Materials (Supplier Stock)</p>
-            <p class="text-3xl font-bold text-purple-600">{{ $totalSupplierStock }}</p>
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-cubes"></i> Inventory Status</h2>
+        <!-- Inventory Summary -->
+        <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div style="flex:1; min-width:220px; background: linear-gradient(135deg, var(--primary), #0d3a07); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Raw Materials (Supplier Stock)</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalSupplierStock }}</div>
+            </div>
+            <div style="flex:1; min-width:220px; background: linear-gradient(135deg, var(--accent), #b35400); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Finished Goods (Retailer Stock)</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalRetailerStock }}</div>
+            </div>
         </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Finished Goods (Retailer Stock)</p>
-            <p class="text-3xl font-bold text-blue-600">{{ $totalRetailerStock }}</p>
+        <!-- Supplier Stock Table -->
+        <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem; margin-bottom: 2rem;">
+            <h3 style="color: var(--secondery); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Raw Materials (Supplier Stock)</h3>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead style="background: #f8f8f8;">
+                        <tr>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Supplier ID</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Material Name</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Quantity</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Colour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($supplierStocks as $stock)
+                            <tr style="transition: background 0.2s;" onmouseover="this.style.background='#f3f7fa'" onmouseout="this.style.background='#fff'">
+                                <td style="padding: 0.7rem; font-weight: 500; color: #222;">{{ $stock->supplier_id }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ $stock->material_name }}</td>
+                                <td style="padding: 0.7rem; color: {{ $stock->quantity < 10 ? '#b71c1c' : '#16610e' }}; font-weight: 600;">{{ $stock->quantity }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ $stock->colour }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" style="padding: 1.2rem; color: #888; text-align:center;">No supplier stock data available.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-    <!-- Supplier Stock Table -->
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
-        <h3 class="text-lg font-semibold mb-4">Raw Materials (Supplier Stock)</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier ID</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material Name</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Colour</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($supplierStocks as $stock)
+        <!-- Retailer Stock Table -->
+        <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
+            <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Finished Goods (Retailer Stock)</h3>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead style="background: #f8f8f8;">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $stock->supplier_id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $stock->material_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $stock->quantity }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $stock->colour }}</td>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--secondery); font-size:0.98rem;">Retailer ID</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--secondery); font-size:0.98rem;">Car Model</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--secondery); font-size:0.98rem;">Quantity Received</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--secondery); font-size:0.98rem;">Status</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No supplier stock data available.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- Retailer Stock Table -->
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-        <h3 class="text-lg font-semibold mb-4">Finished Goods (Retailer Stock)</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Retailer ID</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Car Model</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity Received</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($retailerStocks as $stock)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $stock->retailer_id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $stock->car_model }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $stock->quantity_received }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $stock->status }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No retailer stock data available.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @forelse ($retailerStocks as $stock)
+                            <tr style="transition: background 0.2s;" onmouseover="this.style.background='#f3f7fa'" onmouseout="this.style.background='#fff'">
+                                <td style="padding: 0.7rem; font-weight: 500; color: #222;">{{ $stock->retailer_id }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ $stock->car_model }}</td>
+                                <td style="padding: 0.7rem; color: #16610e; font-weight: 600;">{{ $stock->quantity_received }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ $stock->status }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" style="padding: 1.2rem; color: #888; text-align:center;">No retailer stock data available.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

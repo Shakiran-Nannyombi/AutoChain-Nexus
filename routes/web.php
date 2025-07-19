@@ -28,6 +28,7 @@ use App\Http\Controllers\AnalystReportController;
 use App\Http\Controllers\ManufacturerDashboardController;
 use App\Http\Controllers\VendorDashboardController;
 use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\Manufacturer\AnalyticsController;
 
 
 // Welcome page
@@ -546,16 +547,12 @@ Route::prefix('analyst')->middleware(\App\Http\Middleware\PreventBackAfterLogout
     Route::get('/dashboard', function () { return view('dashboards.analyst.index'); })->name('analyst.dashboard');
     Route::get('/profile', function () { return view('dashboards.analyst.profile'); })->name('analyst.profile');
     Route::get('/settings', function () { return view('dashboards.analyst.settings'); })->name('analyst.settings');
-    Route::get('/analyst/inventory-analysis', [AnalystController::class, 'inventoryAnalysis'])->name('analyst.inventory-analysis');
+    Route::get('/analytics', [App\Http\Controllers\AnalystController::class, 'analytics'])->name('analyst.analytics');
     Route::get('/analyst/trends', [AnalystController::class, 'trends'])->name('analyst.trends');
     Route::get('/analyst/reports', [AnalystReportController::class, 'index'])->name('analyst.reports');
     Route::get('/analyst/reports/generate', [AnalystReportController::class, 'create'])->name('analyst.reports.create');
     Route::post('/analyst/reports/generate', [AnalystReportController::class, 'store'])->name('analyst.reports.store');
-    Route::get('/analyst/analytics', [AnalystController::class, 'dashboard'])->name('analyst.analytics');
-    Route::get('/analyst/sales-analysis', [AnalystController::class, 'salesAnalysis'])->name('analyst.sales-analysis');
-    Route::get('/analyst/reports/sales', [AnalystReportController::class, 'salesReports'])->name('analyst.sales-reports');
-    Route::get('/analyst/reports/inventory', [AnalystReportController::class, 'inventoryReports'])->name('analyst.inventory-reports');
-    Route::get('/analyst/reports/performance', [AnalystReportController::class, 'performanceReports'])->name('analyst.performance-reports');
+    Route::get('/analyst/forecasting', [AnalystController::class, 'forecasting'])->name('analyst.forecasting');
     Route::get('/analyst/chat', function () {
         $userId = session('user_id') ?? Auth::id();
         $manufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->where('id', '!=', $userId)->get();
@@ -578,6 +575,7 @@ Route::prefix('analyst')->middleware(\App\Http\Middleware\PreventBackAfterLogout
         return view('dashboards.analyst.chat', compact('users'));
     })->name('analyst.chat');
     Route::get('/analyst/chat/messages/{userId}', [App\Http\Controllers\AnalystController::class, 'messages']);
+    Route::get('/reports/generate', [App\Http\Controllers\AnalystReportController::class, 'generate'])->name('analyst.reports.generate');
 });
 
 // Analyst application routes
@@ -586,12 +584,23 @@ Route::middleware(['auth', 'role:analyst'])->group(function () {
     Route::get('/analyst/applications', [App\Http\Controllers\AnalystController::class, 'myApplications'])->name('analyst.myApplications');
 });
 
+// Analyst sales analysis upload (restricted to analysts)
+Route::middleware(['auth', 'role:analyst'])->group(function () {
+    Route::get('/analyst/upload-sales-analysis', [App\Http\Controllers\AnalystReportController::class, 'showUploadForm'])->name('analyst.upload-sales-analysis');
+    Route::post('/analyst/upload-sales-analysis', [App\Http\Controllers\AnalystReportController::class, 'uploadSalesAnalysis'])->name('analyst.upload-sales-analysis.submit');
+});
+
 // Manufacturer analyst management routes
 Route::middleware(['auth', 'role:manufacturer'])->group(function () {
     Route::get('/manufacturer/analyst-applications', [App\Http\Controllers\ManufacturerDashboardController::class, 'analystApplications'])->name('manufacturer.analystApplications');
     Route::get('/manufacturer/analyst-approve/{id}', [App\Http\Controllers\ManufacturerDashboardController::class, 'approveAnalyst'])->name('manufacturer.approveAnalyst');
     Route::get('/manufacturer/analyst-reject/{id}', [App\Http\Controllers\ManufacturerDashboardController::class, 'rejectAnalyst'])->name('manufacturer.rejectAnalyst');
     Route::get('/manufacturer/analyst-portfolio/{id}', [App\Http\Controllers\ManufacturerDashboardController::class, 'viewAnalystPortfolio'])->name('manufacturer.viewAnalystPortfolio');
+});
+
+// Manufacturer select analyst sales analysis file for prediction
+Route::middleware(['auth', 'role:manufacturer'])->group(function () {
+    Route::get('/manufacturer/select-sales-analysis', [App\Http\Controllers\ManufacturerDashboardController::class, 'selectSalesAnalysis'])->name('manufacturer.select-sales-analysis');
 });
 
 // Logout route
@@ -704,10 +713,17 @@ Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterL
     Route::get('/workflow', function () { return view('dashboards.manufacturer.workflow'); })->name('manufacturer.workflow');
     Route::get('/production-analytics', [App\Http\Controllers\ManufacturerDashboardController::class, 'production_analytics'])->name('manufacturer.production-analytics');
     Route::get('/production-reports', [App\Http\Controllers\ManufacturerDashboardController::class, 'production_reports'])->name('manufacturer.production-reports');
+    // Add PDF export route for production reports
+    Route::get('/production-reports/pdf', [App\Http\Controllers\ManufacturerDashboardController::class, 'exportProductionReportsPdf'])->name('manufacturer.production-reports.pdf');
     Route::get('/demand-prediction', function () { return view('dashboards.manufacturer.demand-prediction'); })->name('manufacturer.demand-prediction');
     Route::get('/chat', [App\Http\Controllers\ManufacturerDashboardController::class, 'chat'])->name('manufacturer.chat');
     Route::get('/settings', function () { return view('dashboards.manufacturer.settings'); })->name('manufacturer.settings');
-    Route::get('/products', function () { return view('dashboards.manufacturer.products'); })->name('manufacturer.products');
+    Route::get('/products', [App\Http\Controllers\Manufacturer\ProductController::class, 'index'])->name('manufacturer.products');
+    Route::get('/products/create', [App\Http\Controllers\Manufacturer\ProductController::class, 'create'])->name('manufacturer.products.create');
+    Route::post('/products', [App\Http\Controllers\Manufacturer\ProductController::class, 'store'])->name('manufacturer.products.store');
+    Route::get('/products/{id}/edit', [App\Http\Controllers\Manufacturer\ProductController::class, 'edit'])->name('manufacturer.products.edit');
+    Route::put('/products/{id}', [App\Http\Controllers\Manufacturer\ProductController::class, 'update'])->name('manufacturer.products.update');
+    Route::delete('/products/{id}', [App\Http\Controllers\Manufacturer\ProductController::class, 'destroy'])->name('manufacturer.products.destroy');
     Route::get('/orders', [\App\Http\Controllers\ManufacturerDashboardController::class, 'orders'])->name('manufacturer.orders');
     Route::post('/orders/remake/{id}', [\App\Http\Controllers\ManufacturerDashboardController::class, 'remakeOrder'])->name('manufacturer.remake.order');
     Route::post('/material-receipt/delivered/{id}', [\App\Http\Controllers\ManufacturerDashboardController::class, 'orderDelivered'])->name('manufacturer.order.delivered');
@@ -902,3 +918,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
     Route::get('/track-order', [\App\Http\Controllers\CustomerController::class, 'trackOrder'])->name('track.order');
     Route::post('/track-order', [\App\Http\Controllers\CustomerController::class, 'trackOrder'])->name('track.order.post');
 });
+
+Route::get('/manufacturer/analytics/pdf', [AnalyticsController::class, 'exportPdf'])->name('manufacturer.analytics.pdf');
+Route::get('/manufacturer/vendor-segmentation', [\App\Http\Controllers\ManufacturerDashboardController::class, 'vendorSegmentationPage'])->name('manufacturer.vendor-segmentation');
+Route::get('/manufacturer/orders/partial', [App\Http\Controllers\ManufacturerDashboardController::class, 'ordersPartial'])->name('manufacturer.orders.partial');

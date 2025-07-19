@@ -8,78 +8,75 @@
 
 @section('content')
     <div class="content-card">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-file-alt"></i> Production Reports</h2>
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-file-alt"></i> Production Reports</h2>
         <!-- Filter, stats, and table content below -->
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
-        <h3 class="text-lg font-semibold mb-4">Filter Reports</h3>
-        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div>
-                <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date:</label>
-                <input type="date" id="startDate" name="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            </div>
-            <div>
-                <label for="endDate" class="block text-sm font-medium text-gray-700">End Date:</label>
-                <input type="date" id="endDate" name="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            </div>
-            <div>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Apply Filters</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Production Summary Statistics -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Items Processed</p>
-            <p class="text-3xl font-bold text-indigo-600">{{ $totalItemsProcessed }}</p>
+        <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem; margin-bottom: 2rem;">
+            <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Filter Reports</h3>
+            <form id="filterForm" style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-end;">
+                <div>
+                    <label for="startDate" style="font-size: 0.98rem; color: #333;">Start Date:</label>
+                    <input type="date" id="startDate" name="start_date" style="margin-top: 0.3rem; border-radius: 6px; border: 1px solid #ccc; padding: 0.5rem;">
+                </div>
+                <div>
+                    <label for="endDate" style="font-size: 0.98rem; color: #333;">End Date:</label>
+                    <input type="date" id="endDate" name="end_date" style="margin-top: 0.3rem; border-radius: 6px; border: 1px solid #ccc; padding: 0.5rem;">
+                </div>
+                <div>
+                    <button type="submit" style="padding: 0.6rem 1.5rem; background: var(--primary); color: #fff; border-radius: 6px; border: none; font-weight: 600;">Apply Filters</button>
+                </div>
+            </form>
         </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Completed Items</p>
-            <p class="text-3xl font-bold text-green-600">{{ $totalCompletedItems }}</p>
+        <!-- Production Summary Statistics -->
+        <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, var(--primary), #0d3a07); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Items Processed</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalItemsProcessed }}</div>
+            </div>
+            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #27ae60, #16610e); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Completed Items</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalCompletedItems }}</div>
+            </div>
+            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #b71c1c, #e57373); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Failed Items</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalFailedItems }}</div>
+            </div>
         </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Failed Items</p>
-            <p class="text-3xl font-bold text-red-600">{{ $totalFailedItems }}</p>
-        </div>
-    </div>
-
-    <!-- Detailed Process Flow Table -->
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-        <h3 class="text-lg font-semibold mb-4">Detailed Process Flow</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Name</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stage</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entered Stage At</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completed Stage At</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Failure Reason</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($processFlows as $flow)
+        <!-- Detailed Process Flow Table -->
+        <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
+            <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Detailed Process Flow</h3>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead style="background: #f8f8f8;">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $flow->item_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ucfirst(str_replace('_', ' ', $flow->current_stage)) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ucfirst(str_replace('_', ' ', $flow->status)) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $flow->entered_stage_at ? \Carbon\Carbon::parse($flow->entered_stage_at)->format('Y-m-d H:i') : 'N/A' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $flow->completed_stage_at ? \Carbon\Carbon::parse($flow->completed_stage_at)->format('Y-m-d H:i') : 'N/A' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $flow->failure_reason ?? 'N/A' }}</td>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Item Name</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Current Stage</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Status</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Entered Stage At</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Completed Stage At</th>
+                            <th style="padding: 0.7rem; text-align:left; color: var(--primary); font-size:0.98rem;">Failure Reason</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No process flow data available.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div class="mt-6 flex justify-end space-x-2">
-            <button onclick="exportReport('csv')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Export to CSV</button>
-            <button onclick="exportReport('pdf')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Export to PDF</button>
+                    </thead>
+                    <tbody>
+                        @forelse ($processFlows as $flow)
+                            <tr style="transition: background 0.2s;" onmouseover="this.style.background='#f3f7fa'" onmouseout="this.style.background='#fff'">
+                                <td style="padding: 0.7rem; font-weight: 500; color: #222;">{{ $flow->item_name }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ ucfirst(str_replace('_', ' ', $flow->current_stage)) }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ ucfirst(str_replace('_', ' ', $flow->status)) }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ $flow->entered_stage_at ? \Carbon\Carbon::parse($flow->entered_stage_at)->format('Y-m-d H:i') : 'N/A' }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ $flow->completed_stage_at ? \Carbon\Carbon::parse($flow->completed_stage_at)->format('Y-m-d H:i') : 'N/A' }}</td>
+                                <td style="padding: 0.7rem; color: #555;">{{ $flow->failure_reason ?? 'N/A' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" style="padding: 1.2rem; color: #888; text-align:center;">No process flow data available.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button onclick="exportReport('csv')" style="padding: 0.6rem 1.5rem; background: #eee; color: #333; border-radius: 6px; border: none; font-weight: 600;">Export to CSV</button>
+                <a href="{{ route('manufacturer.production-reports.pdf', request()->all()) }}" target="_blank" style="padding: 0.6rem 1.5rem; background: var(--primary); color: #fff; border-radius: 6px; border: none; font-weight: 600; text-decoration: none;">Export to PDF</a>
             </div>
         </div>
     </div>

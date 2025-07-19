@@ -1,4 +1,11 @@
 @extends('layouts.dashboard')
+
+@section('title', 'Analyst Dashboard')
+
+@section('sidebar-content')
+    @include('dashboards.analyst.sidebar')
+@endsection
+
 @section('content')
 <div class="content-card">
     <h2>My Applications to Manufacturers</h2>

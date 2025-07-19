@@ -8,68 +8,55 @@
 
 @section('content')
     <div class="content-card">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-chart-bar"></i> Production Analytics</h2>
-        <!-- All existing content below this line should be inside this content-card div -->
-    <!-- Summary Production Statistics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Items Processed</p>
-            <p class="text-3xl font-bold text-indigo-600">{{ $totalItemsProcessed }}</p>
+        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-chart-bar"></i> Production Analytics</h2>
+        <!-- Summary Production Statistics -->
+        <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, var(--primary), #0d3a07); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Items Processed</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalItemsProcessed }}</div>
+            </div>
+            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #27ae60, #16610e); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Completed Items</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalCompletedItems }}</div>
+            </div>
+            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #b71c1c, #e57373); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Total Failed Items</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalFailedItems }}</div>
+            </div>
+            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, var(--accent), #b35400); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+                <div style="font-size: 1.1rem; opacity: 0.9;">Overall Yield</div>
+                <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $overallYield }}%</div>
+            </div>
         </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Completed Items</p>
-            <p class="text-3xl font-bold text-green-600">{{ $totalCompletedItems }}</p>
-        </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Total Failed Items</p>
-            <p class="text-3xl font-bold text-red-600">{{ $totalFailedItems }}</p>
-        </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 text-center">
-            <p class="text-sm text-gray-600">Overall Yield</p>
-            <p class="text-3xl font-bold text-purple-600">{{ $overallYield }}%</p>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Items by Production Stage Pie Chart -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold">Items by Production Stage</h3>
-                <div class="mt-4">
+        <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 2rem;">
+            <!-- Items by Production Stage Pie Chart -->
+            <div style="flex:1; min-width:320px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
+                <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Items by Production Stage</h3>
+                <div style="margin-top: 1rem;">
                     <canvas id="stageDistributionChart"></canvas>
                 </div>
             </div>
-        </div>
-
-        <!-- Stage Duration Analysis Bar Chart -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold">Average Stage Duration (Minutes)</h3>
-                <div class="mt-4">
+            <!-- Stage Duration Analysis Bar Chart -->
+            <div style="flex:1; min-width:320px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
+                <h3 style="color: var(--accent); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Average Stage Duration (Minutes)</h3>
+                <div style="margin-top: 1rem;">
                     <canvas id="stageDurationChart"></canvas>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <!-- Production Rate Over Time Line Chart -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold">Production Rate Over Time</h3>
-                <div class="mt-4">
+        <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+            <!-- Production Rate Over Time Line Chart -->
+            <div style="flex:1; min-width:320px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
+                <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Production Rate Over Time</h3>
+                <div style="margin-top: 1rem;">
                     <canvas id="productionRateChart"></canvas>
                 </div>
             </div>
-        </div>
-
-        <!-- Failure Trends Over Time Line Chart -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold">Failure Trends Over Time</h3>
-                <div class="mt-4">
+            <!-- Failure Trends Over Time Line Chart -->
+            <div style="flex:1; min-width:320px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
+                <h3 style="color: #b71c1c; font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Failure Trends Over Time</h3>
+                <div style="margin-top: 1rem;">
                     <canvas id="failureTrendChart"></canvas>
-                    </div>
                 </div>
             </div>
         </div>

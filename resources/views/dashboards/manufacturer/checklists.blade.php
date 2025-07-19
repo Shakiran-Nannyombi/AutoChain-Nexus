@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="content-card">
-    <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
+    <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;font-weight:bold;">
         <i class="fas fa-list-alt"></i> Send Checklist to Supplier
     </h2>
     <form method="POST" action="{{ route('manufacturer.checklists.send') }}" id="checklist-form">
@@ -37,7 +37,7 @@
     </form>
 
     <hr style="margin: 2rem 0;">
-    <h3 style="color: var(--primary); margin-bottom: 1rem;">Sent Checklists</h3>
+    <h3 style="color: var(--secondary); font-size: 1.5rem; margin-bottom: 1rem; font-weight:bold;">Sent Checklists</h3>
     <div style="overflow-x:auto;">
         <table style="width:100%; border-collapse: collapse;">
             <thead>
@@ -58,7 +58,10 @@
                             @endforeach
                         </td>
                         <td style="padding: 0.5rem;">
-                            <span class="status-badge status-{{ $checklist->status }}">{{ ucfirst($checklist->status) }}</span>
+                            @php $status = $checklist->status ?? 'unknown'; @endphp
+                            <span class="status-badge status-{{ $status }}">
+                                {{ $status ? ucfirst($status) : 'Unknown' }}
+                            </span>
                         </td>
                         <td style="padding: 0.5rem;">{{ $checklist->created_at->format('Y-m-d H:i') }}</td>
                     </tr>

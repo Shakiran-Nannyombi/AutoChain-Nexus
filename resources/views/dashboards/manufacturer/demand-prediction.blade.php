@@ -7,25 +7,27 @@
 @endsection
 
 @section('content')
-    <div class="content-card">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-chart-line"></i> Demand Prediction</h2>
-    <div class="max-w-2xl mx-auto bg-white p-4 rounded shadow">
-        <h1 class="text-xl font-bold mb-4">Forecast Dashboard</h1>
-        <div class="mb-4">
-                <input id="model" class="border p-2 w-full mb-2" placeholder="Car models (comma-separated, e.g., Camry,Civic) upto 3 models">
-            <input id="region" class="border p-2 w-full" placeholder="Region (e.g., Toronto)">
-            <button onclick="getForecast()" class="bg-blue-500 text-white px-4 py-2 mt-2">Get Forecast</button>
-        </div>
-        <table class="w-full mt-4 text-sm text-left">
-            <thead>
-                <tr>
-                    <th>Month</th>
-                    <th>Predicted Sales</th>
-                </tr>
-            </thead>
-            <tbody id="forecast-table" class="text-gray-700"></tbody>
-        </table>
-        <canvas id="forecastChart" class="mt-6 w-full max-w-xl"></canvas>
+    <div class="content-card demand-prediction-card">
+        <h2 class="demand-prediction-title"><i class="fas fa-chart-line"></i> Demand Prediction</h2>
+        <div>
+            <h1 class="text-xl font-bold mb-4">Forecast Dashboard</h1>
+            <form class="demand-prediction-form" onsubmit="event.preventDefault(); getForecast();">
+                <input id="model" placeholder="Car models (comma-separated, e.g., Camry,Civic) upto 3 models">
+                <input id="region" placeholder="Region (e.g., Toronto)">
+                <button type="submit">Get Forecast</button>
+            </form>
+            <table class="demand-prediction-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Predicted Sales</th>
+                    </tr>
+                </thead>
+                <tbody id="forecast-table" class="text-gray-700"></tbody>
+            </table>
+            <div class="demand-prediction-chart">
+                <canvas id="forecastChart" class="mt-6 w-full max-w-xl"></canvas>
+            </div>
         </div>
     </div>
 @endsection

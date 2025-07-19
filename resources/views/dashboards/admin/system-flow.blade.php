@@ -196,7 +196,7 @@
         1: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], data: [75, 82, 77, 85] },
         2: { labels: ['W1-Jan', 'W2-Jan', 'W3-Jan', 'W4-Jan', 'W1-Feb', 'W2-Feb', 'W3-Feb', 'W4-Feb'], data: [72, 80, 78, 85, 77, 83, 81, 78] },
         3: { labels: ['W1-Jan', 'W2-Jan', 'W3-Jan', 'W4-Jan', 'W1-Feb', 'W2-Feb', 'W3-Feb', 'W4-Feb', 'W1-Mar', 'W2-Mar', 'W3-Mar', 'W4-Mar'], data: [70, 82, 74, 86, 75, 77, 88, 80, 79, 81, 82, 80] },
-        4: { labels: Array.from({length: 16}, (_, i) => 'W' + (i+1) + '-' + ['Jan','Feb','Mar','Apr'][Math.floor(i/4)]), data: [68, 80, 72, 84, 73, 85, 77, 88, 76, 78, 80, 91, 79, 80, 82, 93] },
+        4: { labels: (function(){var arr=[];for(var i=0;i<16;i++){arr.push('W'+(i+1)+'-'+['Jan','Feb','Mar','Apr'][Math.floor(i/4)]);} return arr;})(), data: [68, 80, 72, 84, 73, 85, 77, 88, 76, 78, 80, 91, 79, 80, 82, 93] },
         5: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], data: [75, 88, 80, 77, 89] },
         6: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], data: [72, 85, 78, 90, 77, 89] },
         12: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], data: [68, 80, 72, 84, 73, 85, 77, 88, 76, 78, 80, 91] }

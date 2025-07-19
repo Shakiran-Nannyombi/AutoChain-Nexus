@@ -7,7 +7,6 @@
 @endsection
 
 @section('content')
-    <h1 class="page-header">Trends Analysis</h1>
     <div class="content-card">
     <h2 class="page-header"><i class="fas fa-trending-up"></i> Sales Trend Analysis</h2>
 

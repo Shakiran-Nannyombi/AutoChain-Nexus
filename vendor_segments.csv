@@ -1,21 +1,21 @@
-vendor_id,segment
-1,2
-2,0
-3,1
-4,1
-5,2
-6,1
-7,0
-8,0
-9,1
-10,2
-11,0
-12,1
-13,1
-14,1
-15,1
-16,1
-17,2
-18,1
-19,1
-20,1
+vendor_id,name,segment_name,total_orders,total_quantity,total_value,most_ordered_product,fulfillment_rate,recency_days,top_3_products,average_order_value,order_frequency,cancellation_rate,first_order_date,last_order_date
+1,Ava Carter,Gold,3,21,512080.0,Engine Oil,33.33,2,"Toyota Corolla, Ford F-150, Engine Oil",170693.33,1.5,0.0,2025-05-04,2025-07-15
+2,Benjamin Lee,Gold,5,18,393170.0,Tire,60.0,31,"Tire, Ford F-150, BMW 3 Series",78634.0,2.5,20.0,2025-04-23,2025-06-16
+3,Chloe Kim,Gold,3,17,336920.0,BMW 3 Series,33.33,28,"BMW 3 Series, Car Battery, Engine Oil",112306.67,3.0,0.0,2025-06-04,2025-06-19
+4,David Patel,Silver,3,20,1890.0,Brake Pads,33.33,47,"Car Battery, Engine Oil, Brake Pads",630.0,3.0,66.67,2025-05-02,2025-05-31
+5,Ella Zhang,Silver,3,19,121740.0,Car Battery,0.0,34,"Honda Civic, Car Battery, Tire",40580.0,3.0,66.67,2025-05-10,2025-06-13
+6,Frank Müller,Gold,3,20,434810.0,BMW 3 Series,0.0,3,"Ford F-150, BMW 3 Series, Brake Pads",144936.67,1.0,33.33,2025-04-19,2025-07-14
+7,Grace Park,Gold,4,25,353680.0,Car Battery,25.0,3,"Car Battery, Honda Civic, BMW 3 Series",88420.0,2.0,25.0,2025-05-20,2025-07-14
+8,Henry Kim,Gold,4,22,738040.0,BMW 3 Series,25.0,7,"Honda Civic, Ford F-150, BMW 3 Series",184510.0,1.33,50.0,2025-04-23,2025-07-10
+9,Isabella Rossi,Gold,3,19,378950.0,BMW 3 Series,33.33,37,"BMW 3 Series, Engine Oil, Tire",126316.67,3.0,33.33,2025-05-28,2025-06-10
+10,Jack Wilson,Silver,3,22,260720.0,Brake Pads,33.33,42,"Toyota Corolla, Honda Civic, Brake Pads",86906.67,3.0,33.33,2025-05-18,2025-06-05
+11,Katherine Lee,Gold,5,24,567960.0,BMW 3 Series,20.0,19,"Ford F-150, BMW 3 Series, Car Battery",113592.0,5.0,20.0,2025-05-29,2025-06-28
+12,Liam Brown,Gold,4,23,405500.0,Tire,25.0,18,"Tire, Toyota Corolla, Ford F-150",101375.0,4.0,25.0,2025-05-06,2025-06-29
+13,Mia Garcia,Silver,5,23,72220.0,Tire,60.0,30,"Tire, Ford F-150, Car Battery",14444.0,2.5,20.0,2025-04-18,2025-06-17
+14,Noah Smith,Gold,3,20,420900.0,BMW 3 Series,66.67,20,"BMW 3 Series, Brake Pads",140300.0,3.0,0.0,2025-06-11,2025-06-27
+15,Olivia Davis,Gold,7,30,568410.0,Engine Oil,57.14,24,"Engine Oil, Ford F-150, BMW 3 Series",81201.43,3.5,28.57,2025-04-19,2025-06-23
+16,Paul Walker,Gold,7,38,583100.0,Toyota Corolla,28.57,42,"Toyota Corolla, Honda Civic, Ford F-150",83300.0,3.5,28.57,2025-04-24,2025-06-05
+17,Quinn Harris,Platinum,7,40,1267320.0,Ford F-150,42.86,11,"Ford F-150, BMW 3 Series, Car Battery",181045.71,3.5,28.57,2025-05-04,2025-07-06
+18,Ryan Clark,Silver,6,22,263080.0,Honda Civic,33.33,1,"Honda Civic, Tire, BMW 3 Series",43846.67,2.0,16.67,2025-04-26,2025-07-16
+19,Sophia Martinez,Gold,6,35,380280.0,Engine Oil,16.67,12,"Engine Oil, Tire, BMW 3 Series",63380.0,3.0,83.33,2025-05-04,2025-07-05
+20,Tyler Nguyen,Gold,7,45,643970.0,Engine Oil,42.86,8,"Engine Oil, Honda Civic, Ford F-150",91995.71,2.33,14.29,2025-04-24,2025-07-09
