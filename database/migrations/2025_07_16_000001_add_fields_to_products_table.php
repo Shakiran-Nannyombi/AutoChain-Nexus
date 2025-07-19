@@ -11,10 +11,21 @@ return new class extends Migration {
         });
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['name', 'category', 'price', 'stock']);
+            if (Schema::hasColumn('products', 'name')) {
+                $table->dropColumn('name');
+            }
+            if (Schema::hasColumn('products', 'category')) {
+                $table->dropColumn('category');
+            }
+            if (Schema::hasColumn('products', 'price')) {
+                $table->dropColumn('price');
+            }
+            if (Schema::hasColumn('products', 'stock')) {
+                $table->dropColumn('stock');
+            }
         });
     }
 }; 

@@ -57,30 +57,69 @@ class ManufacturerOrdersSeeder extends Seeder
         // Demo Vendor Orders (vendor_orders table)
         $manufacturerUserId = DB::table('users')->where('role', 'manufacturer')->where('status', 'approved')->value('id');
         $vendorUserIds = DB::table('users')->where('role', 'vendor')->where('status', 'approved')->pluck('id');
-        if ($manufacturerUserId && $vendorUserIds->count() >= 2) {
-        DB::table('vendor_orders')->insert([
-            [
+        // Car products and prices (copied from VendorOrderSeeder)
+        $carProducts = [
+            ['name' => 'Toyota Corolla', 'category' => 'Sedan', 'price' => 250000],
+            ['name' => 'Honda Civic', 'category' => 'Sedan', 'price' => 240000],
+            ['name' => 'Ford F-150', 'category' => 'Truck', 'price' => 350000],
+            ['name' => 'BMW 3 Series', 'category' => 'Sedan', 'price' => 420000],
+            ['name' => 'Mercedes-Benz C-Class', 'category' => 'Sedan', 'price' => 450000],
+            ['name' => 'Audi A4', 'category' => 'Sedan', 'price' => 410000],
+            ['name' => 'Volkswagen Golf', 'category' => 'Hatchback', 'price' => 230000],
+            ['name' => 'Hyundai Sonata', 'category' => 'Sedan', 'price' => 220000],
+            ['name' => 'Kia K5', 'category' => 'Sedan', 'price' => 210000],
+            ['name' => 'Mazda 3', 'category' => 'Sedan', 'price' => 200000],
+        ];
+        if ($manufacturerUserId && $vendorUserIds->count() > 0) {
+            $orders = [];
+            foreach ($vendorUserIds as $i => $vendorId) {
+                $car = $carProducts[$i % count($carProducts)];
+                $quantity = rand(1, 10);
+                // Randomly assign status: 80% fulfilled, 20% cancelled
+                $status = (rand(1, 100) <= 80) ? 'fulfilled' : 'cancelled';
+                $orders[] = [
                     'manufacturer_id' => $manufacturerUserId,
-                    'vendor_id' => $vendorUserIds[0],
-                'product' => 'Packaging Boxes',
-                'quantity' => 100,
-                'status' => 'fulfilled',
-                'ordered_at' => Carbon::now()->subDays(1),
-                'created_at' => Carbon::now()->subDays(1),
-                'updated_at' => Carbon::now()->subDays(1),
-            ],
-            [
-                    'manufacturer_id' => $manufacturerUserId,
-                    'vendor_id' => $vendorUserIds[1],
-                'product' => 'Labels',
-                'quantity' => 500,
-                'status' => 'pending',
-                'ordered_at' => Carbon::now()->subDays(3),
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-        ]);
+                    'vendor_id' => $vendorId,
+                    'product' => $car['name'],
+                    'product_name' => $car['name'],
+                    'product_category' => $car['category'],
+                    'quantity' => $quantity,
+                    'unit_price' => $car['price'],
+                    'total_amount' => $car['price'] * $quantity,
+                    'status' => $status,
+                    'ordered_at' => Carbon::now()->subDays(rand(1, 10)),
+                    'created_at' => Carbon::now()->subDays(rand(1, 10)),
+                    'updated_at' => Carbon::now()->subDays(rand(1, 10)),
+                ];
+            }
+            DB::table('vendor_orders')->insert($orders);
         }
+
+        // Add vendor orders with different statuses for testing
+        \App\Models\VendorOrder::create([
+            'manufacturer_id' => 1,
+            'vendor_id' => 2,
+            'product' => 'Toyota Corolla',
+            'quantity' => 3,
+            'status' => 'pending',
+            'ordered_at' => now(),
+        ]);
+        \App\Models\VendorOrder::create([
+            'manufacturer_id' => 1,
+            'vendor_id' => 3,
+            'product' => 'Kia K5',
+            'quantity' => 2,
+            'status' => 'accepted',
+            'ordered_at' => now()->subDay(),
+        ]);
+        \App\Models\VendorOrder::create([
+            'manufacturer_id' => 1,
+            'vendor_id' => 4,
+            'product' => 'Ford F-150',
+            'quantity' => 1,
+            'status' => 'rejected',
+            'ordered_at' => now()->subDays(2),
+        ]);
 
         // Demo Confirmed Deliveries (fulfilled orders)
         DB::table('deliveries')->insert([

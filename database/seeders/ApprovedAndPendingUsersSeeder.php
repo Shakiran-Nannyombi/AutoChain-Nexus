@@ -1533,7 +1533,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             ],
             [
                 'name' => 'Megan Lewis',
-                'email' => 'megan.lewis@retailmart.com',
+                'email' => 'shakirannannyombi@gmail.com',
                 'password' => Hash::make('password'),
                 'role' => 'retailer',
                 'status' => 'pending',
@@ -1588,7 +1588,8 @@ class ApprovedAndPendingUsersSeeder extends Seeder
                 'profile_photo' => $user['profile_photo'],
                 'supporting_documents' => $user['supporting_documents'],
                 'auto_visit_scheduled' => $user['auto_visit_scheduled'],
-                'segment' => null,
+                // Set segment to 'A' for vendors, otherwise null
+                'segment' => ($user['role'] === 'vendor') ? ($user['segment'] ?? 'A') : null,
                 'remember_token' => null,
                 'created_at' => $user['created_at'],
                 'updated_at' => $user['updated_at'],
@@ -1603,18 +1604,14 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             DB::table('vendors')->insert([
                 'user_id' => $user->id,
                 'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'password' => $user->password,
-                'company' => $user->company,
-                'address' => $user->address,
-                'profile_picture' => $user->profile_photo,
-                'supporting_documents' => $user->supporting_documents,
-                'vendor_license' => null,
-                'product_categories' => null,
-                'service_areas' => null,
-                'contract_terms' => null,
-                'segment' => null,
+                'segment_name' => null,
+                'total_orders' => 0,
+                'total_quantity' => 0,
+                'total_value' => null,
+                'most_ordered_product' => null,
+                'order_frequency' => 0,
+                'fulfillment_rate' => 0,
+                'cancellation_rate' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -1664,6 +1661,40 @@ class ApprovedAndPendingUsersSeeder extends Seeder
                     ]);
                 }
             }
+        }
+
+        // Add demo analyst reports for various dates with realistic titles
+        DB::table('analyst_reports')->truncate();
+        $reportTitles = [
+            'Q2 Sales Analysis',
+            'Inventory Status July',
+            'Supplier Performance Review',
+            'Monthly Sales Breakdown',
+            'Stock Turnover Report',
+            'Vendor Fulfillment Analysis',
+            'Sales Growth Trends',
+            'Inventory Aging Report',
+            'Supplier On-Time Delivery',
+            'Regional Sales Comparison',
+            'Critical Stock Alert',
+            'Vendor Order Accuracy',
+            'Sales by Product Line',
+            'Inventory Valuation',
+            'Supplier Quality Assessment',
+        ];
+        $reportTypes = ['sales', 'inventory', 'performance'];
+        $targetRoles = ['retailer', 'manufacturer', 'supplier'];
+        $baseDate = now()->subDays(30);
+        for ($i = 0; $i < 15; $i++) {
+            DB::table('analyst_reports')->insert([
+                'title' => $reportTitles[$i],
+                'type' => $reportTypes[$i % 3],
+                'target_role' => $targetRoles[$i % 3],
+                'summary' => 'This is a sample report for ' . $reportTitles[$i] . '.',
+                'report_file' => null,
+                'created_at' => $baseDate->copy()->addDays($i * 2),
+                'updated_at' => $baseDate->copy()->addDays($i * 2),
+            ]);
         }
     }
 } 

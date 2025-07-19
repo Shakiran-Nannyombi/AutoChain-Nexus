@@ -3,78 +3,47 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Product;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class ManufacturerProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create manufacturers
-        $manufacturers = [
-            [
-                'name' => 'Toyota Manufacturing Co.',
-                'email' => 'orders@toyota-mfg.com',
-                'password' => Hash::make('password123'),
-                'role' => 'manufacturer',
-                'status' => 'active',
-                'company' => 'Toyota Motor Corporation',
-                'phone' => '+1-800-TOYOTA-1',
-                'address' => '1 Toyota Way, Toyota City, Aichi, Japan',
-            ],
-            [
-                'name' => 'Honda Production Ltd.',
-                'email' => 'orders@honda-prod.com',
-                'password' => Hash::make('password123'),
-                'role' => 'manufacturer',
-                'status' => 'active',
-                'company' => 'Honda Motor Co., Ltd.',
-                'phone' => '+1-800-HONDA-1',
-                'address' => '2-1 Minami-Aoyama, Minato, Tokyo, Japan',
-            ],
-        ];
-
-        $manufacturerIds = [];
-        foreach ($manufacturers as $data) {
-            $manufacturer = User::create($data);
-            $manufacturerIds[] = $manufacturer->id;
+        // Get the first approved manufacturer
+        $manufacturer = User::where('role', 'manufacturer')->where('status', 'approved')->first();
+        if (!$manufacturer) {
+            Log::warning('No approved manufacturer found for ManufacturerProductSeeder.');
+            return;
         }
-
-        // Create products for each manufacturer
+        $manufacturerId = $manufacturer->id;
+        // Unique products from segmentation
         $products = [
-            [
-                'name' => 'Toyota Corolla 2024',
-                'category' => 'Sedan',
-                'price' => 25000,
-                'stock' => 10,
-                'manufacturer_id' => $manufacturerIds[0],
-            ],
-            [
-                'name' => 'Toyota Camry 2024',
-                'category' => 'Sedan',
-                'price' => 28000,
-                'stock' => 8,
-                'manufacturer_id' => $manufacturerIds[0],
-            ],
-            [
-                'name' => 'Honda Civic 2024',
-                'category' => 'Sedan',
-                'price' => 24000,
-                'stock' => 12,
-                'manufacturer_id' => $manufacturerIds[1],
-            ],
-            [
-                'name' => 'Honda Accord 2024',
-                'category' => 'Sedan',
-                'price' => 27000,
-                'stock' => 8,
-                'manufacturer_id' => $manufacturerIds[1],
-            ],
+            ['name' => 'Toyota Corolla', 'category' => 'Sedan', 'price' => 25000000, 'stock' => 100],
+            ['name' => 'Honda Civic', 'category' => 'Sedan', 'price' => 34000000, 'stock' => 200],
+            ['name' => 'Ford F-150', 'category' => 'Truck', 'price' => 350000000, 'stock' => 50],
+            ['name' => 'BMW 3 Series', 'category' => 'Sedan', 'price' => 420000000, 'stock' => 190],
+            ['name' => 'Mercedes-Benz C-Class', 'category' => 'Sedan', 'price' => 450000000, 'stock' => 175],
+            ['name' => 'Audi A4', 'category' => 'Sedan', 'price' => 41000000, 'stock' => 19],
+            ['name' => 'Volkswagen Golf', 'category' => 'Hatchback', 'price' => 230000000, 'stock' => 145],
+            ['name' => 'Hyundai Sonata', 'category' => 'Sedan', 'price' => 320000000, 'stock' => 60],
+            ['name' => 'Kia K5', 'category' => 'Sedan', 'price' => 410000000, 'stock' => 185],
+            ['name' => 'Mazda 3', 'category' => 'Sedan', 'price' => 20000000, 'stock' => 161],
         ];
-
-        foreach ($products as $data) {
-            Product::create($data);
+        foreach ($products as $product) {
+            Product::updateOrCreate(
+                [
+                    'name' => $product['name'],
+                    'manufacturer_id' => $manufacturerId,
+                ],
+                [
+                    'category' => $product['category'],
+                    'price' => $product['price'],
+                    'stock' => $product['stock'],
+                ]
+            );
         }
     }
 } 
