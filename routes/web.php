@@ -872,6 +872,13 @@ Route::prefix('retailer')->middleware(\App\Http\Middleware\PreventBackAfterLogou
     Route::get('/my-orders', [RetailerController::class, 'viewOrders'])->name('retailer.orders');
     Route::get('/my-orders/{id}', [RetailerController::class, 'orderDetail'])->name('retailer.order-detail');
 
+    // all orders placed by customers to this retailer
+    Route::get('/customer-orders', [RetailerController::class, 'viewCustomerOrders'])->name('retailer.customer-orders');
+
+// mark an order received
+    Route::post('/customer-orders/{order}/receive', [RetailerController::class, 'receiveCustomerOrder'])->name('retailer.customer-orders.receive');
+
+
     Route::get('/reports', function () {
         return view('dashboards.retailer.reports');
     })->name('retailer.reports');

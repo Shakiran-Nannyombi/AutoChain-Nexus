@@ -29,13 +29,20 @@
                             <td style="padding: 0.75rem;">{{ $stock->quantity_received }}</td>
                             <td style="padding: 0.75rem;">{{ ucfirst($stock->status) }}</td>
                             <td style="padding: 0.75rem; text-align: center;">
-                                @if($stock->status === 'pending')
-                                    <a href="{{ route('retailer.stock.accept', $stock->id) }}" class="btn btn-success btn-sm">Accept</a>
-                                    <a href="{{ route('retailer.stock.reject', $stock->id) }}" class="btn btn-danger btn-sm">Reject</a>
-                                @else
-                                    <span style="color: gray; font-size: 0.9rem;">No actions</span>
-                                @endif
-                            </td>
+    @if($stock->status === 'pending')
+        <form action="{{ route('retailer.stock.accept', $stock->id) }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" class="btn btn-success btn-sm">Accept</button>
+        </form>
+        <form action="{{ route('retailer.stock.reject', $stock->id) }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+        </form>
+    @else
+        <span style="color: gray; font-size: 0.9rem;">No actions</span>
+    @endif
+</td>
+
                         </tr>
                     @empty
                         <tr>
