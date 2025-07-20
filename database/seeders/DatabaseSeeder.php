@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             ApprovedAndPendingUsersSeeder::class,
-            VendorSeeder::class,
+            //VendorSeeder::class,
             ManufacturerSeeder::class,
             ValidationRuleSeeder::class,
             FacilityVisitSeeder::class,
