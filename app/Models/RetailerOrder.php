@@ -10,7 +10,7 @@ class RetailerOrder extends Model
     use HasFactory;
 
     protected $fillable = [
-        'retailer_id', 
+        'user_id', 
         'vendor_id', 
         'customer_name', 
         'car_model', 
@@ -33,11 +33,16 @@ class RetailerOrder extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function retailer()
-    {
-        return $this->belongsTo(User::class, 'retailer_id');
-    }
+    // RetailerOrder.php
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
 
+public function retailer()
+{
+    return $this->belongsTo(Retailer::class, 'user_id', 'user_id');
+}
     public function vendor()
     {
         return $this->belongsTo(User::class, 'vendor_id');

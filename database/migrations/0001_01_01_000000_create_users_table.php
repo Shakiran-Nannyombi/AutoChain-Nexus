@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('company')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->string('profile_photo')->nullable();
+            $table->string('profile_picture')->nullable();
             $table->json('supporting_documents')->nullable();
             $table->boolean('auto_visit_scheduled')->nullable()->default(null);
             $table->string('segment')->nullable(); // User segmentation

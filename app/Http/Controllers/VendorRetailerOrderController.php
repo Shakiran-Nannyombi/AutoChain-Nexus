@@ -140,9 +140,11 @@ class VendorRetailerOrderController extends Controller
 
       Log::info("Creating RetailerStock for order ID: {$order->id}");
 
+      $retailer = \App\Models\Retailer::where('user_id', $order->user_id)->first();
+
     // Create retailer stock record
     $stock = \App\Models\RetailerStock::create([
-        'retailer_id' => $order->retailer_id,
+        'retailer_id' => $retailer->id,
         'vendor_id' => $vendorId,
         'vendor_name' => Auth::user()->name,
         'car_model' => $order->car_model,
@@ -160,7 +162,7 @@ class VendorRetailerOrderController extends Controller
     ]);
 
     // Notify retailer
-    $retailer = User::find($order->retailer_id);
+    $retailer = User::find($order->user_id);
     if ($retailer) {
         $retailer->notify(new RetailerNotification(
             'Stock Pending Confirmation',

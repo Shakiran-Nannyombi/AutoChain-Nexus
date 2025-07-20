@@ -62,7 +62,7 @@ class AnalystSampleDataSeeder extends Seeder
 
             // Retailer Orders
             RetailerOrder::factory()->count(6)->create([
-                'retailer_id' => $retailer->id,
+                'user_id' => $retailer->id,
             ]);
 
             // Deliveries from supplier to manufacturer

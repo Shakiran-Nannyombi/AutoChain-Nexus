@@ -28,7 +28,7 @@ class AdminUserSeeder extends Seeder
                 'permissions' => json_encode(['all']),
                 'department' => 'Administration',
                 'is_active' => true,
-                'profile_photo' => 'images/profile/admin.jpeg',
+                'profile_picture' => 'images/profile/admin.jpeg',
             ]
         );
         // Removed creation of User record for admin

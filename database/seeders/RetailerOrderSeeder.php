@@ -62,7 +62,7 @@ class RetailerOrderSeeder extends Seeder
                 $totalAmount = $quantity * rand(25000, 50000);
                 
                 $order = RetailerOrder::create([
-                    'retailer_id' => $retailer->id,
+                    'user_id' => $retailer->id,
                     'vendor_id' => $vendor->id,
                     'customer_name' => $customerName,
                     'car_model' => $carModel,

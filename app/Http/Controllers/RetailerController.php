@@ -18,7 +18,7 @@ class RetailerController extends Controller
         $retailerId = Auth::id();
         $acceptedStock = RetailerStock::where('retailer_id', $retailerId)->where('status', 'accepted')->get();
         $sales = RetailerSale::where('retailer_id', $retailerId)->latest()->get();
-        $orders = RetailerOrder::where('retailer_id', $retailerId)->latest()->get();
+        $orders = RetailerOrder::where('user_id', $retailerId)->latest()->get();
 
         // Fetch notifications for the current user
         $user = Auth::user();
@@ -28,13 +28,22 @@ class RetailerController extends Controller
         return view('dashboards.retailer.index', compact('acceptedStock', 'sales', 'orders', 'unreadNotifications', 'allNotifications'));
     }
 
-    public function stockOverview() {
-        $retailerId = Auth::id();
-        $stocks = RetailerStock::with('vendor')->where('retailer_id', $retailerId)->get();
-        return view('dashboards.retailer.stock-overview', compact('stocks'));
+    public function stockOverview()
+{
+    $user = Auth::user();
+    $retailer = $user->retailer;
+
+    if (!$retailer) {
+        // No retailer linked, return empty collection or handle gracefully
+        return view('dashboards.retailer.stock-overview', ['stocks' => collect()]);
     }
 
-    
+    $stocks = RetailerStock::with('vendor')
+        ->where('retailer_id', $retailer->id)
+        ->get();
+
+    return view('dashboards.retailer.stock-overview', compact('stocks'));
+}
 
 
     public function acceptStock($id) {
@@ -47,13 +56,23 @@ class RetailerController extends Controller
         return back()->with('success', 'Stock rejected.');
     }
 
-    public function salesForm() {
-        $stock = RetailerStock::where('retailer_id', Auth::id())
-                    ->where('status', 'accepted')
-                    ->get()
-                    ->groupBy('car_model');
-        return view('dashboards.retailer.sales-update', compact('stock'));
+    public function salesForm()
+{
+    $user = Auth::user();
+    $retailer = $user->retailer;
+
+    if (!$retailer) {
+        return view('dashboards.retailer.sales-update', ['stock' => collect()]);
     }
+
+    $stock = RetailerStock::where('retailer_id', $retailer->id)
+                ->where('status', 'accepted')
+                ->get()
+                ->groupBy('car_model');
+
+    return view('dashboards.retailer.sales-update', compact('stock'));
+}
+
 
     public function submitSale(Request $request) {
         $request->validate([
@@ -107,7 +126,7 @@ class RetailerController extends Controller
     }
 
     $order = RetailerOrder::create([
-        'retailer_id' => Auth::id(),
+        'user_id' => Auth::id(),
         'vendor_id' => $vendor->id,
         'customer_name' => $request->customer_name,
         'car_model' => $request->car_model,
@@ -128,7 +147,7 @@ class RetailerController extends Controller
 
     public function viewOrders() {
         $retailerId = Auth::id();
-        $retailerOrders = RetailerOrder::where('retailer_id', $retailerId)
+        $retailerOrders = RetailerOrder::where('user_id', $retailerId)
             ->with('vendor')
             ->orderByDesc('created_at')
             ->get();
@@ -138,7 +157,7 @@ class RetailerController extends Controller
 
     public function orderDetail($id) {
         $retailerId = Auth::id();
-        $order = RetailerOrder::where('retailer_id', $retailerId)
+        $order = RetailerOrder::where('user_id', $retailerId)
             ->with('vendor')
             ->findOrFail($id);
         

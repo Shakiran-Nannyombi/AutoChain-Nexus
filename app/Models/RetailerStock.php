@@ -25,6 +25,7 @@ class RetailerStock extends Model
 
     public function vendor()
 {
-    return $this->belongsTo(User::class, 'vendor_id');
+    return $this->belongsTo(Vendor::class);
 }
+
 }
