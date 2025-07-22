@@ -44,7 +44,7 @@ class VendorRetailerOrderController extends Controller
             $vendorAddresses = array_map('trim', $vendorAddresses);
             $vendorAddresses = array_filter($vendorAddresses);
         }
-        return view('dashboards.vendor.retailer-orders', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses'));
+        return view('dashboards.vendor.retailer-order-details', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses'));
     }
 
     // Show a specific retailer order
@@ -55,7 +55,7 @@ class VendorRetailerOrderController extends Controller
             ->with('retailer')
             ->findOrFail($id);
         
-        return view('dashboards.vendor.retailer-order-detail', compact('order'));
+        return view('dashboards.vendor.retailer-order-show', compact('order'));
     }
 
     // Confirm a retailer order
