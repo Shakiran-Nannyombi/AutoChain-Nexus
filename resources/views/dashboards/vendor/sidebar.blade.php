@@ -10,7 +10,7 @@
     <i class="fas fa-box"></i> Products
 </a>
 
-<a href="{{ route('vendor.orders') }}" class="nav-item {{ request()->is('vendor/orders*') ? 'active' : '' }}">
+<a href="{{ route('vendor.retailer-orders.index') }}" class="nav-item {{ request()->is('vendor/orders*') ? 'active' : '' }}">
     <i class="fas fa-shopping-cart"></i> Orders Management
 </a>
 

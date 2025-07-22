@@ -599,10 +599,34 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::get('/products/{id}/edit', [\App\Http\Controllers\VendorProductController::class, 'edit'])->name('vendor.products.edit');
     Route::put('/products/{id}', [\App\Http\Controllers\VendorProductController::class, 'update'])->name('vendor.products.update');
     Route::delete('/products/{id}', [\App\Http\Controllers\VendorProductController::class, 'destroy'])->name('vendor.products.destroy');
-    Route::get('/orders', [\App\Http\Controllers\VendorOrderController::class, 'index'])->name('vendor.orders');
-    Route::post('/orders/create', [\App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
-    Route::put('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'update'])->name('vendor.orders.update');
-    Route::delete('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'destroy'])->name('vendor.orders.destroy');
+    //Route::get('/orders', [\App\Http\Controllers\VendorOrderController::class, 'index'])->name('vendor.orders');
+    //Route::post('/orders/create', [\App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
+    //Route::put('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'update'])->name('vendor.orders.update');
+    //Route::delete('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'destroy'])->name('vendor.orders.destroy');
+    
+    // Show details of a specific retailer order
+    Route::get('/retailer-orders/{id}', [\App\Http\Controllers\VendorRetailerOrderController::class, 'show'])
+        ->name('vendor.retailer-orders.show');
+
+    // Confirm a retailer order
+    Route::post('/retailer-orders/{id}/confirm', [\App\Http\Controllers\VendorRetailerOrderController::class, 'confirm'])
+        ->name('vendor.retailer-orders.confirm');
+
+    // Ship a retailer order
+    Route::post('/retailer-orders/{id}/ship', [\App\Http\Controllers\VendorRetailerOrderController::class, 'ship'])
+        ->name('vendor.retailer-orders.ship');
+
+    // Mark retailer order as delivered
+    Route::post('/retailer-orders/{id}/deliver', [\App\Http\Controllers\VendorRetailerOrderController::class, 'deliver'])
+        ->name('vendor.retailer-orders.deliver');
+
+    // Reject a retailer order
+    Route::post('/retailer-orders/{id}/reject', [\App\Http\Controllers\VendorRetailerOrderController::class, 'reject'])
+        ->name('vendor.retailer-orders.reject');
+
+    // Update notes on a retailer order
+    Route::post('/retailer-orders/{id}/update-notes', [\App\Http\Controllers\VendorRetailerOrderController::class, 'updateNotes'])
+        ->name('vendor.retailer-orders.update-notes');
     
     // Retailer Orders Management
     Route::get('/retailer-orders', [\App\Http\Controllers\VendorRetailerOrderController::class, 'index'])->name('vendor.retailer-orders.index');
