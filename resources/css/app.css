@@ -294,6 +294,10 @@ body {
     cursor: pointer;
 }
 
+.header-icon.user-profile-icon {
+    position: relative;
+}
+
 .notification-badge {
     position: absolute;
     top: -5px;
@@ -534,4 +538,11 @@ html, body {
     min-width: 0 !important;
     margin-bottom: 0.7rem !important;
   }
+}
+
+.user-dropdown {
+    display: none;
+}
+.user-dropdown.open {
+    display: block;
 }

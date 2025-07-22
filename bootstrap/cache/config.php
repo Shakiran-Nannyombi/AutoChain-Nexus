@@ -1,8 +1,8 @@
 <?php return array (
-  4 => 'concurrency',
-  5 => 'cors',
-  8 => 'hashing',
-  14 => 'view',
+  5 => 'view',
+  9 => 'cors',
+  12 => 'hashing',
+  14 => 'concurrency',
   'app' => 
   array (
     'name' => 'Laravel',
@@ -16,7 +16,7 @@
     'fallback_locale' => 'en',
     'faker_locale' => 'en_US',
     'cipher' => 'AES-256-CBC',
-    'key' => 'base64:MPNqLH6ARuF0vlSo1d5yGkWkVTlLNIzj4xFiE+H3S0M=',
+    'key' => 'base64:qf11R2Gaa6kg4N75jShY9pnq2L2YXC8/ovjFVkj9ArU=',
     'previous_keys' => 
     array (
     ),
@@ -163,12 +163,12 @@
         array (
           'include' => 
           array (
-            0 => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2',
+            0 => '/opt/lampp/htdocs/Inventory-Mgt-System-25',
           ),
           'exclude' => 
           array (
-            0 => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\vendor',
-            1 => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\node_modules',
+            0 => '/opt/lampp/htdocs/Inventory-Mgt-System-25/vendor',
+            1 => '/opt/lampp/htdocs/Inventory-Mgt-System-25/node_modules',
           ),
           'follow_links' => false,
           'ignore_unreadable_directories' => false,
@@ -193,7 +193,7 @@
           0 => 'local',
         ),
       ),
-      'temporary_directory' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\app/backup-temp',
+      'temporary_directory' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/app/backup-temp',
       'password' => NULL,
       'encryption' => 'default',
       'tries' => 1,
@@ -234,8 +234,8 @@
         'to' => 'your@example.com',
         'from' => 
         array (
-          'address' => 'hello@example.com',
-          'name' => 'Laravel',
+          'address' => 'autochainnexus@gmail.com',
+          'name' => 'AutoChain Nexus',
         ),
       ),
       'slack' => 
@@ -359,8 +359,8 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\framework/cache/data',
-        'lock_path' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\framework/cache/data',
+        'path' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/framework/cache/data',
+        'lock_path' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -415,7 +415,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'inventory_db',
+        'database' => 'inventory_system',
         'prefix' => '',
         'foreign_key_constraints' => true,
         'busy_timeout' => NULL,
@@ -428,7 +428,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'inventory_db',
+        'database' => 'inventory_system',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -448,7 +448,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'inventory_db',
+        'database' => 'inventory_system',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -468,7 +468,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'inventory_db',
+        'database' => 'inventory_system',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -483,7 +483,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'inventory_db',
+        'database' => 'inventory_system',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -533,7 +533,7 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\app/private',
+        'root' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/app/private',
         'serve' => true,
         'throw' => false,
         'report' => false,
@@ -541,7 +541,7 @@
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\app/public',
+        'root' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -563,7 +563,7 @@
     ),
     'links' => 
     array (
-      'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\public\\storage' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\app/public',
+      '/opt/lampp/htdocs/Inventory-Mgt-System-25/public/storage' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/app/public',
     ),
   ),
   'logging' => 
@@ -588,14 +588,14 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\logs/laravel.log',
+        'path' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/logs/laravel.log',
         'level' => 'debug',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\logs/laravel.log',
+        'path' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
         'replace_placeholders' => true,
@@ -660,20 +660,20 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\logs/laravel.log',
+        'path' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/logs/laravel.log',
       ),
     ),
   ),
   'mail' => 
   array (
-    'default' => 'log',
+    'default' => 'java',
     'mailers' => 
     array (
       'smtp' => 
       array (
         'transport' => 'smtp',
-        'host' => '127.0.0.1',
-        'port' => '2525',
+        'host' => 'smtp.mailgun.org',
+        'port' => 587,
         'encryption' => 'tls',
         'username' => NULL,
         'password' => NULL,
@@ -729,22 +729,22 @@
       'java' => 
       array (
         'transport' => 'java',
-        'base_url' => 'http://localhost:8081',
+        'base_url' => 'http://localhost:8082',
         'username' => 'admin',
-        'password' => 'eehm jipn iivy imfq',
+        'password' => 'cbzv dnbl pscb eqvt',
       ),
     ),
     'from' => 
     array (
-      'address' => 'hello@example.com',
-      'name' => 'Laravel',
+      'address' => 'autochainnexus@gmail.com',
+      'name' => 'AutoChain Nexus',
     ),
     'markdown' => 
     array (
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\resources\\views/vendor/mail',
+        0 => '/opt/lampp/htdocs/Inventory-Mgt-System-25/resources/views/vendor/mail',
       ),
     ),
   ),
@@ -863,7 +863,7 @@
     'lifetime' => 120,
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\framework/sessions',
+    'files' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -893,9 +893,13 @@
       0 => 'App\\Nova',
     ),
   ),
-  'concurrency' => 
+  'view' => 
   array (
-    'default' => 'process',
+    'paths' => 
+    array (
+      0 => '/opt/lampp/htdocs/Inventory-Mgt-System-25/resources/views',
+    ),
+    'compiled' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/framework/views',
   ),
   'cors' => 
   array (
@@ -943,13 +947,9 @@
     ),
     'rehash_on_login' => true,
   ),
-  'view' => 
+  'concurrency' => 
   array (
-    'paths' => 
-    array (
-      0 => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\resources\\views',
-    ),
-    'compiled' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\framework\\views',
+    'default' => 'process',
   ),
   'dompdf' => 
   array (
@@ -958,10 +958,10 @@
     'convert_entities' => true,
     'options' => 
     array (
-      'font_dir' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\fonts',
-      'font_cache' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2\\storage\\fonts',
-      'temp_dir' => 'C:\\Users\\byaru\\AppData\\Local\\Temp',
-      'chroot' => 'C:\\Users\\byaru\\Inventory-Mgt-System-25-2',
+      'font_dir' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/fonts',
+      'font_cache' => '/opt/lampp/htdocs/Inventory-Mgt-System-25/storage/fonts',
+      'temp_dir' => '/tmp',
+      'chroot' => '/opt/lampp/htdocs/Inventory-Mgt-System-25',
       'allowed_protocols' => 
       array (
         'data://' => 

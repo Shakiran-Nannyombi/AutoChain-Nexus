@@ -15,6 +15,18 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('password')->nullable();
+            $table->string('company')->nullable();
+            $table->string('address')->nullable();
+            $table->string('profile_picture')->nullable();
+            $table->json('supporting_documents')->nullable();
+            $table->string('vendor_license')->nullable();
+            $table->json('product_categories')->nullable();
+            $table->json('service_areas')->nullable();
+            $table->text('contract_terms')->nullable();
+            $table->string('segment')->nullable();
             $table->string('segment_name')->nullable();
             $table->integer('total_orders')->default(0);
             $table->integer('total_quantity')->default(0);

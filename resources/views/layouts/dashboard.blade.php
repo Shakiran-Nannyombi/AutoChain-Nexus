@@ -17,10 +17,10 @@
         .page-title {
             font-size: 2.2rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--text);
             margin-left: 2.2rem;
-            margin-top: 1.2rem;
-            margin-bottom: 1.5rem;
+            margin-top: 0.2rem;
+            margin-bottom: 0.2rem;
             letter-spacing: 0.01em;
         }
         .search-results-dropdown {
@@ -245,15 +245,15 @@
         <!-- Main Content -->
         <main class="main-content">
             @php $user = auth('admin')->user() ?? auth()->user(); @endphp
-            @if($user && (get_class($user) === 'App\\Models\\Admin' || $user->role === 'admin'))
-                <!-- Original admin header code restored here -->
+            @if($user && (get_class($user) === 'App\\Models\\Admin' || $user->role === 'admin' || $user->role))
+                <!-- Dynamic dashboard header title based on user role -->
             <header class="header">
                 <div class="header-left">
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h1 class="page-title">
-                            Admin Dashboard
+                        {{ ucfirst($user->role ?? (get_class($user) === 'App\\Models\\Admin' ? 'admin' : 'User')) }} Dashboard
                     </h1>
                 </div>
                 <div class="header-right">

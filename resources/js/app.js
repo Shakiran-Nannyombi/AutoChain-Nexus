@@ -81,3 +81,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Vendor profile dropdown toggle
+
+document.addEventListener('DOMContentLoaded', function() {
+    const profileIcon = document.getElementById('vendorUserProfileIcon');
+    const dropdown = document.getElementById('vendorUserDropdown');
+    if (profileIcon && dropdown) {
+        profileIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', function() {
+            dropdown.classList.remove('open');
+        });
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+});
