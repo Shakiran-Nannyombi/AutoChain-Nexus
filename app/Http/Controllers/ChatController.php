@@ -112,8 +112,8 @@ class ChatController extends Controller
                 // Customer can chat with retailer and admin
                 return $query->whereIn('role', ['retailer', 'admin'])->get();
             case 'analyst':
-                // Analyst can chat with admin and manufacturer
-                return $query->whereIn('role', ['admin', 'manufacturer'])->get();
+                // Analyst can chat with all users except themselves
+                return $query->get();
             case 'vendor':
                 // Vendor can chat with manufacturer, retailer, admin
                 return $query->whereIn('role', ['manufacturer', 'retailer', 'admin'])->get();
@@ -296,7 +296,7 @@ class ChatController extends Controller
                 $users = \App\Models\User::where('role', 'retailer')->get();
                 break;
             case 'analyst':
-                $users = \App\Models\User::where('role', '!=', 'customer')->where('id', '!=', $userId)->get();
+                $users = \App\Models\User::where('id', '!=', $userId)->get();
                 break;
             default:
                 $users = collect();

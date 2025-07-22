@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Notifications\VendorNotification;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class ManufacturerVendorOrderController extends Controller
 {
@@ -54,6 +56,27 @@ class ManufacturerVendorOrderController extends Controller
             'unit_price' => $validated['unit_price'] ?? $order->unit_price,
             'total_amount' => ($validated['unit_price'] ?? $order->unit_price) * $order->quantity,
         ]);
+
+        // --- Real-time stock update logic ---
+        $product = \App\Models\Product::find($order->product);
+        if ($product) {
+            if ($product->stock < $order->quantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Insufficient stock to confirm this order.',
+                    'order' => $order
+                ], 400);
+            }
+            $product->decrement('stock', $order->quantity);
+            // Optional: Notify manufacturer if stock is low
+            if ($product->stock < 5) { // threshold can be adjusted
+                // You can use a notification system here
+                // For example, log or send an email/notification
+                Log::warning('Stock for product ' . $product->name . ' is low: ' . $product->stock);
+                // Optionally, notify manufacturer via email/notification
+            }
+        }
+        // --- End stock update logic ---
 
         // Notify vendor
         $vendor = User::find($order->vendor_id);
@@ -170,5 +193,79 @@ class ManufacturerVendorOrderController extends Controller
         ];
 
         return response()->json($products);
+    }
+
+    public function confirm(Request $request, $id)
+    {
+        $manufacturerId = Auth::id();
+        $order = VendorOrder::where('manufacturer_id', $manufacturerId)->findOrFail($id);
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Order is not pending.');
+        }
+        $request->validate([
+            'delivery_date' => 'required|date|after:today',
+            'delivery_address' => 'required|string|max:255',
+            'driver_name' => 'required|string|max:255',
+        ]);
+        $product = \App\Models\Product::find($order->product);
+        if (!$product) {
+            return back()->with('error', 'Product not found.');
+        }
+        if ($product->stock < $order->quantity) {
+            return back()->with('error', 'Insufficient stock to confirm this order.');
+        }
+        // Update order status
+        $order->update([
+            'status' => 'accepted',
+            'accepted_at' => now(),
+            'notes' => ($order->notes ? $order->notes . "\n" : '') .
+                'Delivery Date: ' . $request->delivery_date . ', Address: ' . $request->delivery_address . ', Driver: ' . $request->driver_name,
+        ]);
+        $product->decrement('stock', $order->quantity);
+        if ($product->stock < 5) {
+            Log::warning('Stock for product ' . $product->name . ' is low: ' . $product->stock);
+        }
+        // Generate invoice (simple HTML for now)
+        $invoiceHtml = view('emails.reports.invoice', [
+            'order' => $order,
+            'product' => $product,
+            'manufacturer' => Auth::user(),
+            'vendor' => $order->vendor,
+            'delivery_date' => $request->delivery_date,
+            'delivery_address' => $request->delivery_address,
+            'driver_name' => $request->driver_name,
+        ])->render();
+        // Send invoice via Java email API
+        try {
+            $response = Http::post('http://localhost:8082/api/v1/send-email', [
+                'to' => $order->vendor->email,
+                'subject' => 'Order Invoice #' . $order->id,
+                'body' => $invoiceHtml,
+            ]);
+            if ($response->failed()) {
+                Log::error('Failed to send invoice email for order #' . $order->id);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error sending invoice email: ' . $e->getMessage());
+        }
+        $vendor = User::find($order->vendor_id);
+        if ($vendor) {
+            $vendor->notify(new VendorNotification(
+                'Order Accepted',
+                'Your order #' . $order->id . ' has been accepted by the manufacturer. An invoice has been sent to your email.'
+            ));
+        }
+        return redirect()->route('manufacturer.vendor-orders.invoice-preview', $order->id)->with('success', 'Order confirmed, stock updated, and invoice sent to vendor.');
+    }
+
+    public function invoicePreview($id)
+    {
+        $manufacturerId = Auth::id();
+        $order = VendorOrder::where('manufacturer_id', $manufacturerId)->with('vendor')->findOrFail($id);
+        $product = \App\Models\Product::find($order->product);
+        $manufacturer = Auth::user();
+        $vendor = $order->vendor;
+        // Optionally, parse delivery details from notes if needed
+        return view('dashboards.manufacturer.invoice-preview', compact('order', 'product', 'manufacturer', 'vendor'));
     }
 }

@@ -17,21 +17,32 @@ class VendorOrderController extends Controller
     public function index()
     {
         $vendorId = Auth::id();
-        $orders = VendorOrder::where('vendor_id', $vendorId)
+        // Manufacturer orders (orders TO manufacturers)
+        $manufacturerOrders = VendorOrder::where('vendor_id', $vendorId)
             ->with('manufacturer')
             ->orderByDesc('created_at')
             ->get();
-            
-        // Get all manufacturers for the dropdown
-        $manufacturers = User::where('role', 'manufacturer')
-            ->where('status', 'approved')
-            ->orderBy('name')
-            ->get(['id', 'name', 'company']);          
-            
-        // Get all products for the dropdown
-        $products = Product::orderBy('name')->get(['id', 'name', 'category', 'price']);
-        
-        return view('dashboards.vendor.orders', compact('orders', 'manufacturers', 'products'));
+        // Retailer orders (orders FROM retailers)
+        $retailerOrders = \App\Models\RetailerOrder::where('vendor_id', $vendorId)
+            ->with('retailer')
+            ->orderByDesc('created_at')
+            ->get();
+        // Products for this vendor
+        $products = Product::where('vendor_id', $vendorId)->get();
+        // Stat cards
+        $totalModels = $products->count();
+        $activeModels = $products->where('status', 'active')->count();
+        $totalInventory = $products->sum('stock');
+        $pendingOrders = $retailerOrders->where('status', 'pending')->count();
+        return view('dashboards.vendor.orders', compact(
+            'manufacturerOrders',
+            'retailerOrders',
+            'products',
+            'totalModels',
+            'activeModels',
+            'totalInventory',
+            'pendingOrders'
+        ));
     }
 
     // Get products for a specific manufacturer (AJAX endpoint)
@@ -82,7 +93,8 @@ class VendorOrderController extends Controller
             'total_amount' => $product->price * $validated['quantity'],
             'status' => 'pending',
             'ordered_at' => Carbon::now(),
-            'expected_delivery_date' => $validated['delivery_date'],
+            'expected_delivery_date' => $validated['delivery_date'] ?? null,
+            'delivery_point' => $request->delivery_point ?? null,
             'notes' => $validated['special_instructions'],
         ]);
 
@@ -95,6 +107,10 @@ class VendorOrderController extends Controller
         
         // Notify vendor
         Auth::user()->notify(new VendorNotification('Order Created', 'Your order #' . $order->id . ' has been created.'));
+        // Notify manufacturer
+        if ($manufacturer) {
+            $manufacturer->notify(new \App\Notifications\ManufacturerNotification('New Order Received', 'You have received a new order from vendor ' . Auth::user()->name . '. Order ID: ' . $order->id));
+        }
 
         return response()->json(['success' => true, 'message' => 'Order created successfully!', 'order' => $order]);
     }
