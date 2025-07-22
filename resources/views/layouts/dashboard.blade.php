@@ -9,11 +9,20 @@
     <title>@yield('title', 'Autochain Nexus')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
-    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/css/manufacturer.css','resources/css/analyst.css','resources/css/supplier.css','resources/css/retailer.css', 'resources/css/vendor.css','resources/js/app.js', 'resources/css/auth.css', 'resources/css/vendor.css'])
+    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/css/manufacturer.css','resources/css/analyst.css','resources/css/supplier.css','resources/css/retailer.css', 'resources/css/vendor.css','resources/js/app.js', 'resources/css/auth.css', 'resources/css/vendor.css', 'resources/js/darkmode.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @stack('styles')
     @stack('head')
     <style>
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-left: 2.2rem;
+            margin-top: 1.2rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.01em;
+        }
         .search-results-dropdown {
             position: absolute;
             top: 100%;
@@ -207,16 +216,16 @@
 
             <div class="sidebar-user">
                 @php $user = auth('admin')->user() ?? auth()->user(); @endphp
-                @if($user && isset($user->profile_photo) && $user->profile_photo)
-                    <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
+                @if($user && isset($user->profile_picture) && $user->profile_picture)
+                    <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
                 @else
-                    <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
+                    <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" class="user-avatar" style="margin-left: 0.9rem; object-fit:cover; width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0;">
                 @endif
                 <div class="user-info" style="display: flex; flex-direction: column; align-items: flex-start;">
-                    <div style="font-weight: 600; color: #fff; font-size: 1.05rem; line-height: 1.1;">
+                    <div style="font-weight: 600;  color: var(--text); font-size: 1.05rem; line-height: 1.1;">
                         {{ $user->name ?? 'User' }}
                     </div>
-                    <div style="font-size: 0.85rem; color: #2a6eea">
+                    <div style="font-size: 0.85rem; color: #09822d">
                         @if($user && get_class($user) === 'App\\Models\\Admin')
                             admin
                         @else
@@ -317,10 +326,10 @@
                         <div class="dropdown user-dropdown" id="userDropdown">
                             <div class="dropdown-user-info">
                                  <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                                    @if($user && isset($user->profile_photo) && $user->profile_photo)
-                                        <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                                    @if($user && isset($user->profile_picture) && $user->profile_picture)
+                                        <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                                     @else
-                                        <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                                        <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                                     @endif
                                 </div>
                                 <div>
@@ -341,6 +350,9 @@
                                 </a>
                         </div>
                     </div>
+                    <button id="darkModeToggleDashboardLayout" aria-label="Toggle dark mode" style="margin-left:0.7rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s; padding: 0;">
+                        <span id="darkModeIconDashboardLayout">🌙</span>
+                    </button>
                 </div>
             </header>
             @else
@@ -579,4 +591,4 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @stack('scripts')
 </body>
-</html> 
+</html>

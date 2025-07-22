@@ -1,23 +1,29 @@
 @section('title', 'Login')
 <x-guest-layout>
-    <nav class="login-navbar">
+    <nav class="login-navbar" style="display: flex; align-items: center; justify-content: space-between;">
         <div class="navbar-logo">
             <a href="/">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 40px;">
             </a>
             <span class="navbar-brand">Autocahin Nexus</span>
         </div>
+        <button class="navbar-hamburger" aria-label="Open menu" onclick="document.querySelector('.navbar-links').classList.toggle('open')">
+            &#9776;
+        </button>
         <div class="navbar-links">
             <a href="/">Home</a>
             <a href="/register">Register</a>
         </div>
+        <button id="darkModeToggleAuth" aria-label="Toggle dark mode" style="margin-left: 1.2rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s; padding: 0;">
+            <span id="darkModeIconAuth">🌙</span>
+        </button>
     </nav>
     <div class="login-split-container">
         
         <!-- Left: Illustration and logo-->
         <div class="login-split-left">
             <div class="login-illustration-wrapper">
-                <div class="login-illustration-text">Welcome Back!</div>
+                <div class="login-illustration-text" style="color: var(--text);">Welcome Back!</div>
                 <div class="login-split-illustration">
                     <img src="{{ asset('images/login.png') }}" alt="Login Illustration" style="max-width: 420px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
                 </div>
@@ -97,7 +103,7 @@
                         });
                     </script>
                     <div class="login-register-row">
-                        <span>Don't have an account?</span>
+                        <span style="color: var(--text)">Don't have an account?</span>
                         <a href="/register">Register</a>
                     </div>
                     <div class="login-dashboard-row">
@@ -114,3 +120,4 @@
 <footer class="login-footer">
     ©2024 Autocahin Nexus. All rights reserved.
 </footer>
+@vite(['resources/js/darkmode.js'])

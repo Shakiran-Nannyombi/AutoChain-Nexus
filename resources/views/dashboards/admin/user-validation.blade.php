@@ -12,7 +12,7 @@
 
 @section('content')
   <div class="content-card">
-    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"> 
+    <h2 class="page-title" style="color: var(--text) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"> 
         <i class="fas fa-user-check"></i> User Validation Center
     </h2>
 
@@ -65,14 +65,14 @@
     <!-- Pending Applications List -->
     <div class="card" style="margin-top: 2rem;">
         <div class="card-header">
-            <h2 style=" color: #F97A00; font-size: 1.3rem;">Pending User Applications</h2>
+            <h2 style=" color:var(--text); font-size: 1.3rem;">Pending User Applications</h2>
         </div>
         <div class="card-body">
             @forelse ($pendingUsers as $user)
                 <div class="application-card-new" data-role="{{ strtolower($user->role) }}">
                     <div class="application-header-new">
                         <div class="company-info-new">
-                            <h3>{{ $user->company ?? $user->name }}</h3>
+                            <h3 style="color: var(--primary)">{{ $user->company ?? $user->name }}</h3>
                             <span class="role-badge-new role-{{ strtolower($user->role) }}">{{ ucfirst($user->role) }}</span>
                         </div>
                         @if($user->validation_score !== null)

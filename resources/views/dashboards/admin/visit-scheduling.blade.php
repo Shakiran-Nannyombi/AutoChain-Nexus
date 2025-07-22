@@ -17,7 +17,7 @@
 
 @section('content')
   <div class="content-card">
-    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">
+    <h2 class="page-title" style="color: var(--text) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">
         <i class="fas fa-calendar-check"></i> Visit Scheduling & Management
     </h2>
     @if(session('success'))
@@ -89,7 +89,7 @@
                 <div class="visit-card" data-status="{{ $visit->status }}">
                     <div class="visit-main-info">
                         <div class="visit-header">
-                            <h3 class="company-name">{{ $visit->company_name }}</h3>
+                            <h3 class="company-name" style="color: black">{{ $visit->company_name }}</h3>
                             <span class="status-badge-visit status-{{ $visit->status }}">{{ ucfirst($visit->status) }}</span>
                             <span class="visit-type-badge">{{ $visit->visit_type }}</span>
                         </div>

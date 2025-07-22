@@ -1,24 +1,30 @@
 @section('title', 'Register')
 <x-guest-layout>
-    <nav class="register-navbar">
+    <nav class="login-navbar" style="display: flex; align-items: center; justify-content: space-between;">
         <div class="navbar-logo">
             <a href="/">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 40px;">
             </a>
-            <span class="navbar-brand">Autocahin Nexus</span>
+            <span class="navbar-brand">Autochain Nexus</span>
         </div>
+        <button class="navbar-hamburger" aria-label="Open menu" onclick="document.querySelector('.navbar-links').classList.toggle('open')">
+            &#9776;
+        </button>
         <div class="navbar-links">
             <a href="/">Home</a>
             <a href="/application-status">Application Status</a>
             <a href="/login">Login</a>
         </div>
+        <button id="darkModeToggleAuth" aria-label="Toggle dark mode" class="darkmode-toggle-auth">
+            <span id="darkModeIconAuth">🌙</span>
+        </button>
     </nav>
     <div class="register-split-container">
         <!-- Left: illustration -->
         <div class="register-split-left">
             <div class="register-illustration-wrapper">
                 <div class="register-illustration">
-                    <div class="register-illustration-text">Join the Autochain Nexus network</div>
+                    <div class="register-illustration-text" style="color: var(--text);">Join the Autochain Nexus network</div>
                     <img src="{{ asset('images/register.png') }}" alt="Register Illustration" style="max-width: 450px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
                 </div>
             </div>
@@ -163,19 +169,21 @@
                     renderFileList();
                 }
             });
-            document.querySelector('.register-form').addEventListener('submit', function(e) {
-                if (selectedFiles.length === 0) {
-                    e.preventDefault();
-                    alert('Please upload at least one supporting document.');
-                    return;
-                }
-                const dt = new DataTransfer();
-                selectedFiles.forEach(file => dt.items.add(file));
-                fileInput.files = dt.files;
-            });
             const roleSelect = document.getElementById('role');
             const manufacturerGroup = document.getElementById('manufacturer-select-group');
             const supportingDocsGroup = document.getElementById('supporting-documents-group');
+            document.querySelector('.register-form').addEventListener('submit', function(e) {
+                if (roleSelect.value === 'vendor') {
+                    if (selectedFiles.length === 0) {
+                        e.preventDefault();
+                        alert('Please upload at least one supporting document.');
+                        return;
+                    }
+                    const dt = new DataTransfer();
+                    selectedFiles.forEach(file => dt.items.add(file));
+                    fileInput.files = dt.files;
+                }
+            });
             roleSelect.addEventListener('change', function() {
                 if (this.value === 'vendor') {
                     manufacturerGroup.style.display = '';
@@ -195,6 +203,7 @@
             }
         });
     </script>
+    @vite(['resources/js/darkmode.js'])
 </x-guest-layout>
 <footer class="register-footer">
     ©2024 Autocahin Nexus. All rights reserved.

@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 @section('content')
 <div class="content-card">
-    <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">&larr; Back to Applications</a>
+    <a href="{{ url()->previous() }}" class="btn btn-secondary mb-3">&larr; Back</a>
     <div class="d-flex align-items-center mb-3">
         <img src="{{ asset($analyst->profile_photo ?? 'images/profile/analyst.jpeg') }}" alt="photo" width="64" class="rounded-circle me-3">
         <div>

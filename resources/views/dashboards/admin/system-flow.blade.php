@@ -14,25 +14,25 @@
     <div class="content-card">
     <!-- Welcome Message -->
     <div style="margin-bottom: 2rem;">
-        <h1 style="font-size: 2.1rem; font-weight: 800; color: var(--primary, #2563eb); margin-bottom: 0.3rem;">Welcome to the System Flow Dashboard</h1>
-        <p style="font-size: 1.15rem; color: #64748b;">Monitor your system's health, user engagement, and workflow progress all in one place.</p>
+        <h1 style="font-size: 2.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.3rem;">Welcome to the System Flow Dashboard</h1>
+        <p style="font-size: 1.15rem; color: #0e7636;">Monitor your system's health, user engagement, and workflow progress all in one place.</p>
     </div>
     <!-- Top Navigation Tabs -->
     <div class="dashboard-tabs" style="display: flex; gap: 2.5rem; border-bottom: 2px solid #e5e7eb; margin-bottom: 2.5rem; padding-top: 1.5rem;">
-        <a href="#" class="tab-link active" data-tab="overview" style="color: var(--primary, #2563eb); font-weight: 700; padding-bottom: 0.7rem; border-bottom: 2px solid var(--primary, #2563eb);">System Overview</a>
-        <a href="#" class="tab-link" data-tab="kpi" style="color: #64748b; font-weight: 500; padding-bottom: 0.7rem; border-bottom: 2px solid transparent;">System Flow KPI</a>
-        <a href="#" class="tab-link" data-tab="user" style="color: #64748b; font-weight: 500; padding-bottom: 0.7rem; border-bottom: 2px solid transparent;">User KPIs</a>
-        <a href="#" class="tab-link" data-tab="supplier" style="color: #64748b; font-weight: 500; padding-bottom: 0.7rem; border-bottom: 2px solid transparent;">Supplier KPIs</a>
+        <a href="#" class="tab-link active" data-tab="overview" style="color: var(--primary, #3ceb25); font-weight: 700; padding-bottom: 0.7rem; border-bottom: 2px solid var(--primary, #2563eb);">System Overview</a>
+        <a href="#" class="tab-link" data-tab="kpi" style="color: #0e7636; font-weight: 500; padding-bottom: 0.7rem; border-bottom: 2px solid transparent;">System Flow KPI</a>
+        <a href="#" class="tab-link" data-tab="user" style="color: #0e7636; font-weight: 500; padding-bottom: 0.7rem; border-bottom: 2px solid transparent;">User KPIs</a>
+        <a href="#" class="tab-link" data-tab="supplier" style="color: #0e7636; font-weight: 500; padding-bottom: 0.7rem; border-bottom: 2px solid transparent;">Supplier KPIs</a>
     </div>
     <!-- Tab Content Areas -->
     <div id="tab-content-overview" class="tab-content" style="display: block;">
         <!-- Hero Section with Illustration -->
         <div style="display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap; margin-bottom: 2.5rem;">
             <div style="flex: 2; min-width: 320px;">
-                <h2 style="color: var(--secondary); font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem;">System Overview</h2>
+                <h2 style="color: var(--text); font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem;">System Overview</h2>
                 <p style="color: #64748b; font-size: 1.15rem; margin-bottom: 1.2rem;">Get a high-level summary of your inventory management system, including user roles, modules, and workflow highlights. Use this section to understand the overall structure and flow of your platform.</p>
-                <ul style="margin-top: 1rem; color: #16610E; font-size: 1.08rem;">
-                    <li style="margin-bottom: 0.7rem;"><span style="font-size: 1.3rem; color: #22c55e; margin-right: 0.5rem;">✔️</span><strong>Multi-role access:</strong> <span style="color: #2563eb;">Admin, Vendor, Manufacturer, Retailer, Analyst, Supplier</span></li>
+                <ul style="margin-top: 1rem;  color: var(--text); font-size: 1.08rem;">
+                    <li style="margin-bottom: 0.7rem;"><span style="font-size: 1.3rem; color: #22c55e; margin-right: 0.5rem;">✔️</span><strong>Multi-role access:</strong> <span style="color: #25eb35;">Admin, Vendor, Manufacturer, Retailer, Analyst, Supplier</span></li>
                     <li style="margin-bottom: 0.7rem;"><span style="font-size: 1.3rem; color: #22c55e; margin-right: 0.5rem;">✔️</span><strong>Real-time inventory tracking</strong> and reporting for all users</li>
                     <li style="margin-bottom: 0.7rem;"><span style="font-size: 1.3rem; color: #22c55e; margin-right: 0.5rem;">✔️</span><strong>Automated validation</strong> and approval workflows</li>
                     <li style="margin-bottom: 0.7rem;"><span style="font-size: 1.3rem; color: #22c55e; margin-right: 0.5rem;">✔️</span><strong>Integrated analytics</strong> and forecasting modules</li>
@@ -44,8 +44,8 @@
         </div>
         <!-- Instructions Section -->
         <div style="background: #f3f4f6; border-radius: 10px; padding: 1.5rem 2rem; margin-bottom: 2.5rem;">
-            <h3 style="color: var(--primary, #2563eb); font-size: 1.25rem; font-weight: 700; margin-bottom: 0.7rem;">How to use this dashboard</h3>
-            <ol style="color: #2563eb; font-size: 1.08rem; margin-left: 1.2rem;">
+            <h3 style="color: var(--primary); font-size: 1.25rem; font-weight: 700; margin-bottom: 0.7rem;">How to use this dashboard</h3>
+            <ol style=" color: black; font-size: 1.08rem; margin-left: 1.2rem;">
                 <li style="margin-bottom: 0.5rem;"><strong>Navigate tabs:</strong> Switch between System Overview, KPIs, and Supplier metrics using the tabs above.</li>
                 <li style="margin-bottom: 0.5rem;"><strong>Monitor KPIs:</strong> Review key performance indicators to track system health and workflow progress.</li>
                 <li style="margin-bottom: 0.5rem;"><strong>Explore analytics:</strong> Use the analytics and reports sections for deeper insights.</li>
@@ -54,8 +54,8 @@
         </div>
         <!-- Feature Explanations -->
         <div style="margin-bottom: 1.5rem;">
-            <h4 style="color: #16610E; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Feature Highlights</h4>
-            <ul style="color: #64748b; font-size: 1.05rem;">
+            <h4 style="color: var(--primary); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Feature Highlights</h4>
+            <ul style=" color: var(--text); font-size: 1.05rem;">
                 <li><strong>Role-based Access:</strong> Each user type has tailored permissions and dashboards.</li>
                 <li><strong>Validation Workflow:</strong> Automated checks and manual approvals for secure onboarding.</li>
                 <li><strong>Real-time Data:</strong> Inventory, orders, and visits update instantly for all users.</li>
@@ -64,11 +64,11 @@
         </div>
     </div>
     <div id="tab-content-kpi" class="tab-content" style="display: none;">
-        <h2 style="color: var(--secondary); font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">System Flow KPIs</h2>
+        <h2 style="color: var(--text); font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">System Flow KPIs</h2>
         <p style="color: #64748b;">Monitor key performance indicators for your system’s workflow, including active users, connections, validations, visits, and vendor status.</p>
          <!-- Info/Alert Box -->
          <div class="dashboard-info-box" style="background: #fff; border-radius: 10px; padding: 1.2rem 1.5rem; color: #16610E; font-size: 1.08rem; margin-top: 2rem;">
-            <i class="fas fa-info-circle" style="margin-right: 0.7rem; color: #2563eb;"></i>
+            <i class="fas fa-info-circle" style="margin-right: 0.7rem; color: #25eb35;"></i>
             <strong>Admin Tip:</strong> Use this dashboard to monitor your system's health, user engagement, and workflow progress. For more details, visit the Analytics or User Management pages.
         </div> <br><br>
         <!-- KPI Cards Row with Live Data and Colored Backgrounds -->
@@ -96,9 +96,9 @@
         </div>      
         <!-- Real-Time Active User Connections -->
         <div style="background: #e7f7fb; border-radius: 10px; padding: 1.2rem 1.5rem; color: #16610E; font-size: 1.08rem; margin-bottom: 2rem; border-left: 5px solid var(--primary, #2563eb);">
-            <i class="fas fa-link" style="margin-right: 0.7rem; color: #2563eb;"></i>
+            <i class="fas fa-link" style="margin-right: 0.7rem; color: black;"></i>
             <strong>Current Active User Connections:</strong>
-            <ul style="margin-top: 0.7rem; margin-bottom: 0; color: #2563eb;">
+            <ul style="margin-top: 0.7rem; margin-bottom: 0; color: black;">
                 @forelse($activeConnectionsList as $conn)
                     <li>
                         <strong>{{ $conn->sender->name ?? 'Unknown' }}</strong> ({{ $conn->sender->role ?? 'N/A' }})
@@ -114,10 +114,10 @@
         </div>
         <!-- Active Connections: Who Can Communicate With Whom? -->
         <div style="background: #f3f4f6; border-radius: 10px; padding: 1.5rem 2rem; margin-bottom: 2rem;">
-            <h3 style="color: var(--primary, #2563eb); font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">
+            <h3 style="color: var(--text); font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">
                 Active Connections: Who Can Communicate With Whom?
             </h3>
-            <ul style="color: #2563eb; font-size: 1.08rem; margin-bottom: 1.2rem;">
+            <ul style="color: var(--primary); font-size: 1.08rem; margin-bottom: 1.2rem;">
                 <li><strong>Vendors</strong>: Can communicate with <strong>Manufacturers, Retailers, and Admin</strong><br><span style="color: #64748b;">Vendors coordinate with manufacturers for supplies, retailers for sales, and analysts for demand forecasting.</span></li>
                 <li><strong>Manufacturers</strong>: Can communicate with <strong>Suppliers, Vendors, Analysts, and Admin</strong><br><span style="color: #64748b;">Manufacturers source raw materials from suppliers, work with vendors for distribution, and consult analysts for production planning.</span></li>
                 <li><strong>Suppliers</strong>: Can communicate with <strong>Manufacturers and Admin</strong><br><span style="color: #64748b;">Suppliers provide raw materials or products directly to manufacturers.</span></li>
@@ -129,7 +129,7 @@
         </div>
     </div>
     <div id="tab-content-user" class="tab-content" style="display: none;">
-        <h2 style="color: #ff8800; font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">User KPIs</h2>
+        <h2 style="color:var(--text); font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">User KPIs</h2>
         <p style="color: #64748b;">Track user-specific metrics such as registration trends, active/inactive ratios, and engagement rates. Use this data to optimize user onboarding and retention strategies.</p>
         <!-- KPI List and Pie Chart in a single row -->
         <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: stretch; margin-top: 2rem;">
@@ -137,8 +137,8 @@
             <ul style="flex: 1 1 320px; list-style: none; padding: 0; margin: 0; font-size: 1.15rem; align-self: center;">
                 <li style="margin-bottom: 1.3rem;"><span style="color: #2563eb;"><i class="fas fa-user"></i></span> <span style="color: #2563eb;">New registrations this month:</span> <strong>{{ $stats['newUsersThisMonth'] ?? '12' }}</strong></li>
                 <li style="margin-bottom: 1.3rem;"><span style="color: #22c55e;"><i class="fas fa-circle"></i></span> <span style="color: #22c55e;">Active users:</span> <strong>{{ $stats['activeUsers'] ?? '--' }}</strong></li>
-                <li style="margin-bottom: 1.3rem;"><span style="color: #f87171;"><i class="fas fa-circle"></i></span> <span style="color: #f87171;">Inactive users:</span> <strong>{{ $stats['inactiveUsers'] ?? '5' }}</strong></li>
-                <li style="margin-bottom: 1.3rem;"><span style="color: #2563eb;"><i class="fas fa-chart-bar"></i></span> <span style="color: #2563eb;">Engagement rate:</span> <strong>{{ $stats['engagementRate'] ?? '78%' }}</strong></li>
+                <li style="margin-bottom: 1.3rem;"><span style="color: #8171f8;"><i class="fas fa-circle"></i></span> <span style="color: #8171f8;">Inactive users:</span> <strong>{{ $stats['inactiveUsers'] ?? '5' }}</strong></li>
+                <li style="margin-bottom: 1.3rem;"><span style="color: #ba25eb;"><i class="fas fa-chart-bar"></i></span> <span style="color: #ba25eb;">Engagement rate:</span> <strong>{{ $stats['engagementRate'] ?? '78%' }}</strong></li>
             </ul>
             <!-- Pie Chart: Active vs Inactive Users -->
             <div style="flex: 1 1 380px; min-width: 320px; background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(37,99,235,0.06); padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">

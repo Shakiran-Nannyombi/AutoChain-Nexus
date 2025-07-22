@@ -8,11 +8,14 @@
         <button class="mobile-menu-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
         </button>
-        <h1 class="dashboard-title" style="color: #0F2C67;">
+        <h1 class="dashboard-title" style="color: var(--text); font-size: 2rem; font-weight: 800; ">
              @yield('title', 'Vendor Dashboard')
         </h1>
     </div>
-    <div class="header-right">
+    <div class="header-right" style="display: flex; align-items: center;">
+        <button id="darkModeToggleDashboard" aria-label="Toggle dark mode" style="margin-left:0.7rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s; padding: 0; order: 99;">
+            <span id="darkModeIconDashboard">🌙</span>
+        </button>
         <form class="search-bar" method="GET" action="{{ url()->current() }}" id="vendorSearchForm" autocomplete="off" style="position:relative;">
             <i class="fas fa-search"></i>
             <input type="text" id="vendorSearchInput" name="q" placeholder="Search products, orders..." value="{{ request('q') }}" autocomplete="off">
@@ -68,10 +71,10 @@
             <div class="dropdown user-dropdown" id="vendorUserDropdown">
                 <div class="dropdown-user-info">
                     <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                        @if($user && isset($user->profile_photo) && $user->profile_photo)
-                            <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                        @if($user && isset($user->profile_picture) && $user->profile_picture)
+                            <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @else
-                            <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                            <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @endif
                     </div>
                     <div>
@@ -98,11 +101,14 @@
         <button class="mobile-menu-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
         </button>
-        <h1 class="dashboard-title" style="color: #0F2C67; font-size: 2.1rem; font-weight: 700;">
+        <h1 class="dashboard-title" style="color:var(--text); font-size: 2.1rem; font-weight: 700;">
             @yield('title', 'Manufacturer Dashboard')
         </h1>
     </div>
-    <div class="header-right">
+    <div class="header-right" style="display: flex; align-items: center;">
+        <button id="darkModeToggleDashboard" aria-label="Toggle dark mode" style="margin-left:0.7rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s; padding: 0; order: 99;">
+            <span id="darkModeIconDashboard">🌙</span>
+        </button>
         <form class="search-bar" method="GET" action="{{ url()->current() }}" id="manufacturerSearchForm" autocomplete="off" style="position:relative;">
             <i class="fas fa-search"></i>
             <input type="text" id="manufacturerSearchInput" name="q" placeholder="Search products, orders..." value="{{ request('q') }}" autocomplete="off">
@@ -179,10 +185,10 @@
             <div class="dropdown user-dropdown" id="manufacturerUserDropdown">
                 <div class="dropdown-user-info">
                     <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                        @if($user && isset($user->profile_photo) && $user->profile_photo)
-                            <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                        @if($user && isset($user->profile_picture) && $user->profile_picture)
+                            <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @else
-                            <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                            <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @endif
                     </div>
                     <div>
@@ -213,7 +219,10 @@
             @yield('title', 'Supplier Dashboard')
         </h1>
     </div>
-    <div class="header-right">
+    <div class="header-right" style="display: flex; align-items: center;">
+        <button id="darkModeToggleDashboard" aria-label="Toggle dark mode" style="margin-left:1rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s;">
+            <span id="darkModeIconDashboard">🌙</span>
+        </button>
         <form class="search-bar" method="GET" action="{{ url()->current() }}" id="supplierSearchForm" autocomplete="off" style="position:relative;">
             <i class="fas fa-search"></i>
             <input type="text" id="supplierSearchInput" name="q" placeholder="Search supplies, orders..." value="{{ request('q') }}" autocomplete="off">
@@ -269,10 +278,10 @@
             <div class="dropdown user-dropdown" id="supplierUserDropdown">
                 <div class="dropdown-user-info">
                     <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                        @if($user && isset($user->profile_photo) && $user->profile_photo)
-                            <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                        @if($user && isset($user->profile_picture) && $user->profile_picture)
+                            <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @else
-                            <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                            <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @endif
                     </div>
                     <div>
@@ -303,7 +312,10 @@
             Analyst Dashboard
         </h1>
     </div>
-    <div class="header-right">
+    <div class="header-right" style="display: flex; align-items: center;">
+        <button id="darkModeToggleDashboard" aria-label="Toggle dark mode" style="margin-left:1rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s;">
+            <span id="darkModeIconDashboard">🌙</span>
+        </button>
         <form class="search-bar" method="GET" action="{{ url()->current() }}" id="analystSearchForm" autocomplete="off" style="position:relative;">
             <i class="fas fa-search"></i>
             <input type="text" id="analystSearchInput" name="q" placeholder="Search reports, users..." value="{{ request('q') }}" autocomplete="off">
@@ -359,10 +371,10 @@
             <div class="dropdown user-dropdown" id="analystUserDropdown">
                 <div class="dropdown-user-info">
                     <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                        @if($user && isset($user->profile_photo) && $user->profile_photo)
-                            <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                        @if($user && isset($user->profile_picture) && $user->profile_picture)
+                            <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @else
-                            <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                            <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @endif
                     </div>
                     <div>
@@ -393,7 +405,10 @@
             @yield('title', 'Retailer Dashboard')
         </h1>
     </div>
-    <div class="header-right">
+    <div class="header-right" style="display: flex; align-items: center;">
+        <button id="darkModeToggleDashboard" aria-label="Toggle dark mode" style="margin-left:1rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s;">
+            <span id="darkModeIconDashboard">🌙</span>
+        </button>
         <form class="search-bar" method="GET" action="{{ url()->current() }}" id="retailerSearchForm" autocomplete="off" style="position:relative;">
             <i class="fas fa-search"></i>
             <input type="text" id="retailerSearchInput" name="q" placeholder="Search stock, sales, orders..." value="{{ request('q') }}" autocomplete="off">
@@ -449,10 +464,10 @@
             <div class="dropdown user-dropdown" id="retailerUserDropdown">
                 <div class="dropdown-user-info">
                     <div class="user-avatar" style="background: #e0e0e0; color: #333">
-                        @if($user && isset($user->profile_photo) && $user->profile_photo)
-                            <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                        @if($user && isset($user->profile_picture) && $user->profile_picture)
+                            <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @else
-                            <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
+                            <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" style="object-fit:cover; width:40px; height:40px; border-radius:50%; border:2px solid #e0e0e0;">
                         @endif
                     </div>
                     <div>
@@ -763,6 +778,36 @@ window.addEventListener('click', (event) => {
         retailerUserDropdown.classList.remove('open');
     }
 });
+
+// Sync dashboard header toggle icon and style with global dark mode
+(function() {
+    function setDarkModeIconDashboard(isDark) {
+        var icon = document.getElementById('darkModeIconDashboard');
+        var btn = document.getElementById('darkModeToggleDashboard');
+        if (icon && btn) {
+            if (isDark) {
+                icon.textContent = '☀️';
+                btn.style.background = 'var(--primary)';
+                btn.style.color = 'var(--background)';
+                btn.style.borderColor = 'var(--primary)';
+            } else {
+                icon.textContent = '🌙';
+                btn.style.background = 'var(--background)';
+                btn.style.color = 'var(--primary)';
+                btn.style.borderColor = 'var(--primary)';
+            }
+        }
+    }
+    function updateDashboardToggleIcon() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        setDarkModeIconDashboard(isDark);
+    }
+    document.getElementById('darkModeToggleDashboard')?.addEventListener('click', function() {
+        setTimeout(updateDashboardToggleIcon, 100);
+    });
+    updateDashboardToggleIcon();
+    window.addEventListener('storage', updateDashboardToggleIcon);
+})();
 </script> 
 @push('scripts')
 <script>

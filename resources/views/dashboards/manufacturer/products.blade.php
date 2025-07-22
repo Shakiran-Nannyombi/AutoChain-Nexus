@@ -9,7 +9,7 @@
 @section('content')
 <div class="content-card">
     <div class="products-header-row">
-        <h2 class="page-title" style="color: var(--primary);"><i class="fas fa-box"></i> Products Overview</h2>
+        <h2 class="page-title" style="color: var(--text); font-size: 2rem; font-weight: bold; margin-bottom: 0.2rem;"><i class="fas fa-box"></i> Products Overview</h2>
         <a href="{{ route('manufacturer.products.create') }}" class="button add-product-btn">+ Add Product</a>
     </div>
     <!-- Summary Stats Row -->
@@ -39,15 +39,15 @@
         <button type="submit" class="button search-btn" id="search-btn"><i class="fas fa-search"></i> Search</button>
     </form>
     <!-- Products Table -->
-    <table class="dashboard-table products-table" id="products-table">
+    <table class="dashboard-table products-table" id="products-table"> 
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th style="color: var(--text);">Name</th>
+                <th style="color: var(--text);">Category</th>
+                <th style="color: var(--text);">Price</th>
+                <th style="color: var(--text);">Stock</th>
+                <th style="color: var(--text);">Status</th>
+                <th style="color: var(--text);">Actions</th>
             </tr>
         </thead>
         <tbody>

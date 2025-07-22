@@ -19,7 +19,7 @@
 
 @section('content')
   <div class="content-card">
-    <h2 style="color: var(--primary) !important; font-size: 2rem; font-weight: bold; margin-bottom: 1.5rem;"><i class="fas fa-database"></i> Backups</h2>
+    <h2 style="color: var(--text) !important; font-size: 2rem; font-weight: bold; margin-bottom: 1.5rem;"><i class="fas fa-database"></i> Backups</h2>
     @if(session('success'))
         <div class="alert alert-success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
     @endif
@@ -29,39 +29,39 @@
 
     <!-- Backup Overview Cards -->
     <div class="stats-container mb-8">
-        <div class="stat-card">
+        <div class="stat-card" style="background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff;">
             <div>
-                <div class="stat-title">Total Backups</div>
-                <div class="stat-value">{{ count($backups) }}</div>
+                <div class="stat-title" style="color:#c7d2fe;">Total Backups</div>
+                <div class="stat-value" style="color:#fff;">{{ count($backups) }}</div>
             </div>
-            <div class="stat-icon blue">
+            <div class="stat-icon blue" style="color:#a5b4fc;">
                 <i class="fas fa-database"></i>
             </div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="background: linear-gradient(135deg, #a21caf, #6d28d9); color: #fff;">
             <div>
-                <div class="stat-title">Latest Backup</div>
-                <div class="stat-value">{{ count($backups) > 0 ? $backups[0]['date']->format('M d') : 'None' }}</div>
+                <div class="stat-title" style="color:#e9d5ff;">Latest Backup</div>
+                <div class="stat-value" style="color:#fff;">{{ count($backups) > 0 ? $backups[0]['date']->format('M d') : 'None' }}</div>
             </div>
-            <div class="stat-icon green">
+            <div class="stat-icon purple" style="color:#c4b5fd;">
                 <i class="fas fa-calendar-check"></i>
             </div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="background: linear-gradient(135deg, #ea580c, #be185d); color: #fff;">
             <div>
-                <div class="stat-title">Storage Used</div>
-                <div class="stat-value">{{ app('App\Http\Controllers\Admin\BackupController')->calculateTotalSize($backups) }}</div>
+                <div class="stat-title" style="color:#fed7aa;">Storage Used</div>
+                <div class="stat-value" style="color:#fff;">{{ app('App\\Http\\Controllers\\Admin\\BackupController')->calculateTotalSize($backups) }}</div>
             </div>
-            <div class="stat-icon yellow">
+            <div class="stat-icon orange" style="color:#fdba74;">
                 <i class="fas fa-hdd"></i>
             </div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="background: linear-gradient(135deg, #059669, #0e7490); color: #fff;">
             <div>
-                <div class="stat-title">Auto Backup</div>
-                <div class="stat-value">Daily</div>
+                <div class="stat-title" style="color:#99f6e4;">Auto Backup</div>
+                <div class="stat-value" style="color:#fff;">Daily</div>
             </div>
-            <div class="stat-icon light-green">
+            <div class="stat-icon green" style="color:#6ee7b7;">
                 <i class="fas fa-robot"></i>
             </div>
         </div>
@@ -70,17 +70,17 @@
     <!-- What is being backed up -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h2 style="font-size: 1.5rem; color: var(--secondary);">What Gets Backed Up?</h2>
+            <h2 style="font-size: 1.5rem; color: var(--primary);">What Gets Backed Up?</h2>
         </div>
         <div class="card-body">
-            <ul style="margin-bottom:1rem; font-size: 1.1rem;">
+            <ul style="margin-bottom:1rem;  color: var(--text);font-size: 1.1rem;">
                 <li><strong>Database:</strong> All tables and data in your main database.</li>
                 <li><strong>Application Files:</strong> All code, configuration, and resources (excluding <code>vendor/</code> and <code>node_modules/</code>).</li>
                 <li><strong>Storage Files:</strong> Uploaded files and user-generated content.</li>
             </ul>
             <form action="{{ route('admin.backups.create') }}" method="POST" style="margin-bottom:0;">
                 @csrf
-                <div style="display:flex; flex-wrap:wrap; gap:2rem; align-items:center; margin-bottom:1rem;">
+                <div style="  color: var(--text); display:flex; flex-wrap:wrap; gap:2rem; align-items:center; margin-bottom:1rem;">
                     <label><input type="checkbox" name="backup_database" value="1" checked> Database</label>
                     <label><input type="checkbox" name="backup_files" value="1" checked> Application Files</label>
                     <label><input type="checkbox" name="backup_storage" value="1" checked> Storage Files</label>

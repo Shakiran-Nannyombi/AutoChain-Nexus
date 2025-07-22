@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Send Checklist to Supplier')
+@section('title', 'Manufacturer Checklists')
 
 @section('sidebar-content')
     @include('dashboards.manufacturer.sidebar')
@@ -8,9 +8,9 @@
 
 @section('content')
 <div class="content-card">
-    <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;font-weight:bold;">
+    <h2 style="color: var(--text); font-size: 2rem; font-weight: bold; margin-bottom: 0.2rem;">
         <i class="fas fa-list-alt"></i> Send Checklist to Supplier
-    </h2>
+    </h2> <br>
     <form method="POST" action="{{ route('manufacturer.checklists.send') }}" id="checklist-form">
         @csrf
         <div style="margin-bottom: 1rem;">

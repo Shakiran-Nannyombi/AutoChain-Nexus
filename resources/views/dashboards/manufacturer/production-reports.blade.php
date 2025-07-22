@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="content-card">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-file-alt"></i> Production Reports</h2>
+        <h2 style="color: var(--text); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-file-alt"></i> Production Reports</h2>
         <!-- Filter, stats, and table content below -->
         <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem; margin-bottom: 2rem;">
             <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Filter Reports</h3>
@@ -43,7 +43,7 @@
         </div>
         <!-- Detailed Process Flow Table -->
         <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
-            <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Detailed Process Flow</h3>
+            <h3 style="color: var(--text); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Detailed Process Flow</h3>
             <div style="overflow-x:auto;">
                 <table style="width:100%; border-collapse: collapse;">
                     <thead style="background: #f8f8f8;">

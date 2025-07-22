@@ -49,11 +49,11 @@
         {{ session('warning') ?? $warning }}
       </div>
     @endif
-    <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700; display: flex; align-items: center;"><i class="fas fa-file-alt" style="margin-right: 0.7rem;"></i> Reports</h2>
+    <h2 style="color: var(--text); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700; display: flex; align-items: center;"><i class="fas fa-file-alt" style="margin-right: 0.7rem;"></i> Reports</h2>
     <div style="display: flex; flex-direction: row; gap: 2.5rem; flex-wrap: wrap; width: 100%;">
         <!-- Schedule a New Report -->
       <section style="flex: 1 1 380px; min-width: 340px; background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 2.5rem 2rem; margin-bottom: 0;">
-        <h3 style="color: var(--secondary); font-size: 1.6rem; font-weight: 600; margin-bottom: 1.5rem;">Schedule a New Report</h3>
+        <h3 style="color: black; font-size: 1.6rem; font-weight: 600; margin-bottom: 1.5rem;">Schedule a New Report</h3>
         <form action="{{ route('admin.reports.schedule') }}" method="POST" style="display: flex; flex-direction: column; gap: 1.2rem;">
                 @csrf
           <div>
@@ -98,13 +98,13 @@
                         <option value="monthly">Monthly</option>
                     </select>
                 </div>
-          <button type="submit" style="background: #f38d2d; color: #fff; border: none; border-radius: 8px; padding: 0.9rem 0; font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem; cursor: pointer; transition: background 0.2s;">Schedule Report</button>
+          <button type="submit" style="background: var(--primary); color: #fff; border: none; border-radius: 8px; padding: 0.9rem 0; font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem; cursor: pointer; transition: background 0.2s;">Schedule Report</button>
             </form>
       </section>
 
         <!-- Currently Scheduled Reports -->
       <section style="flex: 1 1 380px; min-width: 340px; background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); padding: 2.5rem 2rem; margin-bottom: 0;">
-        <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Currently Scheduled Reports</h3>
+        <h3 style="color: black; font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Currently Scheduled Reports</h3>
         <div style="display: flex; flex-direction: column; gap: 1.2rem;">
                 @forelse ($scheduledReports as $report)
             <div style="display: flex; justify-content: space-between; align-items: flex-start; background: #f8fafc; border-radius: 10px; padding: 1.2rem 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03); max-width: 100%; box-sizing: border-box; flex-wrap: wrap; margin-bottom: 1.2rem;">

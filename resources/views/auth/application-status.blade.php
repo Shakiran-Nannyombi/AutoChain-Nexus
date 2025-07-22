@@ -17,7 +17,7 @@
         <!-- Left: Illustration -->
         <div class="login-split-left">
             <div class="login-illustration-wrapper">
-                <div class="login-illustration-text">Check your application status</div>
+                <div class="login-illustration-text" style="color: var(--text);">Check your application status</div>
                 <div class="login-split-illustration">
                     <img src="{{ asset('images/status.png') }}" alt="Application Status Illustration" style="max-width: 420px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
                 </div>

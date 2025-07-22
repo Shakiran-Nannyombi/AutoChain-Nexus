@@ -12,7 +12,7 @@
 
 @section('content')
   <div class="content-card">
-    <h2 class="page-title" style="color: var(--primary, #16610E) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">
+    <h2 class="page-title" style="color: var(--text) !important; font-size: 1.8rem; margin-bottom: 1.5rem;">
         <i class="fas fa-users-cog"></i> User Management
     </h2>
     <!-- Stats Cards -->
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Search and Filter -->
-    <div style="background: #e9f0ff; border-radius: 14px; padding: 2rem 1.5rem 1.5rem 1.5rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(37,99,235,0.04);">
+    <div style="background: #e0fada; border-radius: 14px; padding: 2rem 1.5rem 1.5rem 1.5rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(37,99,235,0.04);">
         <h2 style="color: #15803d; font-size: 1.25rem; margin-bottom: 1rem; font-weight: 600;">Search & Filter Users</h2>
         <form id="filterForm" method="GET" action="" style="display: flex; gap: 1rem; align-items: center;">
             <input type="text" name="search" class="form-control" placeholder="Search by name, email, or company..." value="{{ request('search') }}" style="flex: 1; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.75rem 1rem; font-size: 1rem;">
@@ -87,7 +87,7 @@
 
     <!-- All Users List -->
     <div class="user-list-card">
-        <h2 class="card-title" style="color: var(--secondary) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-users"></i> All Users ({{ $users->count() }})</h2>
+        <h2 class="card-title" style="color: var(--text) !important; font-size: 1.8rem; margin-bottom: 1.5rem;"><i class="fas fa-users"></i> All Users ({{ $users->count() }})</h2>
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -104,13 +104,13 @@
                                 {{ $user->status == 'approved' ? 'Active' : 'Inactive' }}
                             </span>
                         </div>
-                        <div class="user-email">Email: {{ $user->email }}</div>
+                        <div class="user-email" style="color: var(--text)">Email: {{ $user->email }}</div>
                     </div>
                     <div class="user-info-secondary">
                         <div>Location: {{ $user->address ?? 'N/A' }}</div>
                         <div>Joined: {{ $user->created_at->format('Y-m-d') }}</div>
                         <div>Last Login: {{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->format('Y-m-d') : 'N/A' }}</div>
-                        <div>Segment: {{ $segmentNames[$user->segment] ?? 'Unsegmented' }}</div>
+                        <div>Segment: {{ $segmentNames[$user->segment] ?? 'segmented' }}</div>
                     </div>
                     <div class="user-actions">
                         <button class="btn-action btn-view" 

@@ -7,366 +7,175 @@
 @endsection
 
 @section('content')
-<div class="content-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin: 0;">
-            <i class="fas fa-file-invoice"></i> Orders to Manufacturers
-    </h2>
-        <a href="{{ route('vendor.retailer-orders.index') }}" class="button" style="background: #007bff; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600;">
-            <i class="fas fa-list"></i> View Retailer Orders
-        </a>
+<div class="content-card" style="background: #fafbfc; box-shadow: none;">
+    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--primary); letter-spacing: 0.01em;">Order Management</h1>
+    <div style="font-size: 1.1rem; color: #555; margin-bottom: 2.2rem;">Manage manufacturer orders and confirm retailer requests</div>
+    <!-- Stat Cards -->
+    <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+        <div style="flex:1; min-width: 180px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.2rem 1rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #2563eb;">
+            <div style="font-size: 1.3rem; font-weight: 700; color: #222;">{{ $totalModels ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.01rem; margin-top: 0.2rem;">Total Models</div>
+        </div>
+        <div style="flex:1; min-width: 180px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.2rem 1rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #10b981;">
+            <div style="font-size: 1.3rem; font-weight: 700; color: #222;">{{ $activeModels ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.01rem; margin-top: 0.2rem;">Active Models</div>
+        </div>
+        <div style="flex:1; min-width: 180px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.2rem 1rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #f59e0b;">
+            <div style="font-size: 1.3rem; font-weight: 700; color: #222;">{{ $totalInventory ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.01rem; margin-top: 0.2rem;">Total Inventory</div>
+        </div>
+        <div style="flex:1; min-width: 180px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.2rem 1rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #a21caf;">
+            <div style="font-size: 1.3rem; font-weight: 700; color: #222;">{{ $pendingOrders ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.01rem; margin-top: 0.2rem;">Pending Orders</div>
+        </div>
     </div>
-    
-    <!-- Order Form -->
-    <div class="order-form-container" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.4rem; font-weight: 700;">
-            <i class="fas fa-plus-circle"></i> Create New Order to Manufacturer
-        </h3>
-        
-        <form id="newOrderForm" method="POST" action="{{ route('vendor.orders.create') }}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-            @csrf
-            
-            <!-- Manufacturer Selection -->
-            <div class="form-group">
-                <label for="partner_id" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">Select Manufacturer</label>
-                <select id="partner_id" name="partner_id" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #d1d5db; font-size: 1rem; background: #f9fafb;">
-                    <option value="">Select Manufacturer</option>
-                    @foreach($manufacturers as $manufacturer)
-                        <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}{{ $manufacturer->company ? ' - ' . $manufacturer->company : '' }}</option>
-                    @endforeach
-                </select>
-            </div>
-            
-            <!-- Product Selection -->
-            <div class="form-group" id="product_selection" style="display: none;">
-                <label for="product_id" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">Select Product</label>
-                <select id="product_id" name="product_id" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #d1d5db; font-size: 1rem; background: #f9fafb;" disabled>
-                    <option value="">Select Product</option>
-                </select>
-            </div>
-            
-            <!-- Quantity -->
-            <div class="form-group" id="quantity_input" style="display: none;">
-                <label for="quantity" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">Quantity</label>
-                <input type="number" id="quantity" name="quantity" min="1" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #d1d5db; font-size: 1rem; background: #f9fafb;">
-            </div>
-            
-            <!-- Delivery Date -->
-            <div class="form-group" id="delivery_date_input" style="display: none;">
-                <label for="delivery_date" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">Expected Delivery Date</label>
-                <input type="date" id="delivery_date" name="delivery_date" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #d1d5db; font-size: 1rem; background: #f9fafb;">
-            </div>
-            
-            <!-- Special Instructions -->
-            <div class="form-group" style="grid-column: 1 / -1;">
-                <label for="special_instructions" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem; display: block;">Special Instructions (Optional)</label>
-                <textarea id="special_instructions" name="special_instructions" rows="3" placeholder="Any special requirements or notes..." style="width: 100%; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid #d1d5db; font-size: 1rem; background: #f9fafb; resize: vertical;"></textarea>
-            </div>
-            
-            <!-- Form Actions -->
-            <div class="form-actions" style="grid-column: 1 / -1; display: flex; gap: 1rem; justify-content: flex-end;">
-                <button type="button" id="cancelOrder" style="background: #6b7280; color: #fff; border: none; border-radius: 8px; padding: 0.8rem 2rem; font-size: 1rem; font-weight: 600; cursor: pointer;">Cancel</button>
-                <button type="submit" id="submitOrder" style="background: var(--primary); color: #fff; border: none; border-radius: 8px; padding: 0.8rem 2rem; font-size: 1rem; font-weight: 600; cursor: pointer;">Create Order</button>
-            </div>
-        </form>
+    <!-- Real-time Stock Levels -->
+    <div style="background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem; margin-bottom: 2.5rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem; color: #222; display: flex; align-items: center;"><i class="fas fa-cube" style="margin-right: 0.7rem;"></i> Real-time Stock Levels</h3>
+        <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+            @foreach($products as $product)
+                <div style="flex:1; min-width: 180px; background: #fafbfc; border-radius: 10px; border: 1px solid #e5e7eb; padding: 1.1rem 1rem; margin-bottom: 1rem; position: relative;">
+                    <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem; display: flex; align-items: center;">
+                        {{ $product->name }}
+                        <span style="margin-left: 0.5rem; width: 10px; height: 10px; border-radius: 50%; display: inline-block; background:
+                            @if($product->stock > 20) #10b981
+                            @elseif($product->stock > 10) #f59e0b
+                            @else #ef4444 @endif;"></span>
+                    </div>
+                    <div style="font-size: 0.98rem; color: #444;">Available: <b>{{ $product->stock }}</b></div>
+                    <div style="font-size: 0.98rem; color: #444;">Reserved: <b>{{ $product->reserved ?? 0 }}</b></div>
+                    <div style="font-size: 0.98rem; color: #444;">Total: <b>{{ $product->stock + ($product->reserved ?? 0) }}</b></div>
+                    @if($product->stock < 10)
+                        <div style="color: #ef4444; font-size: 0.95rem; margin-top: 0.4rem;"><i class="fas fa-exclamation-triangle"></i> Reorder needed</div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
     </div>
-    <div id="orderFormMessage" style="grid-column: 1 / -1; margin-top: 1rem; font-weight: 600;"></div>
-    
-    <!-- Orders Table -->
-    <h3 style="margin-top:2rem; color:var(--primary); font-size:1.3rem;">Your Orders to Manufacturers</h3>
-    <table class="order-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Manufacturer</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th>Ordered At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($orders as $order)
-                <tr>
-                    <td>{{ $order->id }}</td>
-                    <td>{{ $order->manufacturer->name ?? 'Unknown' }}</td>
-                    <td>{{ $order->product_name ?? $order->product }}</td>
-                    <td>{{ $order->quantity }}</td>
-                    <td>{{ ucfirst($order->status) }}</td>
-                    <td>{{ $order->ordered_at ? \Carbon\Carbon::parse($order->ordered_at)->format('Y-m-d') : '' }}</td>
-                    <td>
-                        <form method="POST" action="{{ route('vendor.orders.destroy', $order->id) }}" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="button button-red" onclick="return confirm('Delete this order?')">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr><td colspan="7" class="text-center">No orders found.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <!-- Tabs for Retailer/Manufacturer Orders -->
+    <div style="margin-bottom: 2.5rem;">
+        <div style="display: flex; gap: 1.5rem; margin-bottom: 1.2rem;">
+            <button class="tab-link active" data-tab="retailer-orders" style="padding: 0.7rem 2rem; border: none; border-radius: 8px; background: var(--primary); color: #fff; font-weight: 600; cursor: pointer;">Retailer Orders</button>
+            <button class="tab-link" data-tab="manufacturer-orders" style="padding: 0.7rem 2rem; border: none; border-radius: 8px; background: #f5f5f5; color: var(--primary); font-weight: 600; cursor: pointer;">Manufacturer Orders</button>
+        </div>
+        <div id="retailer-orders" class="tab-content active">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; color: #222;">Pending Retailer Orders</h3>
+            <table style="width: 100%; border-collapse: collapse; background: #fff;">
+                <thead>
+                    <tr style="background: #f8fafc; color: #222; font-size: 1.05rem;">
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Order ID</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Retailer</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Model</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Quantity</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Value</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Status</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Ordered At</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($retailerOrders as $order)
+                        <tr>
+                            <td>RO-{{ str_pad($order->id, 3, '0', STR_PAD_LEFT) }}</td>
+                            <td>{{ $order->retailer->name ?? 'N/A' }}</td>
+                            <td>{{ $order->car_model }}</td>
+                            <td>{{ $order->quantity }}</td>
+                            <td>Shs {{ number_format($order->total_amount) }}</td>
+                            <td>
+                                <span style="font-weight: 700; color:
+                                    @if($order->status === 'pending') #ef4444
+                                    @elseif($order->status === 'confirmed') #f59e0b
+                                    @elseif($order->status === 'shipped') #3b82f6
+                                    @elseif($order->status === 'delivered') #10b981
+                                    @else #222 @endif;">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
+                            <td>{{ $order->ordered_at ? \Carbon\Carbon::parse($order->ordered_at)->diffForHumans() : 'N/A' }}</td>
+                            <td>
+                                <button style="background: #10b981; color: #fff; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; margin-right: 0.3rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button style="background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; margin-right: 0.3rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                                <button style="background: #f3f4f6; color: #222; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="8" class="text-center">No retailer orders found.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div id="manufacturer-orders" class="tab-content" style="display:none;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; color: #222;">Manufacturer Orders</h3>
+            <table style="width: 100%; border-collapse: collapse; background: #fff;">
+                <thead>
+                    <tr style="background: #f8fafc; color: #222; font-size: 1.05rem;">
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Order ID</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Manufacturer</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Product</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Quantity</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Status</th>
+                        <th style="padding: 0.8rem 0.5rem; text-align: left;">Ordered At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($manufacturerOrders as $order)
+                        <tr>
+                            <td>MO-{{ str_pad($order->id, 3, '0', STR_PAD_LEFT) }}</td>
+                            <td>{{ $order->manufacturer->name ?? 'Unknown' }}</td>
+                            <td>{{ $order->product_name ?? $order->product }}</td>
+                            <td>{{ $order->quantity }}</td>
+                            <td>{{ ucfirst($order->status) }}</td>
+                            <td>{{ $order->ordered_at ? \Carbon\Carbon::parse($order->ordered_at)->diffForHumans() : '' }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="text-center">No manufacturer orders found.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Product Grid -->
+    <div style="background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem; margin-bottom: 2.5rem;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1.2rem; color: #222; display: flex; align-items: center;"><i class="fas fa-th-large" style="margin-right: 0.7rem;"></i> Model Inventory</h3>
+        <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+            @foreach($products as $product)
+                <div style="flex:1; min-width: 220px; max-width: 260px; background: #fafbfc; border-radius: 10px; border: 1px solid #e5e7eb; padding: 1.1rem 1rem; margin-bottom: 1rem; position: relative; display: flex; flex-direction: column; align-items: flex-start;">
+                    <div style="width: 100%; height: 90px; background: #e5e7eb; border-radius: 8px; margin-bottom: 0.7rem; display: flex; align-items: center; justify-content: center;">
+                        <img src="{{ $product->image_url ?? asset('images/car1.png') }}" alt="{{ $product->name }}" style="max-width: 80px; max-height: 70px; object-fit: contain;">
+                    </div>
+                    <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.2rem;">{{ $product->name }}</div>
+                    <div style="font-size: 0.98rem; color: #444; margin-bottom: 0.2rem;">{{ $product->category }}</div>
+                    <div style="font-size: 1.05rem; font-weight: 600; color: #2563eb; margin-bottom: 0.2rem;">Shs {{ number_format($product->price) }}</div>
+                    <div style="font-size: 0.98rem; color: #444; margin-bottom: 0.2rem;">Inventory: <b>{{ $product->stock }}</b></div>
+                    <div style="font-size: 0.98rem; color: #444; margin-bottom: 0.2rem;">Orders: <b>{{ $retailerOrders->where('car_model', $product->name)->count() }}</b></div>
+                    <div style="font-size: 0.98rem; color: #444; margin-bottom: 0.2rem;">Status: <span style="color: {{ $product->stock < 10 ? '#ef4444' : '#10b981' }}; font-weight: 700;">{{ $product->stock < 10 ? 'Low' : 'Active' }}</span></div>
+                </div>
+            @endforeach
+        </div>
+    </div>
 </div>
-
-<style>
-.order-table {
-    width: 100%; border-collapse: collapse; margin-bottom: 1.2rem; background: #fff; border-radius: 10px; overflow: hidden;
-}
-.order-table th, .order-table td {
-    padding: 0.7rem 0.8rem; text-align: left; border-bottom: 1px solid #f0f0f0;
-}
-.order-table th { background: #f8f8f8; color: var(--primary); font-weight: 700; }
-.order-table tr:last-child td { border-bottom: none; }
-.button { padding: 0.4rem 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
-.button-red { background: #dc3545; color: white; }
-</style>
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing order form...');
-    
-    // Sample data for products
-    const products = [
-        { id: 1, name: 'Toyota Corolla 2022', category: 'Sedan', price: 22000 },
-        { id: 2, name: 'Honda CR-V 2023', category: 'SUV', price: 28000 },
-        { id: 3, name: 'Ford F-150', category: 'Truck', price: 35000 },
-        { id: 4, name: 'BMW 3 Series', category: 'Sedan', price: 41000 }
-    ];
-    
-    // Get form elements
-        const partnerSelect = document.getElementById('partner_id');
-    const productSelection = document.getElementById('product_selection');
-    const productSelect = document.getElementById('product_id');
-    const quantityInput = document.getElementById('quantity_input');
-    const deliveryDateInput = document.getElementById('delivery_date_input');
-    const submitOrderBtn = document.getElementById('submitOrder');
-    const cancelOrderBtn = document.getElementById('cancelOrder');
-    
-    console.log('Form elements found:', {
-        partnerSelect: !!partnerSelect,
-        productSelection: !!productSelection,
-        productSelect: !!productSelect,
-        quantityInput: !!quantityInput,
-        deliveryDateInput: !!deliveryDateInput,
-        submitOrderBtn: !!submitOrderBtn,
-        cancelOrderBtn: !!cancelOrderBtn
-    });
-    
-    // Manufacturer selection handler
-    if (partnerSelect) {
-        partnerSelect.addEventListener('change', function() {
-        const partnerId = this.value;
-        // Clear previous options
-            if (productSelect) {
-        productSelect.innerHTML = '<option value="">Select Product</option>';
-                productSelect.disabled = true;
-            }
-        if (partnerId) {
-                if (productSelection) productSelection.style.display = 'block';
-                // Fetch products for this manufacturer
-                fetch(`/vendor/products/by-manufacturer/${partnerId}`)
-                    .then(res => res.json())
-                    .then(products => {
-                        if (products.length > 0) {
-                            productSelect.disabled = false;
-            products.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.id;
-                                option.textContent = `${product.name} (${product.category}) - $${product.price}`;
-                productSelect.appendChild(option);
-            });
-        } else {
-                            productSelect.disabled = true;
-                        }
-                    });
-            } else {
-                if (productSelection) productSelection.style.display = 'none';
-                productSelect.disabled = true;
-            hideFormFieldsAfterProduct();
-        }
-            checkOrderFormValidity();
-    });
-    }
-    
-    // Product selection handler
-    if (productSelect) {
-        productSelect.addEventListener('change', function() {
-            console.log('Product changed to:', this.value);
-        const productId = this.value;
-        
-        if (productId) {
-                console.log('Showing quantity and delivery date inputs');
-                if (quantityInput) quantityInput.style.display = 'block';
-                if (deliveryDateInput) deliveryDateInput.style.display = 'block';
-                if (submitOrderBtn) submitOrderBtn.style.display = 'inline-block';
-        } else {
-                console.log('Hiding quantity and delivery date inputs');
-            hideFormFieldsAfterProduct();
-        }
-            checkOrderFormValidity();
-    });
-    }
-    
-    // Cancel button handler
-    if (cancelOrderBtn) {
-        cancelOrderBtn.addEventListener('click', function() {
-            console.log('Cancel button clicked');
-        resetOrderForm();
-    });
-    }
-    
-    // Form submission handler
-    const newOrderForm = document.getElementById('newOrderForm');
-    if (newOrderForm) {
-        newOrderForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-            console.log('Form submitted');
-        const form = this;
-        const formData = new FormData(form);
-        const messageDiv = document.getElementById('orderFormMessage');
-            
-            // Add order_type to form data
-            formData.append('order_type', 'manufacturer');
-            
-            if (submitOrderBtn) {
-                submitOrderBtn.disabled = true;
-                submitOrderBtn.textContent = 'Creating...';
-            }
-            if (messageDiv) {
-        messageDiv.textContent = '';
-        messageDiv.style.color = '';
-            }
-
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                'Accept': 'application/json'
-            },
-            body: formData
-        })
-        .then(async res => {
-            const data = await res.json();
-            if (res.ok && data.success) {
-                    if (messageDiv) {
-                messageDiv.textContent = data.message;
-                messageDiv.style.color = 'green';
-                    }
-                form.reset();
-                hideAllFormFields();
-                    // Reload the page to show the new order
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-            } else if (data.errors) {
-                // Laravel validation errors
-                    if (messageDiv) {
-                messageDiv.textContent = Object.values(data.errors).flat().join(' ');
-                messageDiv.style.color = 'red';
-                    }
-            } else {
-                    if (messageDiv) {
-                messageDiv.textContent = data.message || 'Failed to create order.';
-                messageDiv.style.color = 'red';
-                    }
-            }
-        })
-            .catch((error) => {
-                console.error('Form submission error:', error);
-                if (messageDiv) {
-            messageDiv.textContent = 'Server error. Please try again.';
-            messageDiv.style.color = 'red';
-                }
-        })
-        .finally(() => {
-                if (submitOrderBtn) {
-                    submitOrderBtn.disabled = false;
-                    submitOrderBtn.textContent = 'Create Order';
-                }
-            });
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            tabLinks.forEach(l => l.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            tabContents.forEach(c => c.style.display = 'none');
+            this.classList.add('active');
+            const tab = document.getElementById(this.dataset.tab);
+            tab.classList.add('active');
+            tab.style.display = '';
         });
-    }
-    
-    // Enable/disable Create Order button based on required fields
-    function checkOrderFormValidity() {
-        const partnerId = partnerSelect ? partnerSelect.value : '';
-        const productId = productSelect ? productSelect.value : '';
-        const quantity = quantityInput ? quantityInput.querySelector('input')?.value : '';
-        const deliveryDate = deliveryDateInput ? deliveryDateInput.querySelector('input')?.value : '';
-        
-        console.log('Form validity check:', { partnerId, productId, quantity, deliveryDate });
-        
-        if (submitOrderBtn) {
-            if (partnerId && productId && quantity && deliveryDate) {
-                submitOrderBtn.disabled = false;
-                submitOrderBtn.style.opacity = 1;
-                submitOrderBtn.style.cursor = 'pointer';
-                console.log('Form is valid, enabling submit button');
-        } else {
-                submitOrderBtn.disabled = true;
-                submitOrderBtn.style.opacity = 0.6;
-                submitOrderBtn.style.cursor = 'not-allowed';
-                console.log('Form is invalid, disabling submit button');
-            }
-        }
-    }
-
-    // Attach input listeners
-    const inputIds = ['partner_id', 'product_id', 'quantity', 'delivery_date'];
-    inputIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', checkOrderFormValidity);
-            console.log('Added input listener for:', id);
-        } else {
-            console.log('Element not found:', id);
-        }
     });
-    
-    // Initial form validity check
-    checkOrderFormValidity();
-
-    function hideAllFormFields() {
-        console.log('Hiding all form fields');
-        if (productSelection) productSelection.style.display = 'none';
-        hideFormFieldsAfterProduct();
-        // Always show Create and Cancel buttons
-        if (submitOrderBtn) submitOrderBtn.style.display = 'inline-block';
-        if (cancelOrderBtn) cancelOrderBtn.style.display = 'inline-block';
-        checkOrderFormValidity();
-    }
-
-    function hideFormFieldsAfterProduct() {
-        console.log('Hiding fields after product');
-        if (quantityInput) quantityInput.style.display = 'none';
-        if (deliveryDateInput) deliveryDateInput.style.display = 'none';
-        // Always show Create and Cancel buttons
-        if (submitOrderBtn) submitOrderBtn.style.display = 'inline-block';
-        if (cancelOrderBtn) cancelOrderBtn.style.display = 'inline-block';
-    }
-
-    function resetOrderForm() {
-        console.log('Resetting order form');
-        if (newOrderForm) newOrderForm.reset();
-        hideAllFormFields();
-        // Always show Create and Cancel buttons
-        if (submitOrderBtn) submitOrderBtn.style.display = 'inline-block';
-        if (cancelOrderBtn) cancelOrderBtn.style.display = 'inline-block';
-        checkOrderFormValidity();
-    }
-
-    // Set minimum date for delivery date input
-    const deliveryDateInputElement = deliveryDateInput ? deliveryDateInput.querySelector('input') : null;
-    if (deliveryDateInputElement) {
-    const today = new Date().toISOString().split('T')[0];
-        deliveryDateInputElement.min = today;
-        console.log('Set minimum delivery date to:', today);
-    }
-
-    console.log('Order form initialization complete');
 });
 </script>
 @endpush

@@ -22,11 +22,11 @@
             @foreach($users as $user)
                 <li>
                     <a href="#" class="user-chat-link" data-user-id="{{ $user->id }}">
-                        @php $profilePhoto = $user->profile_photo ?? ($user->documents->where('document_type', 'profile_picture')->first()->file_path ?? null); @endphp
+                        @php $profilePhoto = $user->profile_picture ?? ($user->documents->where('document_type', 'profile_picture')->first()->file_path ?? null); @endphp
                         @if($profilePhoto)
                             <img src="{{ asset($profilePhoto) }}" class="avatar" alt="avatar">
                         @else
-                            <span class="avatar">{{ strtoupper(substr($user->name,0,1)) }}</span>
+                            <img src="{{ asset('images/profile/default.png') }}" class="avatar" alt="avatar">
                         @endif
                         <span class="user-name">{{ $user->name }}</span>
                     </a>

@@ -8,7 +8,8 @@
 
 @section('content')
     <div class="content-card">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-chart-bar"></i> Production Analytics</h2>
+        <h2 style="color: var(--text); font-size: 2rem; font-weight: bold; margin-bottom: 1rem;"><i class="fas fa-chart-bar"></i> Production Analytics</h2>
+        
         <!-- Summary Production Statistics -->
         <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
             <div style="flex:1; min-width:200px; background: linear-gradient(135deg, var(--primary), #0d3a07); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">

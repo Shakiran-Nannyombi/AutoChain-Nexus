@@ -27,15 +27,11 @@
             @foreach($users as $user)
                 <li data-role="{{ $user->role }}" style="list-style: none;">
                     <a href="#" class="user-chat-link" data-user-id="{{ $user->id }}" style="display: flex; align-items: center; gap: 12px; padding: 0.85rem 1.5rem; border-bottom: 1px solid #f3f4f6; text-decoration: none; color: #222; transition: background 0.2s; border-radius: 0;">
-                        @php $profilePhoto = $user->profile_photo ?? ($user->documents->where('document_type', 'profile_picture')->first()->file_path ?? null); @endphp
+                        @php $profilePhoto = $user->profile_picture ?? ($user->documents->where('document_type', 'profile_picture')->first()->file_path ?? null); @endphp
                         @if($profilePhoto)
                             <img src="{{ asset($profilePhoto) }}" class="avatar" alt="avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
                         @else
-                            @if($user->role === 'admin')
-                                <span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #fbbf24; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">{{ strtoupper(substr($user->name,0,1)) }}</span>
-                            @else
-                                <span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">{{ strtoupper(substr($user->name,0,1)) }}</span>
-                            @endif
+                            <img src="{{ asset('images/profile/default.png') }}" class="avatar" alt="avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
                         @endif
                         <div style="flex: 1;">
                             <span class="user-name" style="font-weight: 600; font-size: 1.05rem;">{{ $user->name }}</span>

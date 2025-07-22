@@ -12,184 +12,101 @@
         2 => 'High Value Customers',
         3 => 'occasional Customers',
     ];
+    $newOrdersCount = isset($realTimeOrders) ? $realTimeOrders->where('status', 'new')->count() : 0;
 @endphp
 
 @section('content')
-<div class="content-card vendor-dashboard-grid">
-    <div class="stat-boxes">
-        <div class="stat-box">
-            <div class="stat-content">
-                    <div>
-                    <div class="stat-value">{{ $activeProducts ?? 5 }}</div>
-                    <div class="stat-label">Active Car Models</div>
-                </div>
-                <i class="fas fa-car stat-icon"></i>
+<div class="content-card vendor-dashboard-grid" style="background: #fafbfc; box-shadow: none;">
+    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--primary); letter-spacing: 0.01em;">Welcome back, {{ Auth::user()->name ?? 'Vendor' }}.</h1>
+    <div style="font-size: 1.1rem; color: #555; margin-bottom: 2.2rem;">Here's what's happening with your business today.</div>
+    <!-- Stat Cards -->
+    <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #2563eb;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $activeProducts ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Active Car Models</div>
+        </div>
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #f59e0b;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $pendingOrders ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Pending Orders</div>
+        </div>
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #10b981;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $totalCustomers ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Retailer Customers</div>
+        </div>
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #a21caf;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">Shs {{ number_format($monthlyRevenue ?? 0, 2) }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Monthly Revenue</div>
+        </div>
+    </div>
+    <!-- Real-time Order Processing -->
+    <div style="background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 2rem 1.5rem; margin-bottom: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+            <div style="font-size: 1.35rem; font-weight: 700; color: #222; display: flex; align-items: center;">
+             Order Processing
+                @if($newOrdersCount > 0)
+                    <span style="background: #ef4444; color: #fff; font-size: 0.95rem; font-weight: 600; border-radius: 12px; padding: 0.2rem 0.8rem; margin-left: 1rem;">{{ $newOrdersCount }} New</span>
+                @endif
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.7rem;">
+                <input type="text" placeholder="Search orders..." style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.5rem 1rem; font-size: 1rem; min-width: 220px;">
+                <button style="background: #f3f4f6; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-size: 1.1rem; cursor: pointer;"><i class="fas fa-filter"></i></button>
             </div>
         </div>
-        <div class="stat-box secondary">
-            <div class="stat-content">
-                    <div>
-                    <div class="stat-value">{{ $pendingOrders ?? 3 }}</div>
-                    <div class="stat-label">Pending Orders from Retailers</div>
-                </div>
-                <i class="fas fa-shopping-cart stat-icon"></i>
-            </div>
-        </div>
-        <div class="stat-box primary-light">
-            <div class="stat-content">
-                    <div>
-                    <div class="stat-value">{{ $totalCustomers ?? 7 }}</div>
-                    <div class="stat-label">Retailer Customers</div>
-                </div>
-                <i class="fas fa-users stat-icon"></i>
-            </div>
-        </div>
-        <div class="stat-box accent">
-            <div class="stat-content">
-                    <div>
-                    <div class="stat-value">${{ $monthlyRevenue ?? '120,000' }}</div>
-                    <div class="stat-label">Monthly Revenue</div>
-                </div>
-                <i class="fas fa-dollar-sign stat-icon"></i>
-            </div>
-        </div>
-            </div>
-    <div class="dashboard-main-row">
-        <div class="dashboard-chart-card">
-            <h3 class="dashboard-section-title"><i class="fas fa-chart-line"></i> Revenue Report</h3>
-            <div id="vendorSalesChart" style="width: 100%; min-width: 320px; height: 260px;"></div>
-        </div>
-        <div class="dashboard-activity-card">
-            <h3 class="dashboard-section-title"><i class="fas fa-bell"></i> Recent Activity</h3>
-            <ul class="activity-list">
-                @forelse($recentActivities as $activity)
-                    <li>
-                        <span class="activity-dot success"></span>
-                        {{ $activity->activity }}
-                        @if($activity->details)
-                            <span class="activity-details">{{ $activity->details }}</span>
-                        @endif
-                        <span class="activity-time">{{ $activity->created_at->diffForHumans() }}</span>
-                    </li>
+        <table style="width: 100%; border-collapse: collapse; background: #fff;">
+            <thead>
+                <tr style="background: #f8fafc; color: #222; font-size: 1.05rem;">
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Order ID</th>
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Retailer</th>
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Model</th>
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Qty</th>
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Value</th>
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Status</th>
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Time</th>
+                    <th style="padding: 0.8rem 0.5rem; text-align: left;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($realTimeOrders as $order)
+                    <tr @if($order->status === 'new') style="background: #fef2f2;" @endif>
+                        <td>ORD-{{ str_pad($order->id, 3, '0', STR_PAD_LEFT) }}</td>
+                        <td>{{ $order->retailer->name ?? 'N/A' }}</td>
+                        <td>{{ $order->car_model }}</td>
+                        <td>{{ $order->quantity }}</td>
+                        <td>Shs {{ number_format($order->total_amount) }}</td>
+                        <td>
+                            @if($order->status === 'new')
+                                <span style="color: #ef4444; font-weight: 700;">New</span>
+                            @elseif($order->status === 'pending')
+                                <span style="color: #f59e0b; font-weight: 700;">Pending</span>
+                            @elseif($order->status === 'processing')
+                                <span style="color: #3b82f6; font-weight: 700;">Processing</span>
+                            @else
+                                <span>{{ ucfirst($order->status) }}</span>
+                            @endif
+                        </td>
+                        <td>{{ $order->created_at->diffForHumans() }}</td>
+                        <td>
+                            <button style="background: #10b981; color: #fff; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; margin-right: 0.3rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button style="background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; margin-right: 0.3rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                            <button style="background: #f3f4f6; color: #222; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <i class="fas fa-clock"></i> Delay
+                            </button>
+                        </td>
+                    </tr>
                 @empty
-                    <li>No recent activity.</li>
+                    <tr>
+                        <td colspan="8" style="text-align:center;">No orders found.</td>
+                    </tr>
                 @endforelse
-            </ul>
-        </div>
+            </tbody>
+        </table>
     </div>
-    <!-- Customer Segment Analytics Section -->
-    <div style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: var(--shadow); margin-top: 2rem;">
-        <h3 style="color: var(--deep-purple); margin-bottom: 1rem; font-size: 1.3rem;">
-            <i class="fas fa-users"></i> Customer Segment Distribution
-        </h3>
-        <div>
-            @if(isset($customerSegmentCounts) && count($customerSegmentCounts) > 0)
-                <ul style="list-style: none; padding: 0;">
-                    @foreach($customerSegmentCounts as $seg)
-                        <li style="margin-bottom: 0.5rem;">
-                            <strong>{{ $segmentNames[$seg->segment] ?? 'Unsegmented' }}:</strong> {{ $seg->count }} customers
-                        </li>
-                    @endforeach
-                </ul>
-            @else
-                <p>No segmentation data available.</p>
-            @endif
-                    </div>
-        @if(isset($segmentSummaries) && count($segmentSummaries) > 0)
-        <div style="margin-top: 2rem;">
-            <h4 style="color: var(--deep-purple);">Segment Summary Table</h4>
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background: #f0f0f0;">
-                        <th style="padding: 0.5rem; text-align: left;">Segment</th>
-                        <th style="padding: 0.5rem; text-align: left;">Avg. Total Spent</th>
-                        <th style="padding: 0.5rem; text-align: left;">Avg. Purchases</th>
-                        <th style="padding: 0.5rem; text-align: left;">Avg. Recency (days)</th>
-                        <th style="padding: 0.5rem; text-align: left;"># Customers</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($segmentSummaries as $summary)
-                    <tr>
-                        <td style="padding: 0.5rem;">{{ $segmentNames[$summary->segment] ?? 'Unsegmented' }}</td>
-                        <td style="padding: 0.5rem;">${{ number_format($summary->avg_total_spent, 2) }}</td>
-                        <td style="padding: 0.5rem;">{{ number_format($summary->avg_purchases, 2) }}</td>
-                        <td style="padding: 0.5rem;">{{ $summary->avg_recency !== null ? number_format($summary->avg_recency, 1) : 'N/A' }}</td>
-                        <td style="padding: 0.5rem;">{{ $summary->count }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-                </div>
-        @endif
-
-    <!-- Top Selling Products by Customer Segment -->
-    @if(isset($topProductsBySegment) && count($topProductsBySegment) > 0)
-        <div style="margin-top: 2rem;">
-            <h4 style="color: var(--deep-purple);">Top Selling Products by Customer Segment</h4>
-            @foreach([1,2,3] as $segment)
-                @php
-                    $segmentLabel = $segmentNames[$segment] ?? 'Unsegmented';
-                    $products = $topProductsBySegment[$segment] ?? collect();
-                @endphp
-                <div style="margin-bottom: 1.5rem;">
-                    <h5 style="color: var(--primary); margin-bottom: 0.7rem;">{{ $segmentLabel }}</h5>
-                    @if($products->count() > 0)
-                        <div class="row">
-                            @foreach($products as $product)
-                                <div class="col-md-3 mb-3">
-                                    <div class="bg-white p-3 rounded shadow-sm h-100 d-flex flex-column justify-content-between">
-                                        <h6 style="color: var(--primary); font-size: 1.05rem;">{{ $product->name }}</h6>
-                                        <div style="color: #666;">{{ $product->category ?? 'General' }}</div>
-                                        <div style="color: var(--accent); font-weight: 600;">${{ number_format($product->price, 2) }}</div>
-                                        <div style="color: #888; font-size: 0.95em;">Purchased {{ $product->segment_purchases_count ?? 0 }} times in this segment</div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div style="color: #888;">No data for this segment.</div>
-                    @endif
-                </div>
-            @endforeach
-        </div>
-    @endif
-                    </div>
-    <div class="dashboard-table-card">
-        <h3 class="dashboard-section-title"><i class="fas fa-star"></i> Best Selling Cars</h3>
-        <div class="table-responsive">
-            <table class="dashboard-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Car Model</th>
-                        <th>Manufacturer</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Units Sold</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($bestSellingCars as $car)
-                        <tr>
-                            <td>#{{ $car['id'] }}</td>
-                            <td>{{ $car['car_model'] }}</td>
-                            <td>{{ $car['manufacturer'] }}</td>
-                            <td>${{ number_format($car['price']) }}</td>
-                            <td>{{ $car['stock'] }}</td>
-                            <td>{{ $car['units_sold'] }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center">No sales data available.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        </div>
-    </div>
-@endsection 
+</div>
+@endsection
 
 @push('scripts')
 <!-- ECharts CDN -->
