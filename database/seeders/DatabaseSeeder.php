@@ -35,6 +35,9 @@ class DatabaseSeeder extends Seeder
             CustomerSegmentDemoSeeder::class, // Add this line
             VarietyCustomerPurchaseSeeder::class, // Add this line
             //VendorOrderSeeder::class,
+            ProcessFlowSeeder::class, // <-- Ensure this is included
+            VendorOrderSeeder::class, // <-- Add this to seed vendor sales data
+            DemandPredictionSeeder::class,
         ]);
 
         // Seed demo communications for active connections

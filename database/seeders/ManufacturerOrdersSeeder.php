@@ -54,10 +54,9 @@ class ManufacturerOrdersSeeder extends Seeder
             ],
         ]);
 
-        // Demo Vendor Orders (vendor_orders table)
+        // Enhanced Vendor Orders for Demand Prediction (12 months: last 6 of 2024, first 6 of 2025)
         $manufacturerUserId = DB::table('users')->where('role', 'manufacturer')->where('status', 'approved')->value('id');
         $vendorUserIds = DB::table('users')->where('role', 'vendor')->where('status', 'approved')->pluck('id');
-        // Car products and prices (copied from VendorOrderSeeder)
         $carProducts = [
             ['name' => 'Toyota Corolla', 'category' => 'Sedan', 'price' => 250000],
             ['name' => 'Honda Civic', 'category' => 'Sedan', 'price' => 240000],
@@ -72,25 +71,51 @@ class ManufacturerOrdersSeeder extends Seeder
         ];
         if ($manufacturerUserId && $vendorUserIds->count() > 0) {
             $orders = [];
-            foreach ($vendorUserIds as $i => $vendorId) {
-                $car = $carProducts[$i % count($carProducts)];
-                $quantity = rand(1, 10);
-                // Randomly assign status: 80% fulfilled, 20% cancelled
-                $status = (rand(1, 100) <= 80) ? 'fulfilled' : 'cancelled';
-                $orders[] = [
-                    'manufacturer_id' => $manufacturerUserId,
-                    'vendor_id' => $vendorId,
-                    'product' => $car['name'],
-                    'product_name' => $car['name'],
-                    'product_category' => $car['category'],
-                    'quantity' => $quantity,
-                    'unit_price' => $car['price'],
-                    'total_amount' => $car['price'] * $quantity,
-                    'status' => $status,
-                    'ordered_at' => Carbon::now()->subDays(rand(1, 10)),
-                    'created_at' => Carbon::now()->subDays(rand(1, 10)),
-                    'updated_at' => Carbon::now()->subDays(rand(1, 10)),
-                ];
+            // Last 6 months of 2024
+            for ($m = 7; $m <= 12; $m++) {
+                foreach ($carProducts as $car) {
+                    $vendorId = $vendorUserIds[rand(0, $vendorUserIds->count() - 1)];
+                    $quantity = rand(2, 15);
+                    $status = 'fulfilled';
+                    $orderDate = Carbon::create(2024, $m, 15, 12, 0, 0);
+                    $orders[] = [
+                        'manufacturer_id' => $manufacturerUserId,
+                        'vendor_id' => $vendorId,
+                        'product' => $car['name'],
+                        'product_name' => $car['name'],
+                        'product_category' => $car['category'],
+                        'quantity' => $quantity,
+                        'unit_price' => $car['price'],
+                        'total_amount' => $car['price'] * $quantity,
+                        'status' => $status,
+                        'ordered_at' => $orderDate,
+                        'created_at' => $orderDate,
+                        'updated_at' => $orderDate,
+                    ];
+                }
+            }
+            // First 6 months of 2025
+            for ($m = 1; $m <= 6; $m++) {
+                foreach ($carProducts as $car) {
+                    $vendorId = $vendorUserIds[rand(0, $vendorUserIds->count() - 1)];
+                    $quantity = rand(2, 15);
+                    $status = 'fulfilled';
+                    $orderDate = Carbon::create(2025, $m, 15, 12, 0, 0);
+                    $orders[] = [
+                        'manufacturer_id' => $manufacturerUserId,
+                        'vendor_id' => $vendorId,
+                        'product' => $car['name'],
+                        'product_name' => $car['name'],
+                        'product_category' => $car['category'],
+                        'quantity' => $quantity,
+                        'unit_price' => $car['price'],
+                        'total_amount' => $car['price'] * $quantity,
+                        'status' => $status,
+                        'ordered_at' => $orderDate,
+                        'created_at' => $orderDate,
+                        'updated_at' => $orderDate,
+                    ];
+                }
             }
             DB::table('vendor_orders')->insert($orders);
         }
