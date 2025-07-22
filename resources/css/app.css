@@ -3,19 +3,31 @@
 @tailwind utilities;
 
 :root {
-    --primary: #16610E;
-    --primary-light: #82d48a;
-    --secondary: #F97A00;
-    --accent: #FED16A;
-    --text-dark: #222;
-    --text-light: #666;
-    --background: #fff;
-    --text: #333333;
-    --text2: #FFF4A4;
+    --primary: #40ca74;
+    --secondary: #8cf0b1;
+    --accent: #45fd89;
+    --text: #0b0e0c;
+    --background: #f5faf7;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --success: #38c172;
     --danger: #e3342f;
     --warning: #ffed4a;
+}
+
+[data-theme="dark"] {
+    --primary: #35c06a;
+    --secondary: #0f7133;
+    --accent: #02bb46;
+    --text: #f1f4f2;
+    --background: #050a07;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --success: #38c172;
+    --danger: #e3342f;
+    --warning: #ffed4a;
+}
+
+html {
+    transition: background 0.3s, color 0.3s;
 }
 
 * {
@@ -40,8 +52,10 @@ body {
 /* Sidebar Styles */
 .sidebar {
     width: 300px; /* Increased from 280px for more space */
-    background: var(--primary);
-    color: var(--background);
+    background: var(--background);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    border-right: 3px solid var(--primary);
     position: fixed;
     height: 100vh;
     overflow-y: auto;
@@ -65,7 +79,7 @@ body {
 .sidebar-logo {
     font-size: 1.0rem;
     font-weight: bold;
-    color: var(--text2);
+    color: var(--primary);
 }
 
 .sidebar-subtitle {
@@ -113,7 +127,7 @@ body {
 .nav-item {
     display: block;
     padding: 0.55rem 1.2rem;
-    color: var(--background);
+    color: var(--text);
     text-decoration: none;
     transition: all 0.3s ease;
     border-left: 3px solid transparent;
@@ -123,11 +137,14 @@ body {
     text-overflow: ellipsis; /* Add ... if text is too long */
 }
 
-.nav-item:hover,
 .nav-item.active {
-    background: rgba(255,255,255,0.1);
-    border-left-color: var(--secondary);
-    color: var(--secondary);
+    color: var(--primary);
+    border-left-color: var(--primary);
+    background: rgba(64,202,116,0.08); /* subtle highlight for active */
+}
+
+.nav-item:hover:not(.active) {
+    color: var(--primary);
 }
 
 .nav-item i {
@@ -431,4 +448,90 @@ html, body {
 .order-table td:last-child, .order-table th:last-child {
     text-align: center;
     min-width: 140px;
+}
+
+/* === GLOBAL RESPONSIVE FIX FOR SMALL SCREENS === */
+@media (max-width: 700px) {
+  .dashboard-container,
+  .main-content,
+  .sidebar,
+  .content,
+  .content-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0.5rem !important;
+    height: auto !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+  .sidebar {
+    position: static !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    display: none !important;
+    z-index: 1000;
+  }
+  .sidebar.open {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 80vw !important;
+    max-width: 320px !important;
+    height: 100vh !important;
+    background: var(--background) !important;
+    box-shadow: var(--shadow) !important;
+    overflow-y: auto !important;
+  }
+  .sidebar-header, .sidebar-user, .sidebar-nav {
+    padding: 0.7rem 1rem !important;
+  }
+  .main-content {
+    margin-left: 0 !important;
+    padding: 0.7rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .content {
+    padding: 0.7rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .content-card {
+    padding: 1rem !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .header, .dashboard-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 0.7rem 1rem !important;
+    gap: 0.5rem !important;
+  }
+  .dashboard-title, .page-title {
+    font-size: 1.2rem !important;
+    padding: 0.2rem 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    word-break: break-word !important;
+  }
+  .header-right, .header-left {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  .search-bar {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-bottom: 0.7rem !important;
+  }
 }

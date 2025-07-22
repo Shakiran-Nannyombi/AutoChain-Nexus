@@ -1,17 +1,28 @@
 :root {
-    --primary: #16610E;
-    --primary-light: #82d48a;
-    --secondary: #F97A00;
-    --accent: #FED16A;
-    --text-dark: #222;
-    --text-light: #666;
-    --background: #fff;
-    --text: #333333;
-    --text2: #FFF4A4;
+    --primary: #40ca74;
+    --secondary: #8cf0b1;
+    --accent: #45fd89;
+    --text: #0b0e0c;
+    --background: #f5faf7;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --success: #38c172;
     --danger: #e3342f;
     --warning: #ffed4a;
+}
+[data-theme="dark"] {
+    --primary: #35c06a;
+    --secondary: #0f7133;
+    --accent: #02bb46;
+    --text: #f1f4f2;
+    --background: #050a07;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --success: #38c172;
+    --danger: #e3342f;
+    --warning: #ffed4a;
+}
+
+html {
+    transition: background 0.3s, color 0.3s;
 }
 
 /* User Management Page Styles */
@@ -34,7 +45,7 @@
 
 .stat-title {
     font-size: 0.9rem;
-    color: #6c757d;
+    color: var(--text);
     margin-bottom: 0.5rem;
 }
 
@@ -65,7 +76,7 @@
 .card-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--secondary);
+    color: #0e7636;
     margin-bottom: 1rem;
 }
 
@@ -78,13 +89,13 @@
 .filter-role {
     display: flex;
     align-items: center;
-    background: #f0f2f5;
+    background: var(--background);
     border-radius: 8px;
     padding: 0.5rem 1rem;
 }
 
 .filter-role i {
-    color: #6c757d;
+    color: var(--secondary);
     margin-right: 0.5rem;
 }
 
@@ -135,7 +146,7 @@
 
 .user-email {
     font-size: 0.9rem;
-    color: #6c757d;
+    color: var(--secondary);
 }
 
 .role-badge, .status-badge {
@@ -145,22 +156,22 @@
     font-weight: 500;
 }
 
-.role-badge { background-color: #e9f0ff; color: #2a6eea; }
-.role-supplier { background-color: #fff0e5; color: #ff9843; }
-.role-manufacturer { background-color: #f1edff; color: #6f42c1; }
-.role-vendor { background-color: #e5f6f2; color: #00a878; }
-.role-retailer { background-color: #e3f8ff; color: #17a2b8; }
-.role-analyst { background-color: #fdeeee; color: #dc3545; }
+.role-badge { background-color: var(--secondary); color: var(--primary); }
+.role-supplier { background-color: var(--background); color: var(--accent); }
+.role-manufacturer { background-color: var(--background); color: var(--primary); }
+.role-vendor { background-color: var(--background); color: var(--primary); }
+.role-retailer { background-color: var(--background); color: var(--primary); }
+.role-analyst { background-color: var(--background); color: var(--danger); }
 
 
 .status-badge.status-active {
-    background-color: #e9f6ec;
-    color: #28a745;
+    background-color: var(--success);
+    color: var(--background);
 }
 
 .status-badge.status-inactive {
-    background-color: #f8dfe1;
-    color: #dc3545;
+    background-color: var(--danger);
+    color: var(--background);
 }
 
 .user-actions {
@@ -170,27 +181,27 @@
 
 .btn-action {
     padding: 0.4rem 0.8rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--secondary);
     border-radius: 6px;
     background: var(--background);
     cursor: pointer;
     transition: all 0.2s;
 }
 .btn-action:hover {
-    background: #f8f9fa;
-    border-color: #c0c0c0;
+    background: var(--secondary);
+    border-color: var(--secondary);
 }
 .btn-action i {
     margin-right: 0.4rem;
 }
 
 .btn-delete {
-    color: var(--accent);
+    color: var(--danger);
 }
 .btn-delete:hover {
-    background: var(--accent);
+    background: var(--danger);
     color: var(--background);
-    border-color: var(--accent);
+    border-color: var(--danger);
 }
 
 /* User Validation Page Specifics */
@@ -201,18 +212,18 @@
 }
 
 .stat-card .stat-icon.yellow {
-    background-color: #fff8e1;
-    color: #f59e0b;
+    background-color: var(--warning);
+    color: var(--accent);
 }
 
 .stat-card .stat-icon.green {
-    background-color: #e9f6ec;
-    color: #28a745;
+    background-color: var(--success);
+    color: var(--background);
 }
 
 .stat-card .stat-icon.red {
-    background-color: #f8dfe1;
-    color: #dc3545;
+    background-color: var(--danger);
+    color: var(--background);
 }
 
 .application-card {
@@ -221,7 +232,7 @@
     border-radius: 12px;
     box-shadow: var(--shadow);
     margin-bottom: 1.5rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--secondary);
 }
 
 .application-header {
@@ -229,7 +240,7 @@
     justify-content: space-between;
     align-items: flex-start;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #f0f2f5;
+    border-bottom: 1px solid var(--secondary);
 }
 
 .company-info h3 {
@@ -245,9 +256,9 @@
     font-weight: 600;
 }
 
-.score-badge.score-high { background-color: #e9f6ec; color: #28a745; }
-.score-badge.score-medium { background-color: #fff8e1; color: #f59e0b; }
-.score-badge.score-low { background-color: #f8dfe1; color: #dc3545; }
+.score-badge.score-high { background-color: var(--success); color: var(--background); }
+.score-badge.score-medium { background-color: var(--warning); color: var(--accent); }
+.score-badge.score-low { background-color: var(--danger); color: var(--background); }
 
 
 .application-body {
@@ -429,6 +440,7 @@
 
 .rule-item {
     display: flex;
+    color: var(--text);
     justify-content: space-between;
     align-items: flex-start;
     padding: 1rem 0;
@@ -437,8 +449,13 @@
 .rule-item:last-child { border-bottom: none; }
 
 .rule-name { font-size: 1.1rem; }
-.rule-category { font-size: 0.85rem; color: #6c757d; margin: 0.2rem 0 0.5rem; }
-.rule-description { font-size: 0.95rem; }
+.rule-category { 
+    font-size: 0.85rem; 
+    color: var(--text);
+     margin: 0.2rem 0 0.5rem; }
+.rule-description { 
+    color: var(--text);
+    font-size: 0.95rem; }
 
 .rule-actions { display: flex; align-items: center; gap: 0.5rem; }
 
@@ -460,7 +477,7 @@
     cursor: pointer;
     transition: all 0.2s;
 }
-.btn-action-sm.btn-delete { color: var(--accent); }
+.btn-action-sm.btn-delete { color: var(--danger); }
 .btn-action-sm:hover { background: #f8f9fa; }
 
 /* Modal Styles */
@@ -1522,7 +1539,7 @@
 }
 .tab-link {
     font-weight: 600;
-    color: var(--primary);
+    color: #555;
     cursor: pointer;
     padding: 0.5rem 1.2rem;
     border-radius: 8px 8px 0 0;
@@ -1696,4 +1713,8 @@
     padding: 1.5rem 0.7rem;
     border-radius: 8px;
   }
+} 
+
+h2 {
+    color: var(--text);
 } 

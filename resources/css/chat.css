@@ -1,6 +1,32 @@
-body { background: #f5f7fa; }
+:root {
+    --primary: #40ca74;
+    --secondary: #8cf0b1;
+    --accent: #45fd89;
+    --text: #0b0e0c;
+    --background: #f5faf7;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --success: #38c172;
+    --danger: #e3342f;
+    --warning: #ffed4a;
+}
+[data-theme="dark"] {
+    --primary: #35c06a;
+    --secondary: #0f7133;
+    --accent: #02bb46;
+    --text: #f1f4f2;
+    --background: #050a07;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --success: #38c172;
+    --danger: #e3342f;
+    --warning: #ffed4a;
+}
+
+html {
+    transition: background 0.3s, color 0.3s;
+}
+body { background:var(--background); }
 .chat-outer-card {
-    background: #fff;
+    background: #e8f6e6;
     border-radius: 0;
     box-shadow: none;
     display: flex;
@@ -173,9 +199,4 @@ body { background: #f5f7fa; }
 .chat-input-area button svg {
     width: 28px;
     height: 28px;
-}
-
-html, body {
-    height: 100vh;
-    overflow-y: hidden;
 } 
