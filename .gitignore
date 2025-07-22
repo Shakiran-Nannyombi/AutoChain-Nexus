@@ -38,6 +38,8 @@ __pycache__/
 /.phpunit.cache
 /node_modules
 /public/build
+storage/framework/views/
+storage/logs/
 /public/hot
 /storage/*.key
    # Allow sample documents to be committed
@@ -77,5 +79,4 @@ __pycache__/
 !storage/app/public/
 !storage/app/public/sample_documents/
 !storage/app/public/sample_documents/**
-/storage/framework/views/
-/storage/logs/
+
