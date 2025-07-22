@@ -45,6 +45,20 @@ class VendorOrderController extends Controller
         ));
     }
 
+    // Show the manufacturer orders page for the vendor
+    public function manufacturerOrdersPage()
+    {
+        $vendorId = Auth::id();
+        $manufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->get();
+        $vendorProducts = \App\Models\Product::where('vendor_id', $vendorId)->get();
+        $vendorAddresses = \App\Models\Vendor::where('user_id', $vendorId)->pluck('address')->filter()->unique();
+        $manufacturerOrders = \App\Models\VendorOrder::where('vendor_id', $vendorId)
+            ->with('manufacturer')
+            ->orderByDesc('created_at')
+            ->get();
+        return view('dashboards.vendor.manufacturer-orders', compact('manufacturers', 'vendorProducts', 'vendorAddresses', 'manufacturerOrders'));
+    }
+
     // Get products for a specific manufacturer (AJAX endpoint)
     public function getManufacturerProducts($manufacturerId)
     {
@@ -112,7 +126,12 @@ class VendorOrderController extends Controller
             $manufacturer->notify(new \App\Notifications\ManufacturerNotification('New Order Received', 'You have received a new order from vendor ' . Auth::user()->name . '. Order ID: ' . $order->id));
         }
 
+        // If AJAX, return JSON. Otherwise, redirect with success message.
+        if ($request->ajax() || $request->wantsJson()) {
         return response()->json(['success' => true, 'message' => 'Order created successfully!', 'order' => $order]);
+        } else {
+            return redirect()->route('vendor.manufacturer-orders')->with('success', 'Order created successfully!');
+        }
     }
 
     // Update order status or details

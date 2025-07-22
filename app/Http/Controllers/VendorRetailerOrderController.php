@@ -30,11 +30,7 @@ class VendorRetailerOrderController extends Controller
             ->get(['id', 'name', 'company']);
         // Fetch only products for this vendor
         $vendorProducts = \App\Models\Product::where('vendor_id', $vendorId)->get();
-        // Also fetch manufacturer orders for the 'My Orders' tab
-        $manufacturerOrders = \App\Models\VendorOrder::where('vendor_id', $vendorId)
-            ->with('manufacturer')
-            ->orderByDesc('created_at')
-            ->get();
+        // Remove all manufacturer order logic from this controller. Only keep retailer order logic if needed.
         // Fetch vendor addresses (from vendors table, address column)
         $vendorAddresses = [];
         $vendor = \App\Models\Vendor::where('user_id', $vendorId)->first();
@@ -44,7 +40,7 @@ class VendorRetailerOrderController extends Controller
             $vendorAddresses = array_map('trim', $vendorAddresses);
             $vendorAddresses = array_filter($vendorAddresses);
         }
-        return view('dashboards.vendor.retailer-orders', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses'));
+        return view('dashboards.vendor.retailer-orders', compact('retailerOrders', 'manufacturers', 'vendorProducts', 'vendorAddresses'));
     }
 
     // Show a specific retailer order

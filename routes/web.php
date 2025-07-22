@@ -529,6 +529,8 @@ Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterL
     Route::post('/vendor-orders/{id}/reject', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'reject'])->name('manufacturer.vendor-orders.reject');
     Route::put('/vendor-orders/{id}/notes', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'updateNotes'])->name('manufacturer.vendor-orders.notes');
     Route::post('/vendor-orders/{id}/confirm', [App\Http\Controllers\ManufacturerVendorOrderController::class, 'confirm'])->name('manufacturer.vendor-orders.confirm');
+    Route::post('/vendor-orders/{id}/update-invoice', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'updateInvoice'])->name('manufacturer.vendor-orders.update-invoice');
+    Route::post('/vendor-orders/{id}/resend-invoice', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'resendInvoice'])->name('manufacturer.vendor-orders.resend-invoice');
     Route::get('/vendor-orders/products', [\App\Http\Controllers\ManufacturerVendorOrderController::class, 'getProducts'])->name('manufacturer.vendor-orders.products');
     Route::get('/vendor-orders/{id}/invoice-preview', [App\Http\Controllers\ManufacturerVendorOrderController::class, 'invoicePreview'])->name('manufacturer.vendor-orders.invoice-preview');
     
@@ -653,6 +655,7 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::post('/profile/password', [\App\Http\Controllers\VendorProfileController::class, 'updatePassword'])->name('vendor.profile.password');
     Route::post('/profile/documents', [\App\Http\Controllers\VendorProfileController::class, 'uploadDocuments'])->name('vendor.profile.documents');
     Route::get('/products/by-manufacturer/{manufacturerId}', [\App\Http\Controllers\VendorOrderController::class, 'getManufacturerProducts'])->name('vendor.products.by-manufacturer');
+    Route::get('/manufacturer-orders', [\App\Http\Controllers\VendorOrderController::class, 'manufacturerOrdersPage'])->name('vendor.manufacturer-orders');
 });
 
 // Retailer dashboard routes

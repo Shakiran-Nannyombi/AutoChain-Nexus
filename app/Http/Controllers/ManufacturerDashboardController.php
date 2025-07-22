@@ -499,7 +499,7 @@ class ManufacturerDashboardController extends Controller
         if ($vendorStatus && in_array($vendorStatus, ['fulfilled', 'cancelled'])) {
             $vendorOrdersQuery->where('status', $vendorStatus);
         }
-        $vendorOrders = $vendorOrdersQuery->get();
+        $vendorOrders = $vendorOrdersQuery->orderByDesc('created_at')->get();
         $productPrices = \DB::table('products')->pluck('price', 'name');
         return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'search', 'status', 'productPrices'));
     }

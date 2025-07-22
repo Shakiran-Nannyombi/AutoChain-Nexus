@@ -23,7 +23,7 @@ class VendorNotification extends Notification implements ShouldQueue
 
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     public function toDatabase($notifiable)
@@ -32,5 +32,13 @@ class VendorNotification extends Notification implements ShouldQueue
             'title' => $this->title,
             'message' => $this->message,
         ];
+    }
+
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage([
+            'title' => $this->title,
+            'message' => $this->message,
+        ]);
     }
 } 

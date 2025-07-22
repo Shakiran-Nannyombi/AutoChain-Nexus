@@ -2,7 +2,7 @@
     <i class="fas fa-store"></i> Control Panel
 </a>
 
-<a href="{{ route('vendor.retailer-orders.index') }}" class="nav-item {{ request()->is('vendor/retailer-orders*') ? 'active' : '' }}">
+<a href="{{ route('vendor.manufacturer-orders') }}" class="nav-item {{ request()->is('vendor/manufacturer-orders*') ? 'active' : '' }}">
     <i class="fas fa-list-check"></i> Orders
 </a>
 

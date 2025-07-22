@@ -58,16 +58,16 @@ class ManufacturerOrdersSeeder extends Seeder
         $manufacturerUserId = DB::table('users')->where('role', 'manufacturer')->where('status', 'approved')->value('id');
         $vendorUserIds = DB::table('users')->where('role', 'vendor')->where('status', 'approved')->pluck('id');
         $carProducts = [
-            ['name' => 'Toyota Corolla', 'category' => 'Sedan', 'price' => 250000],
-            ['name' => 'Honda Civic', 'category' => 'Sedan', 'price' => 240000],
-            ['name' => 'Ford F-150', 'category' => 'Truck', 'price' => 350000],
-            ['name' => 'BMW 3 Series', 'category' => 'Sedan', 'price' => 420000],
-            ['name' => 'Mercedes-Benz C-Class', 'category' => 'Sedan', 'price' => 450000],
-            ['name' => 'Audi A4', 'category' => 'Sedan', 'price' => 410000],
-            ['name' => 'Volkswagen Golf', 'category' => 'Hatchback', 'price' => 230000],
-            ['name' => 'Hyundai Sonata', 'category' => 'Sedan', 'price' => 220000],
-            ['name' => 'Kia K5', 'category' => 'Sedan', 'price' => 210000],
-            ['name' => 'Mazda 3', 'category' => 'Sedan', 'price' => 200000],
+            ['name' => 'Toyota Corolla', 'category' => 'Sedan', 'price' => 250000000],
+            ['name' => 'Honda Civic', 'category' => 'Sedan', 'price' => 240000000],
+            ['name' => 'Ford F-150', 'category' => 'Truck', 'price' => 350000000],
+            ['name' => 'BMW 3 Series', 'category' => 'Sedan', 'price' => 420000000],
+            ['name' => 'Mercedes-Benz C-Class', 'category' => 'Sedan', 'price' => 450000000],
+            ['name' => 'Audi A4', 'category' => 'Sedan', 'price' => 410000000],
+            ['name' => 'Volkswagen Golf', 'category' => 'Hatchback', 'price' => 230000000],
+            ['name' => 'Hyundai Sonata', 'category' => 'Sedan', 'price' => 220000000],
+            ['name' => 'Kia K5', 'category' => 'Sedan', 'price' => 210000000],
+            ['name' => 'Mazda 3', 'category' => 'Sedan', 'price' => 200000000],
         ];
         if ($manufacturerUserId && $vendorUserIds->count() > 0) {
             $orders = [];
@@ -126,6 +126,8 @@ class ManufacturerOrdersSeeder extends Seeder
             'vendor_id' => 2,
             'product' => 'Toyota Corolla',
             'quantity' => 3,
+            'unit_price' => 250000000, // Add unit_price
+            'total_amount' => 250000000 * 3, // Add total_amount
             'status' => 'pending',
             'ordered_at' => now(),
         ]);
@@ -134,6 +136,8 @@ class ManufacturerOrdersSeeder extends Seeder
             'vendor_id' => 3,
             'product' => 'Kia K5',
             'quantity' => 2,
+            'unit_price' => 210000000, // Add unit_price
+            'total_amount' => 210000000 * 2, // Add total_amount
             'status' => 'accepted',
             'ordered_at' => now()->subDay(),
         ]);
@@ -142,6 +146,8 @@ class ManufacturerOrdersSeeder extends Seeder
             'vendor_id' => 4,
             'product' => 'Ford F-150',
             'quantity' => 1,
+            'unit_price' => 350000000, // Add unit_price
+            'total_amount' => 350000000 * 1, // Add total_amount
             'status' => 'rejected',
             'ordered_at' => now()->subDays(2),
         ]);

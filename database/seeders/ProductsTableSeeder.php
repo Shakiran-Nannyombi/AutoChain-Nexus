@@ -5,30 +5,67 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class ProductsTableSeeder extends Seeder
 {
     public function run()
     {
-        $manufacturers = User::where('role', 'manufacturer')->get();
-        $products = [
-            ['name' => 'Toyota Corolla', 'price' => 250000.00, 'category' => 'Sedan', 'stock' => 3],
-            ['name' => 'Honda Civic', 'price' => 240000.00, 'category' => 'Sedan', 'stock' => 2],
-            ['name' => 'Ford F-150', 'price' => 350000.00, 'category' => 'Truck', 'stock' => 100],
-            ['name' => 'BMW 3 Series', 'price' => 420000.00, 'category' => 'Sedan', 'stock' => 1],
-            ['name' => 'Mercedes-Benz C-Class', 'price' => 450000.00, 'category' => 'Sedan', 'stock' => 0],
-            ['name' => 'Audi A4', 'price' => 410000.00, 'category' => 'Sedan', 'stock' => 100],
-            ['name' => 'Volkswagen Golf', 'price' => 230000.00, 'category' => 'Hatchback', 'stock' => 100],
-            ['name' => 'Hyundai Sonata', 'price' => 220000.00, 'category' => 'Sedan', 'stock' => 100],
-            ['name' => 'Kia K5', 'price' => 210000.00, 'category' => 'Sedan', 'stock' => 100],
-            ['name' => 'Mazda 3', 'price' => 200000.00, 'category' => 'Sedan', 'stock' => 100],
+        $carImages = [
+            'images/car1.png',
+            'images/car2.png',
+            'images/car3.png',
+            'images/car4.png',
+            'images/car5.png',
+            'images/car6.png',
+            'images/car7.png',
+            'images/car8.png',
+            'images/car9.png',
+            'images/car10.png',
         ];
+        $productNames = [
+            'Toyota Corolla', 'Honda Civic', 'Ford F-150', 'BMW 3 Series', 'Mercedes-Benz C-Class',
+            'Audi A4', 'Volkswagen Golf', 'Hyundai Sonata', 'Kia K5', 'Mazda 3'
+        ];
+        $categories = ['Sedan', 'Truck', 'Hatchback', 'SUV', 'Coupe', 'Convertible', 'Wagon', 'Van', 'Crossover', 'Sports Car'];
+        $prices = [250000000, 240000000, 350000000, 420000000, 450000000, 410000000, 230000000, 220000000, 210000000, 200000000];
+        $stocks = [15, 12, 36, 15, 31, 7, 87, 9, 20, 40];
+        $vendors = \App\Models\User::where('role', 'vendor')->get();
+        $manufacturers = \App\Models\User::where('role', 'manufacturer')->get();
         $insertData = [];
-        foreach ($manufacturers as $manufacturer) {
-            foreach ($products as $product) {
-                $insertData[] = array_merge($product, ['manufacturer_id' => $manufacturer->id]);
+        $productIndex = 0;
+        // Assign products to vendors
+        foreach ($vendors as $vendor) {
+            for ($i = 0; $i < count($carImages); $i++) {
+                $insertData[] = [
+                    'name' => $productNames[$i],
+                    'price' => $prices[$i],
+                    'category' => $categories[$i],
+                    'stock' => rand(100, 200),
+                    'image_url' => $carImages[$i],
+                    'vendor_id' => $vendor->id,
+                    'manufacturer_id' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
         }
-        Product::insert($insertData);
+        // Assign products to manufacturers
+        foreach ($manufacturers as $manufacturer) {
+            for ($i = 0; $i < count($carImages); $i++) {
+                $insertData[] = [
+                    'name' => $productNames[$i],
+                    'price' => $prices[$i],
+                    'category' => $categories[$i],
+                    'stock' => rand(100, 200),
+                    'image_url' => $carImages[$i],
+                    'vendor_id' => null,
+                    'manufacturer_id' => $manufacturer->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        DB::table('products')->insert($insertData);
     }
 } 

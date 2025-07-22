@@ -23,7 +23,7 @@ class ManufacturerNotification extends Notification implements ShouldQueue
 
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail', 'database', 'broadcast'];
     }
 
     public function toMail($notifiable)
@@ -31,6 +31,14 @@ class ManufacturerNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject($this->title)
             ->line($this->body);
+    }
+
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage([
+            'title' => $this->title,
+            'body' => $this->body,
+        ]);
     }
 
     public function toArray($notifiable)

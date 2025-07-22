@@ -14,17 +14,17 @@
     </div>
     <!-- Summary Stats Row -->
     <div class="products-stats-row">
-        <div class="stat-card mini dark-primary">
-            <div class="stat-label">Total Products</div>
-            <div class="stat-value">{{ $products->count() ?? 0 }}</div>
+        <div class="stat-card mini">
+            <div class="stat-label" style="color: black;">Total Products</div>
+            <div class="stat-value" style="color: black;">{{ $products->count() ?? 0 }}</div>
         </div>
-        <div class="stat-card mini dark-danger">
-            <div class="stat-label">Out of Stock</div>
-            <div class="stat-value">{{ $products->where('stock', '<', 100)->count() }}</div>
+        <div class="stat-card mini">
+            <div class="stat-label" style="color: black;">Out of Stock</div>
+            <div class="stat-value" style="color: black;">{{ $products->where('stock', '<', 100)->count() }}</div>
         </div>
-        <div class="stat-card mini dark-secondary">
-            <div class="stat-label">Categories</div>
-            <div class="stat-value">{{ $categoryCount ?? 0 }}</div>
+        <div class="stat-card mini">
+            <div class="stat-label" style="color: black;">Categories</div>
+            <div class="stat-value" style="color: black;">{{ $categoryCount ?? 0 }}</div>
         </div>
     </div>
     <!-- Search/Filter Bar -->

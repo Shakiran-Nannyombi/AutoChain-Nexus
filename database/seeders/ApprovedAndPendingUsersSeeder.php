@@ -1129,11 +1129,22 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 
         // Insert into vendors table for all approved vendors
         $approvedVendors = DB::table('users')->where('role', 'vendor')->where('status', 'approved')->get();
+        $carImages = [
+            'images/car1.png',
+            'images/car2.png',
+            'images/car3.png',
+            'images/car4.png',
+            'images/car5.png',
+            'images/car6.png',
+            'images/car7.png',
+            'images/car8.png',
+            'images/car9.png',
+            'images/car10.png',
+        ];
+        $productIndex = 0;
         foreach ($approvedVendors as $user) {
     if (is_null($user->segment)) {
-        // Set a default or skip this record
-        continue; // or set a default like 'general'
-        // $segment = 'general';
+                continue;
     } else {
         $segment = $user->segment;
     }
@@ -1152,8 +1163,6 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     'service_areas' => null,
     'contract_terms' => null,
     'segment' => $segment,
-
-    // Segment analytics fields
     'segment_name' => null,
     'total_orders' => 0,
     'total_quantity' => 0,
@@ -1162,11 +1171,9 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     'order_frequency' => 0,
     'fulfillment_rate' => 0,
     'cancellation_rate' => 0,
-
     'created_at' => now(),
     'updated_at' => now(),
 ]);
-
         }
 
         // Attach sample documents to pending users

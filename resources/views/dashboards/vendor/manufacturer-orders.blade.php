@@ -7,6 +7,20 @@
 @endsection
 
 @section('content')
+@if(session('success'))
+    <div class="alert alert-success" style="background: #d1fae5; color: #065f46; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-weight: 600;">
+        {{ session('success') }}
+    </div>
+@endif
+@if($errors->any())
+    <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+        <ul style="margin:0; padding-left:1.2rem;">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="content-card manufacturer-orders">
     <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--text); letter-spacing: 0.01em;"><i class="fas fa-shopping-cart"></i>Manufacturer Orders</h1>
     <div class="subtitle">Create new orders to manufacturers and review your order history.</div>
@@ -18,6 +32,7 @@
         <h3 class="section-title">Create New Order to Manufacturer</h3>
         <form id="newOrderForm" method="POST" action="{{ route('vendor.orders.create') }}" class="order-form">
             @csrf
+            <input type="hidden" name="order_type" value="manufacturer">
             <div class="form-group">
                 <label for="partner_id">Select Manufacturer</label>
                 <select id="partner_id" name="partner_id" required>
@@ -39,6 +54,10 @@
             <div class="form-group">
                 <label for="quantity">Quantity</label>
                 <input type="number" id="quantity" name="quantity" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="delivery_date">Delivery Date</label>
+                <input type="date" id="delivery_date" name="delivery_date" min="{{ date('Y-m-d') }}" required>
             </div>
             <div class="form-group">
                 <label for="delivery_point">Delivery Point</label>

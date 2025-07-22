@@ -57,7 +57,7 @@
                     <tr>
                         <td>
                             <div class="product-info">
-                                <img src="{{ $product->image_url ?? asset('images/car1.png') }}" alt="{{ $product->name }}" class="product-img">
+                                <img src="{{ asset($product->image_url ?? 'images/car1.png') }}" alt="{{ $product->name }}" class="product-img">
                                 <div>
                                     <div>{{ $product->name }}</div>
                                     <div class="product-id">CM-{{ str_pad($product->id, 3, '0', STR_PAD_LEFT) }}</div>
@@ -98,7 +98,7 @@
         <div class="products-grid">
             @foreach($products as $product)
                 <div class="product-card">
-                    <img src="{{ $product->image_url ?? asset('images/car1.png') }}" alt="{{ $product->name }}" class="product-img">
+                    <img src="{{ asset($product->image_url ?? 'images/car1.png') }}" alt="{{ $product->name }}" class="product-img">
                     <div class="product-name">{{ $product->name }}</div>
                     <div class="product-id">CM-{{ str_pad($product->id, 3, '0', STR_PAD_LEFT) }}</div>
                     <div class="product-category">{{ $product->category }}</div>
