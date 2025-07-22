@@ -26,7 +26,7 @@ class RetailerController extends Controller
         $retailerId = $user->id;
         $acceptedStock = RetailerStock::where('retailer_id', $retailerId)->where('status', 'accepted')->get();
         $sales = RetailerSale::where('retailer_id', $retailerId)->latest()->get();
-        $orders = RetailerOrder::where('retailer_id', $retailerId)->latest()->get();
+        $orders = RetailerOrder::where('user_id', $retailerId)->latest()->get();
 
         // Fetch notifications for the current user
         $unreadNotifications = ($user && is_object($user) && method_exists($user, 'unreadNotifications')) ? $user->unreadNotifications()->take(5)->get() : collect();
