@@ -19,6 +19,7 @@ class Product extends Model
         'stock',
         'vendor_id',
         'manufacturer_id',
+        'image_url',
     ];
     public function vendor()
     {
