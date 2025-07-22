@@ -345,6 +345,12 @@
             </header>
             @else
                 @include('layouts.partials.dashboard-header')
+                <!-- Add logout button for non-admin users (GET version) -->
+                <div style="position: absolute; top: 1.5rem; right: 2rem; z-index: 1000;">
+                    <a href="{{ route('logout') }}" class="btn btn-danger" style="padding: 0.5rem 1.2rem; font-size: 1rem;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
             @endif
             <!-- Content Area -->
             <div class="content">

@@ -52,11 +52,36 @@ class CustomerController extends Controller
             ->take(5)
             ->get();
         
+        // Get recommendations for the customer (if available)
+        $recommendations = collect();
+        $topSegmentProducts = collect();
+        $customer = null;
+        if (session()->has('customer_id')) {
+            $customer = Customer::find(session('customer_id'));
+            if ($customer) {
+                $recommendations = $customer->recommendProducts();
+                // Top selling products for the segment
+                $customerIdsInSegment = Customer::where('segment', $customer->segment)->pluck('id');
+                $topSegmentProducts = Product::whereHas('purchases', function ($query) use ($customerIdsInSegment) {
+                    $query->whereIn('customer_id', $customerIdsInSegment);
+                })
+                ->withCount(['purchases as segment_purchases_count' => function ($query) use ($customerIdsInSegment) {
+                    $query->whereIn('customer_id', $customerIdsInSegment);
+                }])
+                ->orderBy('segment_purchases_count', 'desc')
+                ->take(5)
+                ->get();
+            }
+        }
+        
         return view('dashboards.customer.index', compact(
             'retailers', 
-            'availableProducts',        'recentStockMovements',
+            'availableProducts',
+            'recentStockMovements',
             'marketStats',
-            'featuredProducts'
+            'featuredProducts',
+            'recommendations',
+            'topSegmentProducts'
         ));
     }
 
@@ -103,7 +128,7 @@ class CustomerController extends Controller
             ->get();
 
         // Only show retailers who have accepted stock for this product
-        $retailers = $retailerStocks->pluck('retailer')->unique('id')->values();
+        $retailers = $retailerStocks->pluck('retailer')->filter()->unique('id')->values();
         $retailerStocksGrouped = $retailerStocks->groupBy('retailer_id');
 
         return view('dashboards.customer.product-detail', compact('product', 'relatedProducts', 'retailerStocksGrouped', 'retailers'));

@@ -847,7 +847,7 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::get('/chats/{chat}/edit', [\App\Http\Controllers\ChatController::class, 'edit'])->name('chats.edit');
     Route::delete('/chats/{chat}', [\App\Http\Controllers\ChatController::class, 'destroy'])->name('chats.destroy');
     Route::get('/chats/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getChatMessages'])->name('chats.messages');
-    Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
+    // Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send'); // This line is removed as per the edit hint
     Route::get('/profile', [\App\Http\Controllers\VendorProfileController::class, 'edit'])->name('vendor.profile');
     Route::post('/profile', [\App\Http\Controllers\VendorProfileController::class, 'update'])->name('vendor.profile.update');
     Route::post('/profile/password', [\App\Http\Controllers\VendorProfileController::class, 'updatePassword'])->name('vendor.profile.password');
@@ -906,8 +906,13 @@ Route::middleware(['user_or_admin'])->group(function () {
     Route::delete('chats/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chats.destroyMessage');
     Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'chat'])->name('user.chat'); // Enable main chat page
     Route::get('/chats/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getChatMessages'])->name('chats.getMessages');
-    Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
+    // Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send'); // This line is removed as per the edit hint
 });
+
+// Public customer chat route (no auth required)
+Route::get('/customer/chat', [\App\Http\Controllers\ChatController::class, 'publicChat'])->name('customer.chat');
+// Public chat messages route for guests (must be before any middleware groups)
+Route::get('/chats/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getChatMessages'])->name('chats.getMessages.guest');
 
 Route::get('/vendor-segments/import', [\App\Http\Controllers\VendorAnalyticsController::class, 'importSegments'])->name('vendor.segments.import');
 Route::get('/vendor-segments/summary', [\App\Http\Controllers\VendorAnalyticsController::class, 'segmentationSummary'])->name('vendor.segments.summary');

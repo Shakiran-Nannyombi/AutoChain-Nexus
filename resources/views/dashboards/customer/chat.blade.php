@@ -26,10 +26,10 @@
         <ul class="chat-users-list" id="userList" style="flex: 1; overflow-y: auto; padding: 0; margin: 0; background: #f8fafc;">
             @foreach($users as $user)
                 <li data-role="{{ $user->role }}" style="list-style: none;">
-                    <a href="#" class="user-chat-link" data-user-id="{{ $user->id }}" style="display: flex; align-items: center; gap: 12px; padding: 0.85rem 1.5rem; border-bottom: 1px solid #f3f4f6; text-decoration: none; color: #222; transition: background 0.2s; border-radius: 0;">
+                    <a href="javascript:void(0)" class="user-chat-link" data-user-id="{{ $user->id }}" style="display: flex; align-items: center; gap: 12px; padding: 0.85rem 1.5rem; border-bottom: 1px solid #f3f4f6; text-decoration: none; color: #222; transition: background 0.2s; border-radius: 0;">
                         @php $profilePhoto = $user->profile_photo ?? ($user->documents->where('document_type', 'profile_picture')->first()->file_path ?? null); @endphp
                         @if($profilePhoto)
-                            <img src="{{ asset($profilePhoto) }}" class="avatar" alt="avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                            <img src="{{ asset($profilePhoto) }}" class="avatar" alt="avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;" onerror="this.onerror=null;this.src='{{ asset('images/profile.png') }}';">
                         @else
                             <span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">{{ strtoupper(substr($user->name,0,1)) }}</span>
                         @endif
@@ -100,6 +100,14 @@
         </div>
       </div>
       <form id="chat-input-form" class="chat-input-area" style="border-radius: 0 0 18px 18px; display: none; padding: 1rem; background: #fff; border-top: 1px solid #e5e7eb; position: sticky; bottom: 0; z-index: 10; box-shadow: 0 -2px 8px rgba(0,0,0,0.03);">
+        @if(!auth()->check())
+        <div class="mb-2">
+            <input type="text" name="guest_name" id="guest_name" class="form-control" placeholder="Your Name" required>
+        </div>
+        <div class="mb-2">
+            <input type="email" name="guest_email" id="guest_email" class="form-control" placeholder="Your Email (optional)">
+        </div>
+        @endif
         <!-- Emoji Picker Button -->
         <button type="button" id="emoji-btn" style="background: none; border: none; color: #888; font-size: 1.3rem; margin-right: 8px; cursor: pointer; transition: color 0.2s;" title="Add emoji">
           <i class="far fa-smile"></i>
@@ -145,202 +153,268 @@
 
 @push('scripts')
 <script>
-let selectedUserId = null;
-let selectedUserData = null;
-let currentUserId = '{{ auth()->id() ?? session('user_id') }}';
+document.addEventListener('DOMContentLoaded', function() {
+  let selectedUserId = null;
+  let selectedUserData = null;
+  let currentUserId = '{{ auth()->id() ?? session('user_id') }}';
 
-function formatTimestamp(ts) {
-  if (!ts) return '';
-  const d = new Date(ts);
-  if (isNaN(d)) return ts;
-  return d.toLocaleString(undefined, {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', hour12: true
-  });
-}
+  function formatTimestamp(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    if (isNaN(d)) return ts;
+    return d.toLocaleString(undefined, {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: true
+    });
+  }
 
-function renderMessages(messages, currentUserId) {
+  function renderMessages(messages, currentUserId) {
     let html = '';
     messages.forEach(msg => {
-        const messageId = msg.id || Math.random().toString(36).substr(2, 9);
-        html += `<div class=\"chat-message-row${msg.is_me ? ' me' : ''}\" style=\"margin-bottom:10px; position: relative;\" data-message-id=\"${messageId}\" data-db-id=\"${msg.id}\">` +
-            (msg.is_me ? '' : `<div class=\"avatar\">${msg.user_initial || msg.sender_name?.charAt(0) || ''}</div>`) +
-            `<div class=\"chat-message${msg.is_me ? ' me' : ''}\" style=\"${msg.is_me ? 'background:#2563eb;color:#fff;' : ''} position: relative;\">` +
-            `<div class=\"message-content\">${msg.message.replace(/(@\\w+)/g, '<span style=\\'color:#22c55e;font-weight:600;\\'>$1<\\/span>')}</div>` +
-            `<div class=\"meta\" style=\"font-size:0.85rem;color:#94a3b8;margin-top:6px;text-align:right;\">${msg.is_me ? 'You' : msg.sender_name}, ${formatTimestamp(msg.created_at)}</div>` +
-            (msg.is_me ? `<div class=\"message-actions\" style=\"position: absolute; top: 5px; right: 5px;\">` +
-                `<button type=\"button\" class=\"edit-message-btn\" data-db-id=\"${msg.id}\" style=\"background: none; border: none; color: inherit; font-size: 0.8rem; margin-right: 5px; cursor: pointer;\" title=\"Edit\">✏️</button>` +
-                `<button type=\"button\" class=\"delete-message-btn\" data-db-id=\"${msg.id}\" style=\"background: none; border: none; color: inherit; font-size: 0.8rem; cursor: pointer;\" title=\"Delete\">🗑️</button>` +
-              `</div>` : '') +
-            `</div>` +
-            `</div>`;
+      const messageId = msg.id || Math.random().toString(36).substr(2, 9);
+      html += `<div class="chat-message-row${msg.is_me ? ' me' : ''}" style="margin-bottom:10px; position: relative;" data-message-id="${messageId}" data-db-id="${msg.id}">` +
+        (msg.is_me ? '' : `<div class="avatar">${msg.user_initial || (msg.sender_name ? msg.sender_name.charAt(0) : '')}</div>`) +
+        `<div class="chat-message${msg.is_me ? ' me' : ''}" style="${msg.is_me ? 'background:#2563eb;color:#fff;' : ''} position: relative;">` +
+        `<div class="message-content">${msg.message.replace(/(@\w+)/g, '<span style=\'color:#22c55e;font-weight:600;\'>$1<\/span>')}</div>` +
+        `<div class="meta" style="font-size:0.85rem;color:#94a3b8;margin-top:6px;text-align:right;">${msg.is_me ? 'You' : msg.sender_name}, ${formatTimestamp(msg.created_at)}</div>` +
+        (msg.is_me ? `<div class="message-actions" style="position: absolute; top: 5px; right: 5px;">` +
+          `<button type="button" class="edit-message-btn" data-db-id="${msg.id}" style="background: none; border: none; color: inherit; font-size: 0.8rem; margin-right: 5px; cursor: pointer;" title="Edit">✏️</button>` +
+          `<button type="button" class="delete-message-btn" data-db-id="${msg.id}" style="background: none; border: none; color: inherit; font-size: 0.8rem; cursor: pointer;" title="Delete">🗑️</button>` +
+        `</div>` : '') +
+        `</div>` +
+        `</div>`;
     });
     return html;
-}
+  }
 
-window.updateChatWindow = function(e) {
+  window.updateChatWindow = function(e) {
     if (selectedUserId && (e.message.sender_id == selectedUserId || e.message.receiver_id == selectedUserId)) {
-        document.querySelector(`.user-chat-link[data-user-id='${selectedUserId}']`).click();
+      document.querySelector(`.user-chat-link[data-user-id='${selectedUserId}']`).click();
     }
-};
-window.showChatNotification = function(e) {
+  };
+  window.showChatNotification = function(e) {
     if (e.message.receiver_id == currentUserId) {
-        alert('New message from ' + e.sender.name + ': ' + e.message.message);
+      alert('New message from ' + e.sender.name + ': ' + e.message.message);
     }
-};
-document.addEventListener('click', function(e) {
+  };
+  document.addEventListener('click', function(e) {
     if (e.target.classList.contains('edit-message-btn')) {
-        const messageRow = e.target.closest('.chat-message-row');
-        const messageContent = messageRow.querySelector('.message-content');
-        const currentText = messageContent.textContent;
-        const dbId = e.target.getAttribute('data-db-id');
-        const editInput = document.createElement('input');
-        editInput.type = 'text';
-        editInput.value = currentText;
-        editInput.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px;';
-        const saveBtn = document.createElement('button');
-        saveBtn.textContent = 'Save';
-        saveBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: 5px; cursor: pointer;';
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = 'Cancel';
-        cancelBtn.style.cssText = 'background: #6b7280; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;';
-        messageContent.innerHTML = '';
-        messageContent.appendChild(editInput);
-        messageContent.appendChild(saveBtn);
-        messageContent.appendChild(cancelBtn);
-        editInput.focus();
-        saveBtn.addEventListener('click', function() {
-            const newText = editInput.value.trim();
-            if (newText && dbId) {
-                fetch(`/chats/messages/${dbId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ message: newText })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        messageContent.innerHTML = newText;
-                    } else {
-                        alert(data.message || 'Failed to update message.');
-                        messageContent.innerHTML = currentText;
-                    }
-                })
-                .catch(() => {
-                    alert('Error updating message.');
-                    messageContent.innerHTML = currentText;
-                });
+      const messageRow = e.target.closest('.chat-message-row');
+      const messageContent = messageRow.querySelector('.message-content');
+      const currentText = messageContent.textContent;
+      const dbId = e.target.getAttribute('data-db-id');
+      const editInput = document.createElement('input');
+      editInput.type = 'text';
+      editInput.value = currentText;
+      editInput.style.cssText = 'width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px;';
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Save';
+      saveBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-right: 5px; cursor: pointer;';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.style.cssText = 'background: #6b7280; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;';
+      messageContent.innerHTML = '';
+      messageContent.appendChild(editInput);
+      messageContent.appendChild(saveBtn);
+      messageContent.appendChild(cancelBtn);
+      editInput.focus();
+      saveBtn.addEventListener('click', function() {
+        const newText = editInput.value.trim();
+        if (newText && dbId) {
+          fetch(`/chats/messages/${dbId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ message: newText })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              messageContent.innerHTML = newText;
+            } else {
+              alert(data.message || 'Failed to update message.');
+              messageContent.innerHTML = currentText;
             }
-        });
-        cancelBtn.addEventListener('click', function() {
+          })
+          .catch(() => {
+            alert('Error updating message.');
             messageContent.innerHTML = currentText;
-        });
-    }
-});
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('delete-message-btn')) {
-        if (confirm('Are you sure you want to delete this message?')) {
-            const messageRow = e.target.closest('.chat-message-row');
-            const dbId = e.target.getAttribute('data-db-id');
-            if (dbId) {
-                fetch(`/chats/messages/${dbId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        messageRow.remove();
-                    } else {
-                        alert(data.message || 'Failed to delete message.');
-                    }
-                })
-                .catch(() => {
-                    alert('Error deleting message.');
-                });
-            }
+          });
         }
+      });
+      cancelBtn.addEventListener('click', function() {
+        messageContent.innerHTML = currentText;
+      });
     }
-});
-const userList = document.getElementById('userList');
-const demoChats = document.getElementById('demo-chats');
-const welcomeMessage = document.getElementById('welcome-message');
-const chatHeaderArea = document.getElementById('chat-header-area');
-const chatInputForm = document.getElementById('chat-input-form');
-const emojiBtn = document.getElementById('emoji-btn');
-const emojiPicker = document.getElementById('emoji-picker');
-const chatInput = document.getElementById('chat-input');
-const fileUploadBtn = document.getElementById('file-upload-btn');
-const fileInput = document.getElementById('file-input');
-
-userList?.addEventListener('click', function(e) {
-  const link = e.target.closest('.user-chat-link');
-  if (!link) return;
-  e.preventDefault();
-  const role = link.closest('li').getAttribute('data-role');
-  const name = link.querySelector('.user-name')?.textContent || '';
-  const avatarEl = link.querySelector('.avatar');
-  // Hide all demo chats
-  demoChats.querySelectorAll('.demo-chat').forEach(dc => dc.style.display = 'none');
-  if (role && demoChats.querySelector('.demo-chat[data-role="' + role + '"]')) {
-    demoChats.style.display = '';
-    welcomeMessage.style.display = 'none';
-    chatHeaderArea.style.display = 'flex';
-    chatInputForm.style.display = 'flex';
-    demoChats.querySelector('.demo-chat[data-role="' + role + '"]').style.display = '';
-    // Update header avatar/name/status
-    document.getElementById('chat-header-name').textContent = name;
-    // Clone avatar node for header
-    const headerAvatar = document.getElementById('chat-header-avatar');
-    headerAvatar.innerHTML = '';
-    if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
-    document.getElementById('chat-header-status').textContent = 'Online';
-  } else {
-    demoChats.style.display = 'none';
-    welcomeMessage.style.display = '';
-    chatHeaderArea.style.display = 'none';
-    chatInputForm.style.display = 'none';
-    document.getElementById('chat-header-name').textContent = '';
-    document.getElementById('chat-header-avatar').innerHTML = '';
-    document.getElementById('chat-header-status').textContent = '';
-  }
-});
-// Emoji picker logic
-emojiBtn?.addEventListener('click', function() {
-  emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
-});
-document.addEventListener('click', function(e) {
-  if (!emojiPicker.contains(e.target) && !emojiBtn.contains(e.target)) {
-    emojiPicker.style.display = 'none';
-  }
-});
-emojiPicker.querySelectorAll('.emoji-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    chatInput.value += this.getAttribute('data-emoji');
-    chatInput.focus();
-    emojiPicker.style.display = 'none';
   });
-});
-// File upload logic
-fileUploadBtn?.addEventListener('click', function() {
-  fileInput.click();
-});
-fileInput?.addEventListener('change', function() {
-  if (fileInput.files.length > 0) {
-    alert('File selected: ' + fileInput.files[0].name + ' (Demo only, not uploaded)');
-    fileInput.value = '';
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('delete-message-btn')) {
+      if (confirm('Are you sure you want to delete this message?')) {
+        const messageRow = e.target.closest('.chat-message-row');
+        const dbId = e.target.getAttribute('data-db-id');
+        if (dbId) {
+          fetch(`/chats/messages/${dbId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              messageRow.remove();
+            } else {
+              alert(data.message || 'Failed to delete message.');
+            }
+          })
+          .catch(() => {
+            alert('Error deleting message.');
+          });
+        }
+      }
+    }
+  });
+
+  const userList = document.getElementById('userList');
+  const demoChats = document.getElementById('demo-chats');
+  const welcomeMessage = document.getElementById('welcome-message');
+  const chatHeaderArea = document.getElementById('chat-header-area');
+  const chatInputForm = document.getElementById('chat-input-form');
+  const emojiBtn = document.getElementById('emoji-btn');
+  const emojiPicker = document.getElementById('emoji-picker');
+  const chatInput = document.getElementById('chat-input');
+  const fileUploadBtn = document.getElementById('file-upload-btn');
+  const fileInput = document.getElementById('file-input');
+
+  if (userList) {
+    userList.addEventListener('click', function(e) {
+      const link = e.target.closest('.user-chat-link');
+      if (!link) return;
+      e.preventDefault();
+      selectedUserId = link.getAttribute('data-user-id');
+      console.log('User clicked:', selectedUserId); // Debug log
+      const name = link.querySelector('.user-name')?.textContent || '';
+      const avatarEl = link.querySelector('.avatar');
+
+      // Hide demo chats and welcome message
+      if (demoChats) demoChats.style.display = 'none';
+      if (welcomeMessage) welcomeMessage.style.display = 'none';
+      if (chatHeaderArea) chatHeaderArea.style.display = 'flex';
+      if (chatInputForm) chatInputForm.style.display = 'flex';
+
+      // Update header avatar/name/status
+      document.getElementById('chat-header-name').textContent = name;
+      const headerAvatar = document.getElementById('chat-header-avatar');
+      headerAvatar.innerHTML = '';
+      if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
+      document.getElementById('chat-header-status').textContent = 'Online';
+
+      // Fetch real chat messages for the selected user
+      console.log('Fetching messages for user:', selectedUserId);
+      fetch(`/chats/messages/${selectedUserId}`)
+        .then(res => {
+          console.log('Fetch response status:', res.status);
+          return res.json();
+        })
+        .then(data => {
+          console.log('Fetch response data:', data);
+          const chatMessagesArea = document.getElementById('chat-messages-area');
+          if (data.messages && Array.isArray(data.messages)) {
+            chatMessagesArea.innerHTML = renderMessages(data.messages, currentUserId);
+          } else {
+            chatMessagesArea.innerHTML = '<div style="text-align:center;color:#888;">No messages yet.</div>';
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to load chat messages:', err);
+          alert('Failed to load chat messages.');
+        });
+    });
   }
-});
-// Send button logic (demo)
-document.getElementById('chat-input-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  chatInput.value = '';
+
+  // Emoji picker logic
+  if (emojiBtn && emojiPicker) {
+    emojiBtn.addEventListener('click', function() {
+      emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function(e) {
+      if (!emojiPicker.contains(e.target) && !emojiBtn.contains(e.target)) {
+        emojiPicker.style.display = 'none';
+      }
+    });
+    emojiPicker.querySelectorAll('.emoji-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (chatInput) {
+          chatInput.value += this.getAttribute('data-emoji');
+          chatInput.focus();
+        }
+        emojiPicker.style.display = 'none';
+      });
+    });
+  }
+
+  // File upload logic
+  if (fileUploadBtn && fileInput) {
+    fileUploadBtn.addEventListener('click', function() {
+      fileInput.click();
+    });
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files.length > 0) {
+        alert('File selected: ' + fileInput.files[0].name + ' (Demo only, not uploaded)');
+        fileInput.value = '';
+      }
+    });
+  }
+
+  // Send button logic
+  if (chatInputForm && chatInput) {
+    chatInputForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const guestName = document.getElementById('guest_name') ? document.getElementById('guest_name').value : '';
+      const guestEmail = document.getElementById('guest_email') ? document.getElementById('guest_email').value : '';
+      const message = chatInput.value;
+      if (!selectedUserId) {
+        alert('Please select a user to chat with.');
+        return;
+      }
+      if (!message.trim()) {
+        alert('Please enter a message.');
+        return;
+      }
+      // Build payload
+      const payload = {
+        receiver_id: selectedUserId,
+        message: message,
+        guest_name: guestName,
+        guest_email: guestEmail
+      };
+      // Always use the backend's origin for the POST URL
+      const backendUrl = window.location.origin.replace(':5173', ':8000') + '/chats/send';
+      fetch(backendUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          chatInput.value = '';
+          // Optionally, refresh messages or show the new message
+        } else {
+          alert(data.message || 'Failed to send message.');
+        }
+      })
+      .catch(() => {
+        alert('Error sending message.');
+      });
+    });
+  }
 });
 </script>
 @endpush 

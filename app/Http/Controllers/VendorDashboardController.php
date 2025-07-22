@@ -81,6 +81,23 @@ class VendorDashboardController extends Controller
         $unreadNotifications = $user ? $user->unreadNotifications()->take(5)->get() : collect();
         $allNotifications = $user ? $user->notifications()->take(10)->get() : collect();
 
+        // Top selling products by segment
+        $topProductsBySegment = [];
+        $segments = [1, 2, 3]; // 1: Occasional Buyers, 2: High Value, 3: At Risk
+        foreach ($segments as $segment) {
+            $customerIds = Customer::where('segment', $segment)->pluck('id');
+            $products = Product::whereHas('purchases', function ($query) use ($customerIds) {
+                $query->whereIn('customer_id', $customerIds);
+            })
+            ->withCount(['purchases as segment_purchases_count' => function ($query) use ($customerIds) {
+                $query->whereIn('customer_id', $customerIds);
+            }])
+            ->orderBy('segment_purchases_count', 'desc')
+            ->take(5)
+            ->get();
+            $topProductsBySegment[$segment] = $products;
+        }
+
         return view('dashboards.vendor.index', compact(
             'customerSegmentCounts',
             'segmentNames',
@@ -92,7 +109,8 @@ class VendorDashboardController extends Controller
             'recentActivities',
             'bestSellingCars',
             'unreadNotifications',
-            'allNotifications'
+            'allNotifications',
+            'topProductsBySegment'
         ));
     }
 } 

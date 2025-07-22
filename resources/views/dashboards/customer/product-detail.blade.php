@@ -22,12 +22,6 @@
                         <strong style="color: var(--primary);">Price:</strong>
                         <p style="color: var(--accent); font-weight:600;">${{ number_format($product->price, 2) }}</p>
                     </div>
-                    @if($product->vendor)
-                    <div class="col-6">
-                        <strong style="color: var(--primary);">Vendor:</strong>
-                        <p>{{ $product->vendor->name }}</p>
-                    </div>
-                    @endif
                 </div>
 
                 <!-- Order Form -->

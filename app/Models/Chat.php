@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Chat extends Model
 {
     protected $fillable = [
-        'sender_id', 'receiver_id', 'order_id', 'message', 'read_at'
+        'sender_id', 'receiver_id', 'order_id', 'message', 'read_at', 'guest_name', 'guest_email', 'guest_chat_id'
     ];
 
     public function sender(): BelongsTo

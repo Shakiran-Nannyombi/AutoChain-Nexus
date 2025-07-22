@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('customer_orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id')->nullable();
+            // Add foreign key constraint
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
             $table->unsignedBigInteger('retailer_id');
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity');

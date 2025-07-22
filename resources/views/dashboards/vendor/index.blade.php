@@ -122,6 +122,38 @@
             </table>
                 </div>
         @endif
+
+    <!-- Top Selling Products by Customer Segment -->
+    @if(isset($topProductsBySegment) && count($topProductsBySegment) > 0)
+        <div style="margin-top: 2rem;">
+            <h4 style="color: var(--deep-purple);">Top Selling Products by Customer Segment</h4>
+            @foreach([1,2,3] as $segment)
+                @php
+                    $segmentLabel = $segmentNames[$segment] ?? 'Unsegmented';
+                    $products = $topProductsBySegment[$segment] ?? collect();
+                @endphp
+                <div style="margin-bottom: 1.5rem;">
+                    <h5 style="color: var(--primary); margin-bottom: 0.7rem;">{{ $segmentLabel }}</h5>
+                    @if($products->count() > 0)
+                        <div class="row">
+                            @foreach($products as $product)
+                                <div class="col-md-3 mb-3">
+                                    <div class="bg-white p-3 rounded shadow-sm h-100 d-flex flex-column justify-content-between">
+                                        <h6 style="color: var(--primary); font-size: 1.05rem;">{{ $product->name }}</h6>
+                                        <div style="color: #666;">{{ $product->category ?? 'General' }}</div>
+                                        <div style="color: var(--accent); font-weight: 600;">${{ number_format($product->price, 2) }}</div>
+                                        <div style="color: #888; font-size: 0.95em;">Purchased {{ $product->segment_purchases_count ?? 0 }} times in this segment</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div style="color: #888;">No data for this segment.</div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    @endif
                     </div>
     <div class="dashboard-table-card">
         <h3 class="dashboard-section-title"><i class="fas fa-star"></i> Best Selling Cars</h3>

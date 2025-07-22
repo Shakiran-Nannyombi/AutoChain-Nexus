@@ -12,21 +12,23 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Notifications\RetailerNotification;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderAcceptedMail;
 
 class RetailerController extends Controller
 {
     public function dashboard() {
-    $retailer = Auth::user()->retailer;
-    if (!$retailer) {
-        // handle error or redirect
-    }
-    $retailerId = $retailer->id;
+        $user = Auth::user();
+        if (!$user || $user->role !== 'retailer') {
+            // handle error or redirect
+            return redirect('/login')->with('error', 'Unauthorized access.');
+        }
+        $retailerId = $user->id;
         $acceptedStock = RetailerStock::where('retailer_id', $retailerId)->where('status', 'accepted')->get();
         $sales = RetailerSale::where('retailer_id', $retailerId)->latest()->get();
-        $orders = RetailerOrder::where('user_id', $retailerId)->latest()->get();
+        $orders = RetailerOrder::where('retailer_id', $retailerId)->latest()->get();
 
         // Fetch notifications for the current user
-        $user = Auth::user();
         $unreadNotifications = ($user && is_object($user) && method_exists($user, 'unreadNotifications')) ? $user->unreadNotifications()->take(5)->get() : collect();
         $allNotifications = ($user && is_object($user) && method_exists($user, 'notifications')) ? $user->notifications()->take(10)->get() : collect();
 
@@ -219,9 +221,13 @@ public function receiveCustomerOrder(CustomerOrder $order)
     abort_if($order->retailer_id !== $retailerId, 403);
 
     if ($order->status === 'pending') {
-        $order->status = 'received';
+        $order->status = 'accepted';
         $order->save();
-        return back()->with('success', "Order #{$order->id} marked received.");
+
+        // Send email to customer
+        Mail::to($order->customer_email)->send(new OrderAcceptedMail($order));
+
+        return back()->with('success', 'Order marked as received and customer notified.');
     }
 
     return back()->with('info', 'Only pending orders can be received.');
