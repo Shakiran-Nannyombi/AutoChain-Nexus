@@ -335,7 +335,11 @@
                                 <div>
                                     <div style="font-weight: 600;">{{ $user->name ?? 'User' }}</div>
                                     <div style="font-size: 0.8rem; opacity: 0.8;">
+                                        @if($user && (get_class($user) === 'App\\Models\\Admin' || $user->role === 'admin'))
                                             Admin
+                                        @else
+                                            {{ ucfirst($user->role ?? 'User') }}
+                                        @endif
                                     </div>
                                 </div>
                             </div>
