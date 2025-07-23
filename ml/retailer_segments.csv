@@ -1,0 +1,21 @@
+retailer_id,name,segment_name,total_orders,total_quantity,total_value,order_frequency,recency_days,average_order_value
+30,Olivia Turner,Occasional,12,119,7014581.0,12.0,1,584548.4166666666
+31,Ethan Brooks,At Risk,6,19,956831.0,6.0,9,159471.83333333334
+32,Sophia Bennett,At Risk,3,20,1336680.0,3.0,4,445560.0
+33,Liam Murphy,At Risk,2,13,599427.0,2.0,5,299713.5
+34,Mia Collins,At Risk,6,28,1374433.0,6.0,2,229072.16666666666
+35,Noah Reed,Occasional,9,87,5511431.0,9.0,18,612381.2222222222
+36,Charlotte Hayes,At Risk,5,21,819496.0,5.0,6,163899.2
+37,Lucas Perry,At Risk,7,28,1419582.0,7.0,6,202797.42857142858
+38,Amelia Foster,At Risk,9,38,1558487.0,9.0,2,173165.22222222222
+39,Mason Gray,At Risk,7,35,1913835.0,7.0,5,273405.0
+40,Ella Price,Occasional,8,92,5029810.0,8.0,1,628726.25
+41,Logan Bell,At Risk,8,37,1896948.0,8.0,4,237118.5
+42,Harper Evans,At Risk,10,53,2754455.0,10.0,2,275445.5
+43,Benjamin Scott,At Risk,3,13,835748.0,3.0,1,278582.6666666667
+44,Emily Adams,At Risk,2,6,359328.0,2.0,9,179664.0
+45,Jack Morris,High Value,12,128,8638651.0,12.0,1,719887.5833333334
+46,Grace Walker,At Risk,7,25,984033.0,7.0,3,140576.14285714287
+47,Henry King,At Risk,7,23,1377828.0,7.0,9,196832.57142857142
+48,Zoe Cooper,At Risk,8,27,1423159.0,8.0,4,177894.875
+49,William Hughes,At Risk,3,14,639568.0,3.0,4,213189.33333333334

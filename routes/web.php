@@ -510,7 +510,31 @@ Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterL
     // Add PDF export route for production reports
     Route::get('/production-reports/pdf', [App\Http\Controllers\ManufacturerDashboardController::class, 'exportProductionReportsPdf'])->name('manufacturer.production-reports.pdf');
     Route::get('/demand-prediction', function () { return view('dashboards.manufacturer.demand-prediction'); })->name('manufacturer.demand-prediction');
-    Route::get('/chat', [App\Http\Controllers\ManufacturerDashboardController::class, 'chat'])->name('manufacturer.chat');
+    Route::get('/chat', function () {
+        $userId = session('user_id') ?? Auth::id();
+        // Manufacturer can chat with suppliers, vendors, analysts, and admin
+        $users = \App\Models\User::whereIn('role', ['supplier', 'vendor', 'analyst'])
+            ->where('id', '!=', $userId)
+            ->get();
+        // Add admin users from the admins table
+        $adminUsers = \App\Models\Admin::where('is_active', true)
+            ->get()
+            ->map(function($admin) {
+                return (object) [
+                    'id' => 'admin_' . $admin->id,
+                    'name' => $admin->name,
+                    'email' => $admin->email,
+                    'role' => 'admin',
+                    'profile_photo' => $admin->profile_photo,
+                    'company' => $admin->company,
+                    'phone' => $admin->phone,
+                    'address' => $admin->address,
+                    'documents' => collect(),
+                ];
+            });
+        $users = $users->concat($adminUsers);
+        return view('dashboards.manufacturer.chat', compact('users'));
+    })->name('manufacturer.chat');
     Route::get('/settings', function () { return view('dashboards.manufacturer.settings'); })->name('manufacturer.settings');
     Route::get('/products', [App\Http\Controllers\Manufacturer\ProductController::class, 'index'])->name('manufacturer.products');
     Route::get('/products/create', [App\Http\Controllers\Manufacturer\ProductController::class, 'create'])->name('manufacturer.products.create');
@@ -537,6 +561,7 @@ Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterL
     // Demand Prediction routes
     Route::get('/demand-prediction/options', [App\Http\Controllers\Manufacturer\DemandPrediction::class, 'getAvailableModelsAndRegions'])->name('manufacturer.demand.options');
     Route::post('/demand-prediction/forecast', [App\Http\Controllers\Manufacturer\DemandPrediction::class, 'getDemandForecast'])->name('manufacturer.demand.forecast');
+    Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('manufacturer.chats.send');
 });
 
 // Supplier dashboard routes
@@ -600,7 +625,7 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::put('/products/{id}', [\App\Http\Controllers\VendorProductController::class, 'update'])->name('vendor.products.update');
     Route::delete('/products/{id}', [\App\Http\Controllers\VendorProductController::class, 'destroy'])->name('vendor.products.destroy');
     //Route::get('/orders', [\App\Http\Controllers\VendorOrderController::class, 'index'])->name('vendor.orders');
-    //Route::post('/orders/create', [\App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
+    Route::post('/orders/create', [\App\Http\Controllers\VendorOrderController::class, 'store'])->name('vendor.orders.create');
     //Route::put('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'update'])->name('vendor.orders.update');
     //Route::delete('/orders/{id}', [\App\Http\Controllers\VendorOrderController::class, 'destroy'])->name('vendor.orders.destroy');
     
@@ -640,12 +665,10 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     // Vendor chat route (now renders the Blade view directly and passes $users)
     Route::get('/chats', function () {
         $currentUser = Auth::user();
-        
-        // Get users from the users table
+        // Get users from the users table, now including analysts
         $usersFromUsersTable = \App\Models\User::where('id', '!=', $currentUser->id)
-            ->whereIn('role', ['admin', 'manufacturer', 'retailer'])
+            ->whereIn('role', ['admin', 'manufacturer', 'retailer', 'analyst'])
             ->get();
-        
         // Get admin users from the admins table
         $adminUsers = \App\Models\Admin::where('is_active', true)
             ->get()
@@ -662,10 +685,8 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
                     'documents' => collect(), // Empty collection for documents
                 ];
             });
-        
         // Combine and shuffle the results
         $users = $usersFromUsersTable->concat($adminUsers)->shuffle();
-        
         return view('dashboards.vendor.chat', compact('users'));
     })->name('chats.index');
     Route::get('/chats/create', [\App\Http\Controllers\ChatController::class, 'create'])->name('chats.create');
@@ -673,7 +694,7 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::get('/chats/{chat}/edit', [\App\Http\Controllers\ChatController::class, 'edit'])->name('chats.edit');
     Route::delete('/chats/{chat}', [\App\Http\Controllers\ChatController::class, 'destroy'])->name('chats.destroy');
     Route::get('/chats/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getChatMessages'])->name('chats.messages');
-    // Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send'); // This line is removed as per the edit hint
+    Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('chats.send');
     Route::get('/profile', [\App\Http\Controllers\VendorProfileController::class, 'edit'])->name('vendor.profile');
     Route::post('/profile', [\App\Http\Controllers\VendorProfileController::class, 'update'])->name('vendor.profile.update');
     Route::post('/profile/password', [\App\Http\Controllers\VendorProfileController::class, 'updatePassword'])->name('vendor.profile.password');

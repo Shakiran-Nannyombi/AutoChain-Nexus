@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ml/scripts')))
 from Forecast_Allmodels import DemandForecaster
+from fastapi import APIRouter
 
 app = FastAPI()
 
@@ -148,6 +149,18 @@ def segment_vendors():
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+@app.post("/segment-retailers")
+def segment_retailers():
+    try:
+        base_dir = os.path.dirname(__file__)
+        script_path = os.path.abspath(os.path.join(base_dir, '..', 'ml', 'retailer_segmentation.py'))
+        result = subprocess.run(['python3', script_path], capture_output=True, text=True)
+        if result.returncode != 0:
+            return {"success": False, "error": f"Segmentation script failed: {result.stderr}"}
+        return {"success": True, "message": "Retailer segmentation complete."}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 @app.post("/forecast-ml")
 async def forecast_ml(request: Request):
     data = await request.json()
@@ -268,3 +281,13 @@ async def api_predict(request: Request):
     output = output[['month', 'value']]
     forecast_list = output.to_dict(orient="records")
     return JSONResponse({"success": True, "forecast": forecast_list})
+
+@app.get('/retailer-segments')
+def get_retailer_segments():
+    import pandas as pd
+    import os
+    csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ml', 'retailer_segments.csv'))
+    if not os.path.exists(csv_path):
+        return {"success": False, "error": "Segmentation file not found."}
+    df = pd.read_csv(csv_path)
+    return {"success": True, "segments": df.to_dict(orient='records')}

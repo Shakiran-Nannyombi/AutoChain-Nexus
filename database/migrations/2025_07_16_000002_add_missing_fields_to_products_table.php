@@ -14,6 +14,9 @@ return new class extends Migration {
             if (!Schema::hasColumn('products', 'stock')) {
                 $table->integer('stock')->default(0);
             }
+            if (!Schema::hasColumn('products', 'status')) {
+                $table->string('status')->default('active');
+            }
         });
     }
 

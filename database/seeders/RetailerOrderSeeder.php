@@ -15,12 +15,12 @@ class RetailerOrderSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get some vendors and retailers
-        $vendors = User::where('role', 'vendor')->take(3)->get();
-        $retailers = User::where('role', 'retailer')->take(5)->get();
+        // Get all approved vendors and retailers
+        $vendors = User::where('role', 'vendor')->where('status', 'approved')->get();
+        $retailers = User::where('role', 'retailer')->where('status', 'approved')->get();
 
         if ($vendors->isEmpty() || $retailers->isEmpty()) {
-            $this->command->info('No vendors or retailers found. Please create some users first.');
+            $this->command->info('No approved vendors or retailers found. Please create some users first.');
             return;
         }
 
@@ -51,16 +51,16 @@ class RetailerOrderSeeder extends Seeder
             'Amanda Rodriguez'
         ];
 
-        foreach ($vendors as $vendor) {
-            // Create 3-5 orders for each vendor
-            for ($i = 0; $i < rand(3, 5); $i++) {
+        // Ensure every approved retailer gets at least 3 orders
+        foreach ($retailers as $retailer) {
+            for ($i = 0; $i < 3; $i++) {
+                $vendor = $vendors->random();
                 $status = $statuses[array_rand($statuses)];
-                $retailer = $retailers->random();
                 $carModel = $carModels[array_rand($carModels)];
                 $customerName = $customerNames[array_rand($customerNames)];
                 $quantity = rand(1, 5);
                 $totalAmount = $quantity * rand(25000, 50000);
-                
+
                 $order = RetailerOrder::create([
                     'user_id' => $retailer->id,
                     'vendor_id' => $vendor->id,
@@ -77,17 +77,31 @@ class RetailerOrderSeeder extends Seeder
                 if ($status !== 'pending') {
                     $order->confirmed_at = Carbon::now()->subDays(rand(1, 25));
                 }
-                
                 if (in_array($status, ['shipped', 'delivered'])) {
                     $order->shipped_at = Carbon::now()->subDays(rand(1, 20));
                 }
-                
                 if ($status === 'delivered') {
                     $order->delivered_at = Carbon::now()->subDays(rand(1, 15));
                 }
-
                 $order->save();
             }
+        }
+
+        // Add a guaranteed demo pending order for testing
+        $demoVendor = $vendors->first();
+        $demoRetailer = $retailers->first();
+        if ($demoVendor && $demoRetailer) {
+            $order = RetailerOrder::create([
+                'user_id' => $demoRetailer->id,
+                'vendor_id' => $demoVendor->id,
+                'customer_name' => 'Demo Customer',
+                'car_model' => 'Demo Car Model 2024',
+                'quantity' => 2,
+                'status' => 'pending',
+                'total_amount' => 123456,
+                'ordered_at' => now(),
+                'notes' => 'This is a guaranteed demo pending order for UI testing.',
+            ]);
         }
 
         $this->command->info('Retailer orders seeded successfully!');
