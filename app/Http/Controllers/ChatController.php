@@ -592,6 +592,8 @@ class ChatController extends Controller
                 'guest_chat_id' => $guestChatId,
                 'timestamp' => now()
             ]);
+            // Broadcast event for real-time chat
+            event(new \App\Events\MessageSent($chat, \App\Models\User::find($senderId), \App\Models\User::find($request->receiver_id)));
 
             return response()->json([
                 'status' => 'success',
