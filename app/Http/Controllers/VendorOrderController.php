@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\VendorActivity;
 use App\Notifications\VendorNotification;
+use App\Notifications\VendorOrderCreated;
 
 class VendorOrderController extends Controller
 {
@@ -121,9 +122,9 @@ class VendorOrderController extends Controller
         
         // Notify vendor
         Auth::user()->notify(new VendorNotification('Order Created', 'Your order #' . $order->id . ' has been created.'));
-        // Notify manufacturer
+        // Notify manufacturer (real-time)
         if ($manufacturer) {
-            $manufacturer->notify(new \App\Notifications\ManufacturerNotification('New Order Received', 'You have received a new order from vendor ' . Auth::user()->name . '. Order ID: ' . $order->id));
+            $manufacturer->notify(new VendorOrderCreated($order));
         }
 
         // If AJAX, return JSON. Otherwise, redirect with success message.

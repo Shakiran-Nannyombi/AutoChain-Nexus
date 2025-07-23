@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\RetailerStock;
 use App\Models\VendorOrder;
 use App\Models\VendorActivity;
+use App\Models\Delivery;
 use Carbon\Carbon;
 
 class VendorDeliveryController extends Controller
@@ -14,67 +15,21 @@ class VendorDeliveryController extends Controller
     public function index()
     {
         $vendorId = Auth::id();
-        
-        // Get pending deliveries (stock to be shipped)
-        $pendingDeliveries = RetailerStock::where('vendor_id', $vendorId)
-            ->whereIn('status', ['to_be_packed', 'to_be_shipped'])
-            ->with('retailer')
-            ->orderBy('created_at', 'asc')
-            ->get();
-        
-        // Get in-transit deliveries
-        $inTransitDeliveries = RetailerStock::where('vendor_id', $vendorId)
-            ->where('status', 'to_be_delivered')
-            ->with('retailer')
-            ->orderBy('created_at', 'asc')
-            ->get();
-        
-        // Get completed deliveries
-        $completedDeliveries = RetailerStock::where('vendor_id', $vendorId)
-            ->whereIn('status', ['accepted', 'rejected'])
-            ->with('retailer')
-            ->orderBy('created_at', 'desc')
-            ->take(20)
-            ->get();
-        
-        // Get vendor orders (incoming from manufacturers)
-        $vendorOrders = VendorOrder::where('vendor_id', $vendorId)
-            ->with('manufacturer')
-            ->orderBy('ordered_at', 'desc')
-            ->get();
-        
-        // Calculate delivery statistics
-        $totalPending = $pendingDeliveries->count();
-        $totalInTransit = $inTransitDeliveries->count();
-        $totalCompleted = $completedDeliveries->count();
-        $totalOrders = $vendorOrders->count();
-        
-        // Get delivery performance metrics
-        $deliveryPerformance = RetailerStock::where('vendor_id', $vendorId)
-            ->where('status', 'accepted')
-            ->selectRaw('
-                DATE(created_at) as delivery_date,
-                COUNT(*) as successful_deliveries,
-                AVG(DATEDIFF(updated_at, created_at)) as avg_delivery_time
-            ')
-            ->groupBy('delivery_date')
-            ->orderBy('delivery_date', 'desc')
-            ->take(30)
-            ->get()
-            ->map(function ($item) {
-                $item->delivery_date = Carbon::parse($item->delivery_date);
-                return $item;
-            });
-        
-        // Get upcoming deliveries (next 7 days)
-        $upcomingDeliveries = RetailerStock::where('vendor_id', $vendorId)
-            ->whereIn('status', ['to_be_packed', 'to_be_shipped'])
-            ->where('created_at', '<=', Carbon::now()->addDays(7))
-            ->with('retailer')
-            ->orderBy('created_at', 'asc')
-            ->get();
-        
+        // Fetch all deliveries for demo/testing
+        $deliveries = Delivery::orderByDesc('created_at')->get();
+        // Keep the old variables for now if needed by the view
+        $pendingDeliveries = collect();
+        $inTransitDeliveries = collect();
+        $completedDeliveries = collect();
+        $vendorOrders = collect();
+        $totalPending = 0;
+        $totalInTransit = 0;
+        $totalCompleted = 0;
+        $totalOrders = 0;
+        $deliveryPerformance = collect();
+        $upcomingDeliveries = collect();
         return view('dashboards.vendor.delivery', compact(
+            'deliveries',
             'pendingDeliveries',
             'inTransitDeliveries',
             'completedDeliveries',

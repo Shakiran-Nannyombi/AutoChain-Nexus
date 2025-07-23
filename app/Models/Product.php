@@ -20,6 +20,7 @@ class Product extends Model
         'vendor_id',
         'manufacturer_id',
         'image_url',
+        'status',
     ];
     public function vendor()
     {

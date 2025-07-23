@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="content-card vendor-products">
-    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.8rem; color: var(--text); letter-spacing: 0.01em;"><i class="fas fa-car"></i> Car Models</h1>
+    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.8rem; color: var(--text); letter-spacing: 0.01em;">Stock Management</h1>
     <div class="stat-cards-row">
         <div class="stat-card" style="background: #125bed;">
             <div class="stat-label" style="color: white">Total Models</div>
@@ -49,7 +49,6 @@
                     <th>Status</th>
                     <th>Inventory</th>
                     <th>Orders</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -69,7 +68,6 @@
                         <td><span class="status-dot status-{{ $product->status ?? 'active' }}"></span> {{ ucfirst($product->status ?? 'active') }}</td>
                         <td><span class="inventory-badge {{ $product->stock < 15 ? 'low' : '' }}">{{ $product->stock }} units</span></td>
                         <td>0</td>
-                        <td>...</td>
                     </tr>
                 @endforeach
                 @foreach($orderedProducts as $product)
@@ -88,7 +86,6 @@
                         <td><span class="status-dot status-active"></span> Active</td>
                         <td><span class="inventory-badge {{ $product['stock'] < 15 ? 'low' : '' }}">{{ $product['stock'] }} units</span></td>
                         <td>{{ $product['orders_count'] }}</td>
-                        <td>...</td>
                     </tr>
                 @endforeach
             </tbody>

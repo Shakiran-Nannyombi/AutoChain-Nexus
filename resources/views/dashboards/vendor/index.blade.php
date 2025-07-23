@@ -17,40 +17,21 @@
 
 @section('content')
 <div class="content-card vendor-dashboard-grid" style="background: #fafbfc; box-shadow: none;">
-    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--primary); letter-spacing: 0.01em;">Welcome back, {{ Auth::user()->name ?? 'Vendor' }}.</h1>
-    <div style="font-size: 1.1rem; color: #555; margin-bottom: 2.2rem;">Here's what's happening with your business today.</div>
-    <!-- Stat Cards -->
-    <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
-        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #2563eb;">
-            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $activeProducts ?? 0 }}</div>
-            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Active Car Models</div>
-        </div>
-        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #f59e0b;">
-            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $pendingOrders ?? 0 }}</div>
-            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Pending Orders</div>
-        </div>
-        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #10b981;">
-            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $totalCustomers ?? 0 }}</div>
-            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Retailer Customers</div>
-        </div>
-        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #a21caf;">
-            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">Shs {{ number_format($monthlyRevenue ?? 0, 2) }}</div>
-            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Monthly Revenue</div>
-        </div>
-    </div>
-    <!-- Real-time Order Processing -->
+    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--text); letter-spacing: 0.01em;">Welcome back, {{ Auth::user()->name ?? 'Vendor' }}.</h1>
+    <div style="font-size: 1.1rem; color: var(--primary); margin-bottom: 2.2rem;">Here's what's happening with your business today.</div>
+    <!-- Live Retailer Orders (moved up) -->
     <div style="background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 2rem 1.5rem; margin-bottom: 2.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
             <div style="font-size: 1.35rem; font-weight: 700; color: #222; display: flex; align-items: center;">
-             Order Processing
+                <i class="fas fa-bolt" style="color: #10b981; margin-right: 0.5rem;"></i>
+                Live Retailer Orders
                 @if($newOrdersCount > 0)
                     <span style="background: #ef4444; color: #fff; font-size: 0.95rem; font-weight: 600; border-radius: 12px; padding: 0.2rem 0.8rem; margin-left: 1rem;">{{ $newOrdersCount }} New</span>
                 @endif
             </div>
-            <div style="display: flex; align-items: center; gap: 0.7rem;">
-                <input type="text" placeholder="Search orders..." style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.5rem 1rem; font-size: 1rem; min-width: 220px;">
-                <button style="background: #f3f4f6; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-size: 1.1rem; cursor: pointer;"><i class="fas fa-filter"></i></button>
-            </div>
+            <button onclick="location.reload()" style="background: #10b981; color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
         </div>
         <table style="width: 100%; border-collapse: collapse; background: #fff;">
             <thead>
@@ -86,15 +67,9 @@
                         </td>
                         <td>{{ $order->created_at->diffForHumans() }}</td>
                         <td>
-                            <button style="background: #10b981; color: #fff; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; margin-right: 0.3rem; display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <i class="fas fa-check"></i> Approve
-                            </button>
-                            <button style="background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; margin-right: 0.3rem; display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                            <button style="background: #f3f4f6; color: #222; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.3rem;">
-                                <i class="fas fa-clock"></i> Delay
-                            </button>
+                            <a href="{{ route('vendor.retailer-orders.show', $order->id) }}" style="background: #10b981; color: #fff; border: none; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 1.1rem; margin-right: 0.3rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <i class="fas fa-eye"></i> View
+                            </a>
                         </td>
                     </tr>
                 @empty
@@ -104,6 +79,25 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <!-- Stat Cards -->
+    <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #2563eb;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $activeProducts ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Active Car Models</div>
+        </div>
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #f59e0b;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $pendingOrders ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Pending Orders</div>
+        </div>
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #10b981;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">{{ $totalCustomers ?? 0 }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Retailer Customers</div>
+        </div>
+        <div style="flex:1; min-width: 220px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; display: flex; flex-direction: column; align-items: flex-start; border-left: 6px solid #a21caf;">
+            <div style="font-size: 1.7rem; font-weight: 700; color: #222;">Shs {{ number_format($monthlyRevenue ?? 0, 2) }}</div>
+            <div style="color: #555; font-size: 1.05rem; margin-top: 0.2rem;">Monthly Revenue</div>
+        </div>
     </div>
 </div>
 @endsection

@@ -2,12 +2,12 @@
     <i class="fas fa-store"></i> Control Panel
 </a>
 
-<a href="{{ route('vendor.manufacturer-orders') }}" class="nav-item {{ request()->is('vendor/manufacturer-orders*') ? 'active' : '' }}">
-    <i class="fas fa-list-check"></i> Orders
-</a>
-
 <a href="{{ route('vendor.products') }}" class="nav-item {{ request()->is('vendor/products*') ? 'active' : '' }}">
     <i class="fas fa-box"></i> Products
+</a>
+
+<a href="{{ route('vendor.manufacturer-orders') }}" class="nav-item {{ request()->is('vendor/manufacturer-orders*') ? 'active' : '' }}">
+    <i class="fas fa-list-check"></i> Orders
 </a>
 
 <a href="{{ route('vendor.retailer-orders.index') }}" class="nav-item {{ request()->is('vendor/orders*') ? 'active' : '' }}">
@@ -18,11 +18,7 @@
     <i class="fas fa-warehouse"></i> Warehouse Access
 </a>
 
-<a href="{{ route('vendor.delivery') }}" class="nav-item {{ request()->is('vendor/delivery*') ? 'active' : '' }}">
-    <i class="fas fa-truck"></i> Car Delivery
-</a>
-
-<a href="{{ route('vendor.tracking') }}" class="nav-item {{ request()->is('vendor/tracking*') ? 'active' : '' }}">
+<a href="{{ route('vendor.tracking') }}" class="nav-item {{ request()->is('vendor/de*') ? 'active' : '' }}">
     <i class="fas fa-route"></i> Delivery Tracking
 </a>
 

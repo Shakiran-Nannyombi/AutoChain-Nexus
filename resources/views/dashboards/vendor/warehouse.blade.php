@@ -8,28 +8,28 @@
 
 @section('content')
 <div class="content-card vendor-warehouse-dashboard">
-    <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
+    <h2  style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text); letter-spacing: 0.01em;">
         Warehouse Management
     </h2>
     
     <!-- Stat Cards Row -->
     <div class="warehouse-stat-cards">
-        <div class="warehouse-stat-card" style="background: linear-gradient(135deg, var(--primary), #0d3a07); color: #fff;">
+        <div class="warehouse-stat-card" style="background: linear-gradient(125deg,  #43ab72, #1b0a44); color: #fff;">
             <div class="stat-label"><i class="fas fa-boxes"></i> Total Products</div>
-            <div class="stat-value">{{ $totalProducts }}</div>
+            <div class="stat-value">{{ $products->count() }}</div>
             <div class="stat-desc">Active products in warehouse</div>
         </div>
-        <div class="warehouse-stat-card" style="background: linear-gradient(135deg, var(--primary-light), #0a440d); color: #fff;">
+        <div class="warehouse-stat-card" style="background: linear-gradient(125deg,  #43ab72, #1b0a44); color: #fff;">
             <div class="stat-label"><i class="fas fa-warehouse"></i> Total Stock</div>
-            <div class="stat-value">{{ $totalStock }}</div>
+            <div class="stat-value">{{ $products->sum('stock') }}</div>
             <div class="stat-desc">Units in warehouse</div>
         </div>
-        <div class="warehouse-stat-card" style="background: linear-gradient(135deg, var(--accent), #4e2501); color: #fff;">
+        <div class="warehouse-stat-card" style="background: linear-gradient(125deg,  #43ab72, #1b0a44); color: #fff;">
             <div class="stat-label"><i class="fas fa-exclamation-triangle"></i> Low Stock</div>
             <div class="stat-value">{{ $lowStockProducts }}</div>
             <div class="stat-desc">Products below 10 units</div>
         </div>
-        <div class="warehouse-stat-card" style="background: linear-gradient(135deg, var(--secondary), #b35400); color: #fff;">
+        <div class="warehouse-stat-card" style="background: linear-gradient(125deg,  #43ab72, #1b0a44); color: #fff;">
             <div class="stat-label"><i class="fas fa-times-circle"></i> Out of Stock</div>
             <div class="stat-value">{{ $outOfStockProducts }}</div>
             <div class="stat-desc">Products with zero stock</div>
@@ -51,29 +51,28 @@
     <!-- Products Table -->
     <div class="warehouse-table-card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="chart-title">Product Inventory</div>
-            <a href="{{ route('vendor.products') }}" style="color: var(--primary); font-weight: 600; font-size: 1rem;">Manage Products</a>
+            <div class="chart-title" style="color: var(--text); font-size: 1.8rem; font-weight: 600;">Product Inventory</div>
         </div>
         <div class="table-responsive">
-            <table class="dashboard-table">
-                <thead>
+            <table class="dashboard-table" style="width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden;">
+                <thead style="background:#43ab72; color:var(--text);">
                     <tr>
-                        <th>Product Name</th>
-                        <th>Category</th>
-                        <th>Current Stock</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th style="padding:0.9rem 0.7rem;">Product Name</th>
+                        <th style="padding:0.9rem 0.7rem;">Category</th>
+                        <th style="padding:0.9rem 0.7rem;">Current Stock</th>
+                        <th style="padding:0.9rem 0.7rem;">Price</th>
+                        <th style="padding:0.9rem 0.7rem;">Status</th>
+                        <th style="padding:0.9rem 0.7rem;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($products as $product)
-                    <tr>
-                        <td><a href="#" style="color: #2563eb; font-weight: 600;">{{ $product->name }}</a></td>
-                        <td>{{ $product->category }}</td>
-                        <td>{{ $product->stock }} units</td>
-                        <td>${{ number_format($product->price, 2) }}</td>
-                        <td>
+                    <tr style="background: {{ $loop->even ? '#f8fafc' : '#fff' }}; border-bottom:1px solid #e5e7eb; transition:background 0.2s;" onmouseover="this.style.background='#e6f7f1'" onmouseout="this.style.background='{{ $loop->even ? '#f8fafc' : '#fff' }}'">
+                        <td style="padding:0.8rem 0.7rem;"><a href="#" style="color:var(--text); font-weight:600;">{{ $product->name }}</a></td>
+                        <td style="padding:0.8rem 0.7rem;">{{ $product->category }}</td>
+                        <td style="padding:0.8rem 0.7rem;">{{ $product->stock }} units</td>
+                        <td style="padding:0.8rem 0.7rem;">${{ number_format($product->price, 2) }}</td>
+                        <td style="padding:0.8rem 0.7rem; font-weight:600;">
                             @if($product->stock == 0)
                                 <span class="status-badge danger">Out of Stock</span>
                             @elseif($product->stock < 10)
@@ -82,10 +81,8 @@
                                 <span class="status-badge success">In Stock</span>
                             @endif
                         </td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="updateStock({{ $product->id }}, {{ $product->stock }})">
-                                Update Stock
-                            </button>
+                        <td style="padding:0.8rem 0.7rem;">
+                            <!-- Update Stock button removed as requested -->
                         </td>
                     </tr>
                     @empty
@@ -95,50 +92,6 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- Recent Stock Movements & Recent Activity Row -->
-    <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 2rem; align-items: flex-start;">
-        <!-- Recent Stock Movements -->
-        <div style="flex: 1 1 320px; min-width: 320px; max-width: 370px; display: flex; flex-direction: column; gap: 1.5rem;">
-            <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 1.5rem 2rem;">
-                <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">Recent Stock Movements</div>
-                <div style="font-size: 0.98rem; color: var(--text-light); margin-bottom: 1rem;">Latest stock transfers to retailers</div>
-                <div style="max-height: 300px; overflow-y: auto;">
-                    @forelse($recentStockMovements as $movement)
-                    <div style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">
-                        <div style="font-weight: 600; color: var(--text-dark);">{{ $movement->car_model }}</div>
-                        <div style="font-size: 0.9rem; color: var(--text-light);">
-                            {{ $movement->quantity_received }} units to {{ $movement->retailer->name ?? 'Unknown Retailer' }}
-                        </div>
-                        <div style="font-size: 0.8rem; color: var(--text-light);">
-                            {{ $movement->created_at->diffForHumans() }}
-                </div>
-            </div>
-                    @empty
-                    <div style="text-align: center; color: var(--text-light); padding: 1rem;">
-                        No recent stock movements
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Warehouse Activity -->
-        <div class="dashboard-activity-card" style="flex: 2 1 400px; min-width: 320px;">
-            <h3 class="dashboard-section-title"><i class="fas fa-history"></i> Recent Warehouse Activity</h3>
-            <ul class="activity-list">
-                @forelse($recentStockMovements->take(5) as $movement)
-                <li>
-                    <span class="activity-dot info"></span> 
-                    {{ $movement->quantity_received }} {{ $movement->car_model }} sent to {{ $movement->retailer->name ?? 'retailer' }}
-                    <span class="activity-time">{{ $movement->created_at->diffForHumans() }}</span>
-                </li>
-                @empty
-                <li><span class="activity-dot info"></span> No recent activity</li>
-                @endforelse
-            </ul>
         </div>
     </div>
 </div>
@@ -188,9 +141,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 center: ['40%', '50%'],
                 label: { show: true, position: 'center', formatter: '{b}', fontSize: 16, fontWeight: 600, color: '#333' },
                 data: [
-                    { value: {{ $products->where('stock', '>', 10)->count() }}, name: 'In Stock', itemStyle: { color: '#27ae60' } },
+                    { value: {{ $products->where('stock', '>', 10)->count() }}, name: 'In Stock', itemStyle: { color: '#43ab72' } },
                     { value: {{ $lowStockProducts }}, name: 'Low Stock', itemStyle: { color: '#f39c12' } },
-                    { value: {{ $outOfStockProducts }}, name: 'Out of Stock', itemStyle: { color: '#e74c3c' } }
+                    { value: {{ $outOfStockProducts }}, name: 'Out of Stock', itemStyle: { color: '#1b0a44' } }
                 ]
             }]
         };
@@ -204,7 +157,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var barChart = echarts.init(barDom);
         var productNames = @json($products->pluck('name')->take(5));
         var stockLevels = @json($products->pluck('stock')->take(5));
-        
         var barOption = {
             tooltip: { trigger: 'axis' },
             grid: { left: 40, right: 20, top: 40, bottom: 40 },
@@ -222,9 +174,12 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             series: [{
                 name: 'Stock Level',
-                    type: 'bar',
+                type: 'bar',
                 data: stockLevels,
-                    itemStyle: { color: '#16610E' },
+                itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#43ab72' },
+                    { offset: 1, color: '#1b0a44' }
+                ]) },
                 barWidth: 20
             }]
         };

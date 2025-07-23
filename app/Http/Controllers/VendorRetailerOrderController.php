@@ -18,29 +18,10 @@ class VendorRetailerOrderController extends Controller
     // List all retailer orders for the current vendor
     public function index()
     {
-        $vendorId = Auth::id();
-        $retailerOrders = RetailerOrder::where('vendor_id', $vendorId)
-            ->with('retailer')
+        $retailerOrders = \App\Models\RetailerOrder::with(['retailer', 'vendor'])
             ->orderByDesc('created_at')
             ->get();
-        // Add manufacturers for the new order form
-        $manufacturers = \App\Models\User::where('role', 'manufacturer')
-            ->where('status', 'approved')
-            ->orderBy('name')
-            ->get(['id', 'name', 'company']);
-        // Fetch only products for this vendor
-        $vendorProducts = \App\Models\Product::where('vendor_id', $vendorId)->get();
-        // Remove all manufacturer order logic from this controller. Only keep retailer order logic if needed.
-        // Fetch vendor addresses (from vendors table, address column)
-        $vendorAddresses = [];
-        $vendor = \App\Models\Vendor::where('user_id', $vendorId)->first();
-        if ($vendor && $vendor->address) {
-            // Support comma-separated or semicolon-separated addresses
-            $vendorAddresses = preg_split('/[;,]/', $vendor->address);
-            $vendorAddresses = array_map('trim', $vendorAddresses);
-            $vendorAddresses = array_filter($vendorAddresses);
-        }
-        return view('dashboards.vendor.retailer-order-details', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses'));
+        return view('dashboards.vendor.retailer-orders', compact('retailerOrders'));
     }
 
     // Show a specific retailer order
@@ -79,10 +60,13 @@ class VendorRetailerOrderController extends Controller
         ]);
 
         // Notify vendor
-        Auth::user()->notify(new VendorNotification(
-            'Order Confirmed', 
-            'Retailer order #' . $order->id . ' has been confirmed.'
-        ));
+        $vendor = Auth::user();
+        if (method_exists($vendor, 'notify')) {
+            $vendor->notify(new VendorNotification(
+                'Order Confirmed', 
+                'Retailer order #' . $order->id . ' has been confirmed.'
+            ));
+        }
 
         // Notify retailer
         $retailer = User::find($order->retailer_id);
@@ -118,6 +102,28 @@ class VendorRetailerOrderController extends Controller
                       'Shipped: ' . ($validated['shipping_notes'] ?? 'Order shipped'),
         ]);
 
+        // Create or update Delivery record
+        $driver = 'Demo Driver';
+        $destination = 'Demo Destination';
+        $progress = 75;
+        $eta = Carbon::now()->addDays(2)->format('Y-m-d H:i');
+        $tracking = [
+            ['status' => 'Package loaded', 'location' => 'Warehouse', 'timestamp' => Carbon::now()->subDays(2)->format('Y-m-d H:i')],
+            ['status' => 'Departed', 'location' => 'Warehouse', 'timestamp' => Carbon::now()->subDay()->format('Y-m-d H:i')],
+            ['status' => 'In transit', 'location' => $destination, 'timestamp' => Carbon::now()->format('Y-m-d H:i')],
+        ];
+        \App\Models\Delivery::updateOrCreate(
+            ['retailer_order_id' => $order->id],
+            [
+                'status' => 'shipped',
+                'driver' => $driver,
+                'destination' => $destination,
+                'progress' => $progress,
+                'eta' => $eta,
+                'tracking_history' => $tracking,
+            ]
+        );
+
         // Log activity
         VendorActivity::create([
             'vendor_id' => $vendorId,
@@ -126,7 +132,7 @@ class VendorRetailerOrderController extends Controller
         ]);
 
         // Notify retailer
-        $retailer = User::find($order->retailer_id);
+        $retailer = User::find($order->user_id);
         if ($retailer) {
             $retailer->notify(new RetailerNotification(
                 'Order Shipped', 

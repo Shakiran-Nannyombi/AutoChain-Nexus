@@ -8,28 +8,16 @@
 
 @section('content')
 <div class="content-card">
-    <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">
-        Delivery Tracking
-    </h2>
-    
-    <!-- Tracking Statistics -->
-    <div class="tracking-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-        <div class="stat-card" style="background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="color: var(--primary); font-weight: 600;">Active Deliveries</div>
-            <div style="font-size: 1.5rem; font-weight: bold;">{{ $activeDeliveries->count() }}</div>
-        </div>
-        <div class="stat-card" style="background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="color: var(--accent); font-weight: 600;">In Transit</div>
-            <div style="font-size: 1.5rem; font-weight: bold;">{{ $activeDeliveries->where('status', 'to_be_delivered')->count() }}</div>
-        </div>
-        <div class="stat-card" style="background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="color: var(--warning); font-weight: 600;">Pending</div>
-            <div style="font-size: 1.5rem; font-weight: bold;">{{ $activeDeliveries->whereIn('status', ['to_be_packed', 'to_be_shipped'])->count() }}</div>
-        </div>
-        <div class="stat-card" style="background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="color: var(--success); font-weight: 600;">Completed Today</div>
-            <div style="font-size: 1.5rem; font-weight: bold;">{{ $trackingHistory->where('status', 'accepted')->where('updated_at', '>=', now()->startOfDay())->count() }}</div>
-        </div>
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--text); letter-spacing: 0.01em;">Delivery Tracking</h2>
+    </div>
+    <!-- Status Legend -->
+    <div style="margin-bottom: 1rem;">
+        <span class="status-badge to_be_packed">To Be Packed</span>
+        <span class="status-badge to_be_shipped">To Be Shipped</span>
+        <span class="status-badge to_be_delivered">In Transit</span>
+        <span class="status-badge accepted">Delivered</span>
+        <span class="status-badge rejected">Rejected</span>
     </div>
 
     <div class="delivery-tracking-grid" style="display: flex; min-height: 70vh;">
@@ -37,38 +25,117 @@
         <div class="tracking-list" style="width: 340px; background: #fafbfc; border-right: 1px solid #eee; padding: 1.5rem 0; overflow-y: auto;">
             <h3 style="margin-left: 2rem; color: var(--primary); font-size: 1.2rem; margin-bottom: 1.2rem;">Active Deliveries</h3>
             <div id="deliveryList">
-                @forelse($activeDeliveries as $index => $delivery)
-                <div class="delivery-card{{ $index === 0 ? ' selected' : '' }}" data-id="{{ $delivery->id }}">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">#{{ $delivery->id }}</div>
-                        <span class="status-badge {{ $delivery->status }}">{{ ucfirst(str_replace('_', ' ', $delivery->status)) }}</span>
-                    </div>
-                    <div style="margin: 0.7rem 0 0.5rem 0; font-size: 0.98rem; color: var(--text-dark);">
-                        <i class="fas fa-car" style="color: var(--primary);"></i> {{ $delivery->car_model }}<br>
-                        <i class="fas fa-boxes" style="color: var(--accent);"></i> {{ $delivery->quantity_received }} units
-                    </div>
-                    <div class="card-footer">
-                        <div class="retailer-info">
-                            <div class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin-right: 0.7rem; font-weight: bold;">
-                                {{ substr($delivery->retailer->name ?? 'R', 0, 1) }}
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: var(--text-dark);">{{ $delivery->retailer->name ?? 'Unknown Retailer' }}</div>
-                                <div style="font-size: 0.92rem; color: var(--text-light);">Retailer</div>
-                                <div style="font-size: 0.92rem; color: var(--text-light);">{{ $delivery->created_at ? \Carbon\Carbon::parse($delivery->created_at)->format('M d, Y') : 'N/A' }}</div>
-                            </div>
+                @if($activeDeliveries->count() === 0)
+                    <!-- Demo Deliveries -->
+                    <div class="delivery-card selected" data-id="101">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">#101</div>
+                            <span class="status-badge to_be_delivered">In Transit</span>
                         </div>
-                        <button class="icon-btn" onclick="getDeliveryDetails({{ $delivery->id }})">
-                            <i class="fas fa-info-circle"></i>
-                        </button>
+                        <div style="margin: 0.7rem 0 0.5rem 0; font-size: 0.98rem; color: var(--text-dark);">
+                            <i class="fas fa-car" style="color: var(--primary);"></i> Toyota Corolla 2024<br>
+                            <i class="fas fa-boxes" style="color: var(--accent);"></i> 20 units
+                        </div>
+                        <div class="progress" style="height: 8px; background: #e0e7ef; border-radius: 4px; margin: 0.5rem 0;">
+                            <div style="width: 60%; background: var(--primary); height: 100%; border-radius: 4px;"></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="retailer-info">
+                                <div class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin-right: 0.7rem; font-weight: bold;">O</div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--text-dark);">Olivia Turner</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">Retailer</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">Jul 20, 2025</div>
+                                </div>
+                            </div>
+                            <button class="icon-btn" onclick="updateDemoInfo(101)"><i class="fas fa-info-circle"></i></button>
+                        </div>
                     </div>
-                </div>
-                @empty
-                <div style="text-align: center; padding: 2rem; color: var(--text-light);">
-                    <i class="fas fa-truck" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
-                    No active deliveries
-                </div>
-                @endforelse
+                    <div class="delivery-card" data-id="102">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">#102</div>
+                            <span class="status-badge to_be_packed">To Be Packed</span>
+                        </div>
+                        <div style="margin: 0.7rem 0 0.5rem 0; font-size: 0.98rem; color: var(--text-dark);">
+                            <i class="fas fa-car" style="color: var(--primary);"></i> Honda Civic 2024<br>
+                            <i class="fas fa-boxes" style="color: var(--accent);"></i> 12 units
+                        </div>
+                        <div class="progress" style="height: 8px; background: #e0e7ef; border-radius: 4px; margin: 0.5rem 0;">
+                            <div style="width: 20%; background: #e67e22; height: 100%; border-radius: 4px;"></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="retailer-info">
+                                <div class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin-right: 0.7rem; font-weight: bold;">E</div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--text-dark);">Ethan Brooks</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">Retailer</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">Jul 19, 2025</div>
+                                </div>
+                            </div>
+                            <button class="icon-btn" onclick="updateDemoInfo(102)"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    </div>
+                    <div class="delivery-card" data-id="103">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">#103</div>
+                            <span class="status-badge accepted">Delivered</span>
+                        </div>
+                        <div style="margin: 0.7rem 0 0.5rem 0; font-size: 0.98rem; color: var(--text-dark);">
+                            <i class="fas fa-car" style="color: var(--primary);"></i> Ford F-150 2024<br>
+                            <i class="fas fa-boxes" style="color: var(--accent);"></i> 8 units
+                        </div>
+                        <div class="progress" style="height: 8px; background: #e0e7ef; border-radius: 4px; margin: 0.5rem 0;">
+                            <div style="width: 100%; background: #155724; height: 100%; border-radius: 4px;"></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="retailer-info">
+                                <div class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin-right: 0.7rem; font-weight: bold;">S</div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--text-dark);">Sophia Bennett</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">Retailer</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">Jul 18, 2025</div>
+                                </div>
+                            </div>
+                            <button class="icon-btn" onclick="updateDemoInfo(103)"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                    </div>
+                @else
+                    @forelse($activeDeliveries as $index => $delivery)
+                    <div class="delivery-card{{ $index === 0 ? ' selected' : '' }}" data-id="{{ $delivery->id }}">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">#{{ $delivery->id }}</div>
+                            <span class="status-badge {{ $delivery->status }}">{{ ucfirst(str_replace('_', ' ', $delivery->status)) }}</span>
+                        </div>
+                        <div style="margin: 0.7rem 0 0.5rem 0; font-size: 0.98rem; color: var(--text-dark);">
+                            <i class="fas fa-car" style="color: var(--primary);"></i> {{ $delivery->car_model }}<br>
+                            <i class="fas fa-boxes" style="color: var(--accent);"></i> {{ $delivery->quantity_received }} units
+                        </div>
+                        <div class="progress" style="height: 8px; background: #e0e7ef; border-radius: 4px; margin: 0.5rem 0;">
+                            <div style="width: {{ $delivery->progress_percentage }}%; background: var(--primary); height: 100%; border-radius: 4px;"></div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="retailer-info">
+                                <div class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin-right: 0.7rem; font-weight: bold;">
+                                    {{ substr($delivery->retailer->name ?? 'R', 0, 1) }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--text-dark);">{{ $delivery->retailer->name ?? 'Unknown Retailer' }}</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">Retailer</div>
+                                    <div style="font-size: 0.92rem; color: var(--text-light);">{{ $delivery->created_at ? \Carbon\Carbon::parse($delivery->created_at)->format('M d, Y') : 'N/A' }}</div>
+                                </div>
+                            </div>
+                            <button class="icon-btn" onclick="getDeliveryDetails({{ $delivery->id }})">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    @empty
+                    <div style="text-align: center; padding: 2rem; color: var(--text-light);">
+                        <i class="fas fa-truck" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        No active deliveries
+                    </div>
+                    @endforelse
+                @endif
             </div>
         </div>
 

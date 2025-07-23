@@ -22,7 +22,7 @@
     </div>
 @endif
 <div class="content-card manufacturer-orders">
-    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--text); letter-spacing: 0.01em;"><i class="fas fa-shopping-cart"></i>Manufacturer Orders</h1>
+    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--text); letter-spacing: 0.01em;">Manufacturer Orders</h1>
     <div class="subtitle">Create new orders to manufacturers and review your order history.</div>
     <div class="tab-buttons">
         <button class="tab-link active" data-tab="new-order">New Order</button>

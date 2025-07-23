@@ -7,57 +7,37 @@
 @endsection
 
 @section('content')
-<div class="container">
-    <div class="page-header">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h1>Order</h1>
-                <p>Retailer Order Details</p>
-            </div>
-            <a href="{{ route('vendor.retailer-orders.index') }}" class="button button-gray">
-                <i class="fas fa-arrow-left"></i> Back to Orders
-            </a>
-        </div>
-    </div>
-        
-    
-        @if ($retailerOrders->isEmpty())
-        <p>No retailer orders found.</p>
-    @else
-        <table>
-            <thead>
+<div class="content-card" style="margin-bottom: 2rem;">
+    <h2  style="font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; color: var(--text); letter-spacing: 0.01em;">Retailer Order Details</h2>
+    <div style="overflow-x: auto; margin-bottom: 2rem;">
+        <table class="orders-table" style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden;">
+            <thead style="background: var(--primary-light); color: #d8f9db;">
                 <tr>
-                    <th>Order ID</th>
-                    <th>Retailer</th>
-                    <th>Product</th>
-                    <th>Status</th>
-                    <th>Details</th>
+                    <th style="padding: 0.7rem;">Order ID</th>
+                    <th style="padding: 0.7rem;">Retailer</th>
+                    <th style="padding: 0.7rem;">Product</th>
+                    <th style="padding: 0.7rem;">Status</th>
+                    <th style="padding: 0.7rem;">Details</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($retailerOrders as $order)
                     <tr>
-                        <td>{{ $order->id }}</td>
-                        <td>{{ $order->retailer->name ?? 'N/A' }}</td>
-                        <td>{{ $order->product->name ?? 'N/A' }}</td>
-                        <td>{{ $order->status }}</td>
-                        <td>
-                            <a href="{{ route('vendor.retailer-orders.show', $order->id) }}">
-                                View
-                            </a>
-                        </td>
+                        <td style="padding: 0.7rem;">{{ $order->id }}</td>
+                        <td style="padding: 0.7rem;">{{ $order->retailer->name ?? 'N/A' }}</td>
+                        <td style="padding: 0.7rem;">{{ $order->car_model ?? 'N/A' }}</td>
+                        <td style="padding: 0.7rem;">{{ ucfirst($order->status) }}</td>
+                        <td style="padding: 0.7rem;"><a href="{{ route('vendor.retailer-orders.show', $order->id) }}">View</a></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-    @endif
-        
-
-    <div class="order-detail-container">
-        <div class="order-info-grid">
-            <!-- Order Status -->
+    </div>
+    @if(isset($order))
+    <div class="content-card" style="margin-bottom: 2rem;">
+        <div class="order-details-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             <div class="info-card">
-                <h3>Order Status</h3>
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Order Status</h3>
                 <div class="status-display">
                     <span class="status-badge status-{{ $order->status }}">
                         {{ ucfirst($order->status) }}
@@ -98,100 +78,67 @@
                     @endif
                 </div>
             </div>
-
-            <!-- Customer Information -->
             <div class="info-card">
-                <h3>Customer Information</h3>
-                <div class="info-item">
-                    <label>Customer Name:</label>
-                    <span>{{ $order->customer_name }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Retailer:</label>
-                    <span>{{ $order->retailer->name ?? 'N/A' }}</span>
-                </div>
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Customer Information</h3>
+                <div class="info-item"><label>Customer Name:</label> <span>{{ $order->customer_name }}</span></div>
+                <div class="info-item"><label>Retailer:</label> <span>{{ $order->retailer->name ?? 'N/A' }}</span></div>
             </div>
-
-            <!-- Product Information -->
             <div class="info-card">
-                <h3>Product Details</h3>
-                <div class="info-item">
-                    <label>Car Model:</label>
-                    <span>{{ $order->car_model }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Quantity:</label>
-                    <span>{{ $order->quantity }}</span>
-                </div>
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Product Details</h3>
+                <div class="info-item"><label>Car Model:</label> <span>{{ $order->car_model }}</span></div>
+                <div class="info-item"><label>Quantity:</label> <span>{{ $order->quantity }}</span></div>
                 @if($order->total_amount)
-                <div class="info-item">
-                    <label>Total Amount:</label>
-                    <span>${{ number_format($order->total_amount, 2) }}</span>
-                </div>
+                <div class="info-item"><label>Total Amount:</label> <span>${{ number_format($order->total_amount, 2) }}</span></div>
                 @endif
             </div>
-
-            <!-- Actions -->
             <div class="info-card">
-                <h3>Actions</h3>
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Actions</h3>
                 <div class="action-buttons">
                     @if($order->status === 'pending')
-                        <button class="button button-green confirm-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-check"></i> Confirm Order
-                        </button>
-                        <button class="button button-red reject-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-times"></i> Reject Order
-                        </button>
+                        <button class="button button-green confirm-order" data-order-id="{{ $order->id }}"><i class="fas fa-check"></i> Confirm Order</button>
+                        <button class="button button-red reject-order" data-order-id="{{ $order->id }}"><i class="fas fa-times"></i> Reject Order</button>
                     @elseif($order->status === 'confirmed')
-                        <button class="button button-blue ship-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-shipping-fast"></i> Ship Order
-                        </button>
+                        <button class="button button-blue ship-order" data-order-id="{{ $order->id }}"><i class="fas fa-shipping-fast"></i> Ship Order</button>
                     @elseif($order->status === 'shipped')
-                        <button class="button button-green deliver-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-check-double"></i> Mark Delivered
-                        </button>
+                        <button class="button button-green deliver-order" data-order-id="{{ $order->id }}"><i class="fas fa-check-double"></i> Mark Delivered</button>
                     @endif
                 </div>
             </div>
         </div>
-
-        <!-- Notes Section -->
-        <div class="notes-section">
-            <h3>Order Notes</h3>
-            <div class="notes-content">
+        <div class="content-card" style="margin-bottom: 2rem;">
+            <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Order Notes</h3>
+            <div class="notes-content" style="margin-bottom: 1rem;">
                 @if($order->notes)
                     <div class="notes-text">{{ $order->notes }}</div>
                 @else
                     <div class="no-notes">No notes available for this order.</div>
                 @endif
             </div>
-            <button class="button button-blue" onclick="openNotesModal()">
-                <i class="fas fa-edit"></i> Update Notes
-            </button>
+            <button class="button button-blue" onclick="openNotesModal()"><i class="fas fa-edit"></i> Update Notes</button>
         </div>
-    </div>
-</div>
-
-<!-- Notes Modal -->
-<div id="notesModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Update Order Notes</h2>
-            <span class="close">&times;</span>
-        </div>
-        <form id="updateNotesForm">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="notes">Notes</label>
-                    <textarea id="notes" name="notes" rows="5" placeholder="Add or update notes for this order...">{{ $order->notes }}</textarea>
+        <!-- Notes Modal -->
+        <div class="notes-modal" id="notesModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Update Order Notes</h2>
+                    <span class="close" onclick="closeModal('notesModal')">&times;</span>
                 </div>
+                <form id="updateNotesForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="notes">Notes</label>
+                            <textarea id="notes" name="notes" rows="5" placeholder="Add or update notes for this order...">{{ $order->notes }}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="button button-gray" onclick="closeModal('notesModal')">Cancel</button>
+                        <button type="submit" class="button button-blue">Update Notes</button>
+                    </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="button button-gray" onclick="closeModal('notesModal')">Cancel</button>
-                <button type="submit" class="button button-blue">Update Notes</button>
-            </div>
-        </form>
+        </div>
     </div>
+    @endif
 </div>
 
 <style>
@@ -424,36 +371,29 @@
 </style>
 
 @push('scripts')
+@if(isset($order))
 <script>
 // Modal functions
 function openNotesModal() {
     document.getElementById('notesModal').style.display = 'block';
 }
-
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
-
-// Close modal when clicking outside
 window.onclick = function(event) {
     if (event.target.classList.contains('modal')) {
         event.target.style.display = 'none';
     }
 }
-
-// Close modal when clicking X
 document.querySelectorAll('.close').forEach(function(closeBtn) {
     closeBtn.onclick = function() {
         closeBtn.closest('.modal').style.display = 'none';
     }
 });
-
 // Update notes
 document.getElementById('updateNotesForm').onsubmit = function(e) {
     e.preventDefault();
-    
     const formData = new FormData(this);
-    
     fetch(`/vendor/retailer-orders/{{ $order->id }}/notes`, {
         method: 'PUT',
         headers: {
@@ -466,22 +406,11 @@ document.getElementById('updateNotesForm').onsubmit = function(e) {
     .then(data => {
         if (data.success) {
             alert(data.message);
-            location.reload();
-        } else {
-            alert('Error: ' + data.message);
+            // Optionally update notes in the UI
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating notes.');
     });
-    
-    closeModal('notesModal');
 };
-
-// Action buttons (same as in retailer-orders.blade.php)
 let currentOrderId = {{ $order->id }};
-
 // Confirm order
 document.querySelectorAll('.confirm-order').forEach(function(btn) {
     btn.onclick = function() {
@@ -509,7 +438,6 @@ document.querySelectorAll('.confirm-order').forEach(function(btn) {
         }
     }
 });
-
 // Reject order
 document.querySelectorAll('.reject-order').forEach(function(btn) {
     btn.onclick = function() {
@@ -539,7 +467,6 @@ document.querySelectorAll('.reject-order').forEach(function(btn) {
         }
     }
 });
-
 // Ship order
 document.querySelectorAll('.ship-order').forEach(function(btn) {
     btn.onclick = function() {
@@ -567,7 +494,6 @@ document.querySelectorAll('.ship-order').forEach(function(btn) {
         }
     }
 });
-
 // Deliver order
 document.querySelectorAll('.deliver-order').forEach(function(btn) {
     btn.onclick = function() {
@@ -596,5 +522,6 @@ document.querySelectorAll('.deliver-order').forEach(function(btn) {
     }
 });
 </script>
+@endif
 @endpush
 @endsection 
