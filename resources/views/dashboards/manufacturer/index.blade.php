@@ -26,26 +26,30 @@
                 <h2 style="color: var(--text); font-size: 2rem; font-weight: bold; margin-bottom: 0.2rem;">
                     <i class="fas fa-industry"></i> Manufacturer Dashboard
                 </h2>
-                <div style="font-size: 1.1rem; color: var(--primary); opacity: 0.8;">Welcome back, {{ Auth::user()->name ?? 'Manufacturer' }}!</div>
+                <div style="font-size: 1.5rem; color:rgb(6, 76, 6); opacity: 0.8;">Welcome back, {{ Auth::user()->name ?? 'Manufacturer' }}!</div>
             </div>
             <!-- Quick actions can be added here if needed -->
         </div>
 
         <!-- Stats Grid (reduced to 4 relevant cards) -->
         <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
-            <div class="stat-card" style="background: #10b981; color: #fff;">
+            <div class="stat-card" style="background: #110b7d; color: #fff;">
+                <i class="fas fa-shopping-cart"></i>
                 <div style="font-size: 2rem; font-weight: bold;">{{ $activeOrders ?? 0 }}</div>
                 <div>Active Orders</div>
             </div>
-            <div class="stat-card" style="background: #3b82f6; color: #fff;">
+            <div class="stat-card" style="background: #076a09; color: #fff;">
+                <i class="fas fa-money-bill"></i>
                 <div style="font-size: 2rem; font-weight: bold;">Shs {{ number_format($monthlyRevenue ?? 0, 2) }}</div>
                 <div>Monthly Revenue</div>
             </div>
-            <div class="stat-card" style="background: #f59e0b; color: #fff;">
+            <div class="stat-card" style="background: #948d06; color: #fff;">
+                <i class="fas fa-boxes"></i>
                 <div style="font-size: 2rem; font-weight: bold;">{{ $inventoryCount ?? 0 }}</div>
                 <div>Inventory</div>
             </div>
-            <div class="stat-card" style="background: #8b5cf6; color: #fff;">
+            <div class="stat-card" style="background: #7b0581; color: #fff;">
+                <i class="fas fa-users"></i>
                 <div style="font-size: 2rem; font-weight: bold;">{{ $activeVendors ?? 0 }}</div>
                 <div>Active Vendors</div>
             </div>
@@ -78,15 +82,15 @@
 
         <!-- Recent Orders Table -->
         <div class="table-section">
-            <h4 style="color: var(--primary); margin-bottom: 1rem;">Recent Orders</h4>
+            <h4 style="color: var(--text); font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Recent Orders</h4>
             <table class="dashboard-table">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>Vendor</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
+                        <th style="color: var(--text)">Order ID</th>
+                        <th style="color: var(--text)">Vendor</th>
+                        <th style="color: var(--text)">Status</th>
+                        <th style="color: var(--text)">Date</th>
+                        <th style="color: var(--text)">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,13 +113,13 @@
 
         <!-- Low Stock Products Table -->
         <div class="table-section">
-            <h4 style="color: var(--primary); margin-bottom: 1rem;">Low Stock Products</h4>
+            <h4 style="color: var(--text); font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Low Stock Products</h4>
             <table class="dashboard-table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Current Stock</th>
-                        <th>Reorder</th>
+                        <th style="color: var(--text)">Product</th>
+                        <th style="color: var(--text)">Current Stock</th>
+                        <th style="color: var(--text)">Reorder</th>
                     </tr>
                 </thead>
                 <tbody>

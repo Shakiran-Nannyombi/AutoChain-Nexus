@@ -28,15 +28,15 @@
         </div>
         <!-- Production Summary Statistics -->
         <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
-            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, var(--primary), #0d3a07); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+            <div style="flex:1; min-width:200px; background: #090857; color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
                 <div style="font-size: 1.1rem; opacity: 0.9;">Total Items Processed</div>
                 <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalItemsProcessed }}</div>
             </div>
-            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #27ae60, #16610e); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+            <div style="flex:1; min-width:200px; background: #090857; color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
                 <div style="font-size: 1.1rem; opacity: 0.9;">Total Completed Items</div>
                 <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalCompletedItems }}</div>
             </div>
-            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #b71c1c, #e57373); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+            <div style="flex:1; min-width:200px; background: #090857; color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
                 <div style="font-size: 1.1rem; opacity: 0.9;">Total Failed Items</div>
                 <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalFailedItems }}</div>
             </div>
