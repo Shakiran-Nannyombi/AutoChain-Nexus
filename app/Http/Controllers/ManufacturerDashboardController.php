@@ -476,24 +476,10 @@ class ManufacturerDashboardController extends Controller
     public function orders(Request $request)
     {
         $manufacturerId = session('user_id') ?? Auth::id();
-        $query = \App\Models\ChecklistRequest::where('manufacturer_id', $manufacturerId)->with('supplier');
-
-        // Filter by status
-        $status = $request->input('status');
-        if ($status && in_array($status, ['pending', 'fulfilled', 'cancelled'])) {
-            $query->where('status', $status);
-        }
-
-        // Filter by supplier name or email
-        $search = $request->input('search');
-        if ($search) {
-            $query->whereHas('supplier', function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%") ;
-            });
-        }
-
-        $supplierOrders = $query->orderByDesc('created_at')->get();
+        // Load supplier orders (all for now, or filter by supplier if needed)
+        $supplierOrders = \App\Models\SupplierOrder::with(['supplier', 'items'])
+            ->orderByDesc('created_at')
+            ->get();
         $vendorOrdersQuery = \App\Models\VendorOrder::where('manufacturer_id', $manufacturerId);
         $vendorStatus = $request->input('vendor_status');
         if ($vendorStatus && in_array($vendorStatus, ['fulfilled', 'cancelled'])) {
@@ -501,7 +487,7 @@ class ManufacturerDashboardController extends Controller
         }
         $vendorOrders = $vendorOrdersQuery->orderByDesc('created_at')->get();
         $productPrices = \DB::table('products')->pluck('price', 'name');
-        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'search', 'status', 'productPrices'));
+        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'productPrices'));
     }
 
     public function ordersPartial(Request $request)
