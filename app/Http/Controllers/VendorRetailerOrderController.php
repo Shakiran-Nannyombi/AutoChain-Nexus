@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 class VendorRetailerOrderController extends Controller
 {
     // List all retailer orders for the current vendor
-    public function index()
+    public function index(Request $request)
     {
         $vendorId = Auth::id();
         $retailerOrders = RetailerOrder::where('vendor_id', $vendorId)
@@ -43,8 +43,17 @@ class VendorRetailerOrderController extends Controller
             $vendorAddresses = preg_split('/[;,]/', $vendor->address);
             $vendorAddresses = array_map('trim', $vendorAddresses);
             $vendorAddresses = array_filter($vendorAddresses);
+
+        $selectedOrder = null;
+    
+    // Get the first order if none is selected
+    if ($request->has('selected')) {
+        $selectedOrder = $retailerOrders->firstWhere('id', $request->selected);
+    } elseif ($retailerOrders->isNotEmpty()) {
+        $selectedOrder = $retailerOrders->first();
+    }
         }
-        return view('dashboards.vendor.retailer-order-details', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses'));
+        return view('dashboards.vendor.retailer-order-details', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses', 'selectedOrder'));
     }
 
     // Show a specific retailer order

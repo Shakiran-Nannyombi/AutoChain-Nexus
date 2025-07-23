@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Order Details')
+@section('title', 'Order Management')
 
 @section('sidebar-content')
     @include('dashboards.vendor.sidebar')
@@ -11,8 +11,8 @@
     <div class="page-header">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h1>Order</h1>
-                <p>Retailer Order Details</p>
+                <h1>Order Management</h1>
+                <p>View and manage all retailer orders</p>
             </div>
             <a href="{{ route('vendor.retailer-orders.index') }}" class="button button-gray">
                 <i class="fas fa-arrow-left"></i> Back to Orders
@@ -20,156 +20,164 @@
         </div>
     </div>
         
-    
-        @if ($retailerOrders->isEmpty())
+    @if ($retailerOrders->isEmpty())
         <p>No retailer orders found.</p>
     @else
-        <table>
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Retailer</th>
-                    <th>Product</th>
-                    <th>Status</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($retailerOrders as $order)
+        <!-- Orders Table -->
+        <div class="orders-table-container">
+            <table class="orders-table">
+                <thead>
                     <tr>
-                        <td>{{ $order->id }}</td>
-                        <td>{{ $order->retailer->name ?? 'N/A' }}</td>
-                        <td>{{ $order->product->name ?? 'N/A' }}</td>
-                        <td>{{ $order->status }}</td>
-                        <td>
-                            <a href="{{ route('vendor.retailer-orders.show', $order->id) }}">
-                                View
-                            </a>
-                        </td>
+                        <th>Order ID</th>
+                        <th>Retailer</th>
+                        <th>Product</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($retailerOrders as $order)
+                        <tr data-order-id="{{ $order->id }}" class="{{ $selectedOrder && $selectedOrder->id == $order->id ? 'active' : '' }}">
+                            <td>{{ $order->id }}</td>
+                            <td>{{ $order->retailer->name ?? 'N/A' }}</td>
+                            <td>{{ $order->car_model }}</td>
+                            <td>
+                                <span class="status-badge status-{{ $order->status }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
+                            <td class="action-buttons">
+                                @if($order->status === 'pending')
+                                    <button class="button button-sm button-green confirm-order" data-order-id="{{ $order->id }}">
+                                        <i class="fas fa-check"></i> Confirm
+                                    </button>
+                                    <button class="button button-sm button-red reject-order" data-order-id="{{ $order->id }}">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                @elseif($order->status === 'confirmed')
+                                    <button class="button button-sm button-blue ship-order" data-order-id="{{ $order->id }}">
+                                        <i class="fas fa-shipping-fast"></i> Ship
+                                    </button>
+                                @elseif($order->status === 'shipped')
+                                    <button class="button button-sm button-green deliver-order" data-order-id="{{ $order->id }}">
+                                        <i class="fas fa-check-double"></i> Deliver
+                                    </button>
+                                @endif
+                                <button class="button button-sm button-gray view-details" data-order-id="{{ $order->id }}">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Details Panel -->
+        <div class="order-details-panel">
+            @if($selectedOrder)
+                <div class="order-detail-container">
+                    <div class="order-info-grid">
+                        <!-- Order Status Timeline -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-history"></i> Order Status</h3>
+                            <div class="status-display">
+                                <span class="status-badge status-{{ $selectedOrder->status }}">
+                                    {{ ucfirst($selectedOrder->status) }}
+                                </span>
+                            </div>
+                            <div class="status-timeline">
+                                @if($selectedOrder->ordered_at)
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-content">
+                                            <strong>Ordered:</strong> {{ \Carbon\Carbon::parse($selectedOrder->ordered_at)->format('M d, Y H:i') }}
+                                        </div>
+                                    </div>
+                                @endif
+                                @if($selectedOrder->confirmed_at)
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-content">
+                                            <strong>Confirmed:</strong> {{ \Carbon\Carbon::parse($selectedOrder->confirmed_at)->format('M d, Y H:i') }}
+                                        </div>
+                                    </div>
+                                @endif
+                                @if($selectedOrder->shipped_at)
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-content">
+                                            <strong>Shipped:</strong> {{ \Carbon\Carbon::parse($selectedOrder->shipped_at)->format('M d, Y H:i') }}
+                                        </div>
+                                    </div>
+                                @endif
+                                @if($selectedOrder->delivered_at)
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-content">
+                                            <strong>Delivered:</strong> {{ \Carbon\Carbon::parse($selectedOrder->delivered_at)->format('M d, Y H:i') }}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Customer Information -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-user"></i> Customer Information</h3>
+                            <div class="info-item">
+                                <label>Customer Name:</label>
+                                <span>{{ $selectedOrder->customer_name }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Retailer:</label>
+                                <span>{{ $selectedOrder->retailer->name ?? 'N/A' }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Product Information -->
+                        <div class="info-card">
+                            <h3><i class="fas fa-box"></i> Product Details</h3>
+                            <div class="info-item">
+                                <label>Car Model:</label>
+                                <span>{{ $selectedOrder->car_model }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Quantity:</label>
+                                <span>{{ $selectedOrder->quantity }}</span>
+                            </div>
+                            @if($selectedOrder->total_amount)
+                            <div class="info-item">
+                                <label>Total Amount:</label>
+                                <span>${{ number_format($selectedOrder->total_amount, 2) }}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="notes-section">
+                        <h3><i class="fas fa-sticky-note"></i> Order Notes</h3>
+                        <div class="notes-content">
+                            @if($selectedOrder->notes)
+                                <div class="notes-text">{{ $selectedOrder->notes }}</div>
+                            @else
+                                <div class="no-notes">No notes available for this order.</div>
+                            @endif
+                        </div>
+                        <button class="button button-blue" onclick="openNotesModal('{{ $selectedOrder->id }}')">
+                            <i class="fas fa-edit"></i> Update Notes
+                        </button>
+                    </div>
+                </div>
+            @else
+                <div class="no-order-selected">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Select an order to view details</p>
+                </div>
+            @endif
+        </div>
     @endif
-        
-
-    <div class="order-detail-container">
-        <div class="order-info-grid">
-            <!-- Order Status -->
-            <div class="info-card">
-                <h3>Order Status</h3>
-                <div class="status-display">
-                    <span class="status-badge status-{{ $order->status }}">
-                        {{ ucfirst($order->status) }}
-                    </span>
-                </div>
-                <div class="status-timeline">
-                    @if($order->ordered_at)
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <strong>Ordered:</strong> {{ \Carbon\Carbon::parse($order->ordered_at)->format('M d, Y H:i') }}
-                            </div>
-                        </div>
-                    @endif
-                    @if($order->confirmed_at)
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <strong>Confirmed:</strong> {{ \Carbon\Carbon::parse($order->confirmed_at)->format('M d, Y H:i') }}
-                            </div>
-                        </div>
-                    @endif
-                    @if($order->shipped_at)
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <strong>Shipped:</strong> {{ \Carbon\Carbon::parse($order->shipped_at)->format('M d, Y H:i') }}
-                            </div>
-                        </div>
-                    @endif
-                    @if($order->delivered_at)
-                        <div class="timeline-item">
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <strong>Delivered:</strong> {{ \Carbon\Carbon::parse($order->delivered_at)->format('M d, Y H:i') }}
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Customer Information -->
-            <div class="info-card">
-                <h3>Customer Information</h3>
-                <div class="info-item">
-                    <label>Customer Name:</label>
-                    <span>{{ $order->customer_name }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Retailer:</label>
-                    <span>{{ $order->retailer->name ?? 'N/A' }}</span>
-                </div>
-            </div>
-
-            <!-- Product Information -->
-            <div class="info-card">
-                <h3>Product Details</h3>
-                <div class="info-item">
-                    <label>Car Model:</label>
-                    <span>{{ $order->car_model }}</span>
-                </div>
-                <div class="info-item">
-                    <label>Quantity:</label>
-                    <span>{{ $order->quantity }}</span>
-                </div>
-                @if($order->total_amount)
-                <div class="info-item">
-                    <label>Total Amount:</label>
-                    <span>${{ number_format($order->total_amount, 2) }}</span>
-                </div>
-                @endif
-            </div>
-
-            <!-- Actions -->
-            <div class="info-card">
-                <h3>Actions</h3>
-                <div class="action-buttons">
-                    @if($order->status === 'pending')
-                        <button class="button button-green confirm-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-check"></i> Confirm Order
-                        </button>
-                        <button class="button button-red reject-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-times"></i> Reject Order
-                        </button>
-                    @elseif($order->status === 'confirmed')
-                        <button class="button button-blue ship-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-shipping-fast"></i> Ship Order
-                        </button>
-                    @elseif($order->status === 'shipped')
-                        <button class="button button-green deliver-order" data-order-id="{{ $order->id }}">
-                            <i class="fas fa-check-double"></i> Mark Delivered
-                        </button>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Notes Section -->
-        <div class="notes-section">
-            <h3>Order Notes</h3>
-            <div class="notes-content">
-                @if($order->notes)
-                    <div class="notes-text">{{ $order->notes }}</div>
-                @else
-                    <div class="no-notes">No notes available for this order.</div>
-                @endif
-            </div>
-            <button class="button button-blue" onclick="openNotesModal()">
-                <i class="fas fa-edit"></i> Update Notes
-            </button>
-        </div>
-    </div>
 </div>
 
 <!-- Notes Modal -->
@@ -183,7 +191,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="notes">Notes</label>
-                    <textarea id="notes" name="notes" rows="5" placeholder="Add or update notes for this order...">{{ $order->notes }}</textarea>
+                    <textarea id="notes" name="notes" rows="5" placeholder="Add or update notes for this order..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -195,406 +203,215 @@
 </div>
 
 <style>
+/* Container Layout */
+.orders-table-container {
+    margin-bottom: 20px;
+}
+
+.order-details-panel {
+    margin-top: 30px;
+}
+
+/* Table Styles */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th, .orders-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.orders-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.orders-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.orders-table tr.active {
+    background-color: #e9f7fe;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+}
+
+.button-sm {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+/* Order Detail Styles */
 .order-detail-container {
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    padding: 2rem;
-    margin-top: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 20px;
 }
 
 .order-info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
 .info-card {
     background: #f8f9fa;
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 15px;
     border: 1px solid #e9ecef;
 }
 
-.info-card h3 {
-    color: var(--primary);
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.status-display {
-    margin-bottom: 1rem;
-}
-
-.status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.status-pending { background: #fff3cd; color: #856404; }
-.status-confirmed { background: #d1ecf1; color: #0c5460; }
-.status-shipped { background: #d4edda; color: #155724; }
-.status-delivered { background: #d1e7dd; color: #0f5132; }
-.status-rejected { background: #f8d7da; color: #721c24; }
-
-.status-timeline {
-    margin-top: 1rem;
-}
-
-.timeline-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.timeline-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--primary);
-    border-radius: 50%;
-    margin-right: 0.75rem;
-}
-
-.timeline-content {
-    font-size: 0.9rem;
-    color: var(--text-dark);
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-item label {
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.info-item span {
-    color: var(--text-light);
-}
-
-.action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.button {
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-.button-green { background: #28a745; color: white; }
-.button-red { background: #dc3545; color: white; }
-.button-blue { background: #007bff; color: white; }
-.button-gray { background: #6c757d; color: white; }
-
-.notes-section {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #e9ecef;
-}
-
-.notes-section h3 {
-    color: var(--primary);
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.notes-content {
-    margin-bottom: 1rem;
-}
-
-.notes-text {
-    background: white;
-    padding: 1rem;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
-    white-space: pre-wrap;
-    line-height: 1.5;
-}
-
-.no-notes {
-    color: var(--text-light);
-    font-style: italic;
-    text-align: center;
-    padding: 1rem;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 0;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-
-.modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h2 {
-    margin: 0;
-    color: var(--primary);
-}
-
-.close {
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: #000;
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.modal-footer {
-    padding: 1.5rem;
-    border-top: 1px solid #f0f0f0;
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.form-group textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
-    resize: vertical;
-    min-height: 120px;
-}
+/* Keep all your other existing styles */
+/* ... */
 </style>
 
 @push('scripts')
 <script>
-// Modal functions
-function openNotesModal() {
-    document.getElementById('notesModal').style.display = 'block';
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-    }
-}
-
-// Close modal when clicking X
-document.querySelectorAll('.close').forEach(function(closeBtn) {
-    closeBtn.onclick = function() {
-        closeBtn.closest('.modal').style.display = 'none';
-    }
-});
-
-// Update notes
-document.getElementById('updateNotesForm').onsubmit = function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch(`/vendor/retailer-orders/{{ $order->id }}/notes`, {
-        method: 'PUT',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(Object.fromEntries(formData))
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert('Error: ' + data.message);
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle all order actions
+    document.addEventListener('click', function(e) {
+        const getOrderId = (button) => button.getAttribute('data-order-id');
+        
+        // Confirm order
+        if (e.target.closest('.confirm-order')) {
+            const button = e.target.closest('.confirm-order');
+            if (confirm('Confirm this order?')) {
+                updateOrderStatus(getOrderId(button), 'confirm', 'Order confirmed!');
+            }
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating notes.');
+        
+        // Reject order
+        if (e.target.closest('.reject-order')) {
+            const button = e.target.closest('.reject-order');
+            const reason = prompt('Reason for rejection:');
+            if (reason) {
+                fetch(`/vendor/retailer-orders/${getOrderId(button)}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ rejection_reason: reason })
+                }).then(handleResponse).catch(handleError);
+            }
+        }
+        
+        // Ship order
+        if (e.target.closest('.ship-order')) {
+            const button = e.target.closest('.ship-order');
+            if (confirm('Mark as shipped?')) {
+                updateOrderStatus(getOrderId(button), 'ship', 'Order shipped!');
+            }
+        }
+        
+        // Deliver order
+        if (e.target.closest('.deliver-order')) {
+            const button = e.target.closest('.deliver-order');
+            if (confirm('Mark as delivered?')) {
+                updateOrderStatus(getOrderId(button), 'deliver', 'Order delivered!');
+            }
+        }
+        
+        // View details
+        if (e.target.closest('.view-details')) {
+            const button = e.target.closest('.view-details');
+            window.location.href = `/vendor/retailer-orders?selected=${getOrderId(button)}`;
+        }
     });
-    
-    closeModal('notesModal');
-};
 
-// Action buttons (same as in retailer-orders.blade.php)
-let currentOrderId = {{ $order->id }};
-
-// Confirm order
-document.querySelectorAll('.confirm-order').forEach(function(btn) {
-    btn.onclick = function() {
-        if (confirm('Confirm this order?')) {
-            fetch(`/vendor/retailer-orders/${currentOrderId}/confirm`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
+    // Helper functions
+    function updateOrderStatus(orderId, action, successMsg) {
+        fetch(`/vendor/retailer-orders/${orderId}/${action}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+            }
+        }).then(handleResponse).catch(handleError);
+        
+        function handleResponse(response) {
+            response.json().then(data => {
                 if (data.success) {
-                    alert(data.message);
-                    location.reload();
+                    alert(successMsg);
+                    window.location.reload();
                 } else {
-                    alert('Error: ' + data.message);
+                    alert('Error: ' + (data.message || 'Action failed'));
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while confirming the order.');
             });
         }
-    }
-});
-
-// Reject order
-document.querySelectorAll('.reject-order').forEach(function(btn) {
-    btn.onclick = function() {
-        const reason = prompt('Please provide a reason for rejecting this order:');
-        if (reason) {
-            fetch(`/vendor/retailer-orders/${currentOrderId}/reject`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ rejection_reason: reason })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while rejecting the order.');
-            });
+        
+        function handleError(error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
         }
     }
-});
 
-// Ship order
-document.querySelectorAll('.ship-order').forEach(function(btn) {
-    btn.onclick = function() {
-        if (confirm('Mark this order as shipped?')) {
-            fetch(`/vendor/retailer-orders/${currentOrderId}/ship`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
+    // Modal functions
+    window.openNotesModal = function(orderId) {
+        fetch(`/vendor/retailer-orders/${orderId}/notes`)
+            .then(res => res.json())
             .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while shipping the order.');
+                document.getElementById('notes').value = data.notes || '';
+                document.getElementById('updateNotesForm').dataset.orderId = orderId;
+                document.getElementById('notesModal').style.display = 'block';
             });
-        }
-    }
-});
+    };
 
-// Deliver order
-document.querySelectorAll('.deliver-order').forEach(function(btn) {
-    btn.onclick = function() {
-        if (confirm('Mark this order as delivered?')) {
-            fetch(`/vendor/retailer-orders/${currentOrderId}/deliver`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while marking the order as delivered.');
-            });
+    window.closeModal = function(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    };
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
         }
-    }
+    };
+
+    // Form submission
+    document.getElementById('updateNotesForm').onsubmit = function(e) {
+        e.preventDefault();
+        const orderId = this.dataset.orderId;
+        const notes = document.getElementById('notes').value;
+        
+        fetch(`/vendor/retailer-orders/${orderId}/notes`, {
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ notes: notes })
+        }).then(res => {
+            if (res.ok) {
+                alert('Notes updated!');
+                window.location.reload();
+            }
+        });
+    };
 });
 </script>
 @endpush
-@endsection 
+@endsection
