@@ -16,12 +16,42 @@ use Illuminate\Support\Facades\Log;
 class VendorRetailerOrderController extends Controller
 {
     // List all retailer orders for the current vendor
-    public function index()
+    public function index(Request $request)
     {
         $retailerOrders = \App\Models\RetailerOrder::with(['retailer', 'vendor'])
             ->orderByDesc('created_at')
             ->get();
-        return view('dashboards.vendor.retailer-orders', compact('retailerOrders'));
+        // Add manufacturers for the new order form
+        $manufacturers = \App\Models\User::where('role', 'manufacturer')
+            ->where('status', 'approved')
+            ->orderBy('name')
+            ->get(['id', 'name', 'company']);
+        // Fetch only products for this vendor
+        $vendorProducts = \App\Models\Product::where('vendor_id', $vendorId)->get();
+        // Also fetch manufacturer orders for the 'My Orders' tab
+        $manufacturerOrders = \App\Models\VendorOrder::where('vendor_id', $vendorId)
+            ->with('manufacturer')
+            ->orderByDesc('created_at')
+            ->get();
+        // Fetch vendor addresses (from vendors table, address column)
+        $vendorAddresses = [];
+        $vendor = \App\Models\Vendor::where('user_id', $vendorId)->first();
+        if ($vendor && $vendor->address) {
+            // Support comma-separated or semicolon-separated addresses
+            $vendorAddresses = preg_split('/[;,]/', $vendor->address);
+            $vendorAddresses = array_map('trim', $vendorAddresses);
+            $vendorAddresses = array_filter($vendorAddresses);
+
+        $selectedOrder = null;
+    
+    // Get the first order if none is selected
+    if ($request->has('selected')) {
+        $selectedOrder = $retailerOrders->firstWhere('id', $request->selected);
+    } elseif ($retailerOrders->isNotEmpty()) {
+        $selectedOrder = $retailerOrders->first();
+    }
+        }
+        return view('dashboards.vendor.retailer-order-details', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses', 'selectedOrder'));
     }
 
     // Show a specific retailer order
