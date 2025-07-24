@@ -16,7 +16,7 @@ RUN apk add --no-cache \
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install pdo pdo_pgsql gd zip
+RUN docker-php-ext-install pdo pdo_pgsql gd zip zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -28,7 +28,8 @@ WORKDIR /var/www/html
 COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-zip
 RUN npm install && npm run build
 
 # Set permissions
