@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Delivery extends Model
 {
-    protected $fillable = ['supplier_id', 'manufacturer_id', 'materials_delivered', 'retailer_order_id', 'status', 'driver', 'destination', 'progress', 'eta', 'tracking_history'];
+    protected $fillable = ['supplier_id', 'manufacturer_id', 'materials_delivered', 'retailer_order_id', 'checklist_request_id', 'status', 'driver', 'destination', 'progress', 'eta', 'tracking_history'];
 
     protected $casts = [
         'materials_delivered' => 'array',
@@ -24,5 +24,18 @@ use HasFactory;
     public function retailerOrder()
     {
         return $this->belongsTo(RetailerOrder::class, 'retailer_order_id');
+    }
+    
+    public function checklistRequest()
+    {
+        return $this->belongsTo(ChecklistRequest::class, 'checklist_request_id');
+    }
+
+    /**
+     * Get the manufacturer (user) that this delivery belongs to.
+     */
+    public function manufacturer()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'manufacturer_id');
     }
 }
