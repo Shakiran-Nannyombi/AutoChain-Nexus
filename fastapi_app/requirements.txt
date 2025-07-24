@@ -7,3 +7,7 @@
      pymysql
      requests
      uvicorn
+     plotly
+     xgboost
+     lightgbm
+     seaborn

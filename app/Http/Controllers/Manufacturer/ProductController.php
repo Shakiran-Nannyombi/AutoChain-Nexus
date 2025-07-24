@@ -17,29 +17,51 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // Handle storing a new product (to be implemented)
-        // ...
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+        ]);
+        $manufacturerId = Auth::id();
+        Product::create([
+            'name' => $request->name,
+            'category' => $request->category,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'manufacturer_id' => $manufacturerId,
+        ]);
         return redirect()->route('manufacturer.products')->with('success', 'Product created successfully!');
     }
 
     public function edit($id)
     {
-        // Return a view for editing a product (to be created)
-        // $product = ... fetch product by $id
-        return view('dashboards.manufacturer.products-edit', compact('id'));
+        $product = Product::findOrFail($id);
+        return view('dashboards.manufacturer.products-edit', compact('product', 'id'));
     }
 
     public function update(Request $request, $id)
     {
-        // Handle updating a product (to be implemented)
-        // ...
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+        ]);
+        $product = Product::findOrFail($id);
+        $product->update([
+            'name' => $request->name,
+            'category' => $request->category,
+            'price' => $request->price,
+            'stock' => $request->stock,
+        ]);
         return redirect()->route('manufacturer.products')->with('success', 'Product updated successfully!');
     }
 
     public function destroy($id)
     {
-        // Handle deleting a product (to be implemented)
-        // ...
+        $product = Product::findOrFail($id);
+        $product->delete();
         return redirect()->route('manufacturer.products')->with('success', 'Product deleted successfully!');
     }
 

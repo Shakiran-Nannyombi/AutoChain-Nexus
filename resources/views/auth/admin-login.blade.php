@@ -17,7 +17,7 @@
         <!-- Left: Illustration -->
         <div class="login-split-left">
             <div class="login-illustration-wrapper">
-                <div class="login-illustration-text">Admin Access</div>
+                <div class="login-illustration-text" style="color: var(--text);">Admin Access</div>
                 <div class="login-split-illustration">
                     <img src="{{ asset('images/admin.png') }}" alt="Admin Login Illustration" style="max-width: 420px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
                 </div>

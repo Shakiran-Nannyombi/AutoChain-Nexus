@@ -40,9 +40,13 @@
             <div class="form-group">
                 <label for="profile_photo">Profile Photo</label>
                 <input type="file" name="profile_photo" id="profile_photo" accept="image/*">
-                @if($user->profile_photo)
+                @if($user->profile_picture)
                     <div class="mt-2">
-                        <img src="{{ asset($user->profile_photo) }}" alt="Profile Photo" width="100" class="rounded-full border">
+                        <img src="{{ asset($user->profile_picture) }}" alt="Profile Photo" width="100" class="rounded-full border">
+                    </div>
+                @else
+                    <div class="mt-2">
+                        <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" width="100" class="rounded-full border">
                     </div>
                 @endif
                 @error('profile_photo')

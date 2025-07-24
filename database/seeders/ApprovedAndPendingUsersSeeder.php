@@ -1129,11 +1129,22 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 
         // Insert into vendors table for all approved vendors
         $approvedVendors = DB::table('users')->where('role', 'vendor')->where('status', 'approved')->get();
+        $carImages = [
+            'images/car1.png',
+            'images/car2.png',
+            'images/car3.png',
+            'images/car4.png',
+            'images/car5.png',
+            'images/car6.png',
+            'images/car7.png',
+            'images/car8.png',
+            'images/car9.png',
+            'images/car10.png',
+        ];
+        $productIndex = 0;
         foreach ($approvedVendors as $user) {
     if (is_null($user->segment)) {
-        // Set a default or skip this record
-        continue; // or set a default like 'general'
-        // $segment = 'general';
+                continue;
     } else {
         $segment = $user->segment;
     }
@@ -1152,8 +1163,6 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     'service_areas' => null,
     'contract_terms' => null,
     'segment' => $segment,
-
-    // Segment analytics fields
     'segment_name' => null,
     'total_orders' => 0,
     'total_quantity' => 0,
@@ -1162,11 +1171,153 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     'order_frequency' => 0,
     'fulfillment_rate' => 0,
     'cancellation_rate' => 0,
-
     'created_at' => now(),
     'updated_at' => now(),
 ]);
+        }
 
+        // Clean related tables before inserting
+        DB::table('retailer_orders')->delete();
+        DB::table('retailer_sales')->delete();
+        DB::table('retailers')->delete();
+        // Insert into retailers table for all approved retailers
+        $approvedRetailers = DB::table('users')->where('role', 'retailer')->where('status', 'approved')->get();
+        $storeLocations = [
+            '201 Retail Ave, Miami, FL',
+            '202 Retail Ave, Miami, FL',
+            '203 Retail Ave, Miami, FL',
+            '204 Retail Ave, Miami, FL',
+            '205 Retail Ave, Miami, FL',
+        ];
+        $productInventories = [
+            '[{"product": "Toyota Corolla 2024", "qty": 5}, {"product": "Honda Civic 2024", "qty": 3}]',
+            '[{"product": "Ford F-150 2024", "qty": 2}, {"product": "BMW 3 Series 2024", "qty": 1}]',
+            '[{"product": "Mazda 3 2024", "qty": 4}, {"product": "Kia K5 2024", "qty": 2}]',
+        ];
+        $businessHours = [
+            'Mon-Fri 9am-6pm',
+            'Mon-Sat 8am-8pm',
+            'Everyday 10am-7pm',
+        ];
+        $retailLicenses = [
+            'RL-2024-001', 'RL-2024-002', 'RL-2024-003', 'RL-2024-004', 'RL-2024-005'
+        ];
+        $carModels = [
+            'Toyota Corolla 2024', 'Honda Civic 2024', 'Ford F-150 2024', 'BMW 3 Series 2024',
+            'Mercedes-Benz C-Class 2024', 'Audi A4 2024', 'Volkswagen Golf 2024',
+            'Hyundai Sonata 2024', 'Kia K5 2024', 'Mazda 3 2024'
+        ];
+        foreach ($approvedRetailers as $i => $user) {
+            $storeLoc = $storeLocations[$i % count($storeLocations)];
+            $prodInv = $productInventories[$i % count($productInventories)];
+            $bizHours = $businessHours[$i % count($businessHours)];
+            $license = $retailLicenses[$i % count($retailLicenses)];
+            DB::table('retailers')->insert([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone ?? '+1-555-0000',
+                'password' => $user->password,
+                'company' => $user->company ?? 'RetailMart',
+                'address' => $user->address ?? $storeLoc,
+                'profile_picture' => $user->profile_picture ?? 'images/profile/retailer.jpeg',
+                'supporting_documents' => $user->supporting_documents ?? json_encode([]),
+                'retail_license' => $license,
+                'store_locations' => $storeLoc,
+                'product_inventory' => $prodInv,
+                'business_hours' => $bizHours,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            // Create varied orders for each retailer
+            $orders = [];
+            $productCounts = [];
+            // Heavy buyer: buys a lot of one product
+            if ($i % 5 == 0) {
+                $heavyProduct = $carModels[array_rand($carModels)];
+                $numOrders = rand(6, 12);
+                for ($j = 0; $j < $numOrders; $j++) {
+                    $quantity = rand(5, 15);
+                    $totalAmount = $quantity * rand(30000, 90000);
+                    $status = $j % 3 == 0 ? 'confirmed' : ($j % 3 == 1 ? 'shipped' : 'delivered');
+                    $orders[] = [
+                        'user_id' => $user->id,
+                        'vendor_id' => 1,
+                        'customer_name' => 'Heavy Buyer Customer ' . ($j + 1),
+                        'car_model' => $heavyProduct,
+                        'quantity' => $quantity,
+                        'status' => $status,
+                        'total_amount' => $totalAmount,
+                        'ordered_at' => now()->subDays(rand(1, 30)),
+                        'confirmed_at' => now()->subDays(rand(1, 29)),
+                        'shipped_at' => now()->subDays(rand(1, 28)),
+                        'delivered_at' => $status === 'delivered' ? now()->subDays(rand(1, 27)) : null,
+                        'notes' => 'Heavy buyer order',
+                        'created_at' => now()->subDays(rand(1, 30)),
+                        'updated_at' => now()->subDays(rand(1, 28)),
+                    ];
+                    if (!isset($productCounts[$heavyProduct])) $productCounts[$heavyProduct] = 0;
+                    $productCounts[$heavyProduct] += $quantity;
+                }
+            // Niche buyer: buys only 1-2 products repeatedly
+            } else if ($i % 5 == 1) {
+                $nicheProducts = array_rand(array_flip($carModels), 2);
+                $numOrders = rand(4, 8);
+                for ($j = 0; $j < $numOrders; $j++) {
+                    $carModel = $nicheProducts[array_rand($nicheProducts)];
+                    $quantity = rand(2, 6);
+                    $totalAmount = $quantity * rand(25000, 70000);
+                    $status = $j % 2 == 0 ? 'confirmed' : 'shipped';
+                    $orders[] = [
+                        'user_id' => $user->id,
+                        'vendor_id' => 1,
+                        'customer_name' => 'Niche Buyer Customer ' . ($j + 1),
+                        'car_model' => $carModel,
+                        'quantity' => $quantity,
+                        'status' => $status,
+                        'total_amount' => $totalAmount,
+                        'ordered_at' => now()->subDays(rand(1, 30)),
+                        'confirmed_at' => now()->subDays(rand(1, 29)),
+                        'shipped_at' => now()->subDays(rand(1, 28)),
+                        'delivered_at' => $status === 'delivered' ? now()->subDays(rand(1, 27)) : null,
+                        'notes' => 'Niche buyer order',
+                        'created_at' => now()->subDays(rand(1, 30)),
+                        'updated_at' => now()->subDays(rand(1, 28)),
+                    ];
+                    if (!isset($productCounts[$carModel])) $productCounts[$carModel] = 0;
+                    $productCounts[$carModel] += $quantity;
+                }
+            // Random buyers: random products, quantities, and order counts
+            } else {
+                $numOrders = rand(2, 10);
+                for ($j = 0; $j < $numOrders; $j++) {
+                    $carModel = $carModels[array_rand($carModels)];
+                    $quantity = rand(1, 8);
+                    $totalAmount = $quantity * rand(20000, 80000);
+                    $status = $j % 3 == 0 ? 'confirmed' : ($j % 3 == 1 ? 'shipped' : 'delivered');
+                    $orders[] = [
+                        'user_id' => $user->id,
+                        'vendor_id' => 1,
+                        'customer_name' => 'Random Buyer Customer ' . ($j + 1),
+                        'car_model' => $carModel,
+                        'quantity' => $quantity,
+                        'status' => $status,
+                        'total_amount' => $totalAmount,
+                        'ordered_at' => now()->subDays(rand(1, 30)),
+                        'confirmed_at' => now()->subDays(rand(1, 29)),
+                        'shipped_at' => now()->subDays(rand(1, 28)),
+                        'delivered_at' => $status === 'delivered' ? now()->subDays(rand(1, 27)) : null,
+                        'notes' => 'Random buyer order',
+                        'created_at' => now()->subDays(rand(1, 30)),
+                        'updated_at' => now()->subDays(rand(1, 28)),
+                    ];
+                    if (!isset($productCounts[$carModel])) $productCounts[$carModel] = 0;
+                    $productCounts[$carModel] += $quantity;
+                }
+            }
+            DB::table('retailer_orders')->insert($orders);
+            $mostBought = array_keys($productCounts, max($productCounts))[0];
+            // You can update the retailer record or output this info as needed
         }
 
         // Attach sample documents to pending users

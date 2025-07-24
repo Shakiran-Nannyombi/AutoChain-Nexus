@@ -9,7 +9,7 @@
 @section('content')
 <div class="content-card">
     <h2 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.8rem;">Add Product</h2>
-    <form method="POST" action="{{ route('vendor.products.store') }}" style="max-width: 500px;">
+    <form method="POST" action="{{ route('vendor.products.store') }}" style="max-width: 500px;" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
             <label>Name</label>
@@ -30,6 +30,11 @@
             <label>Stock</label>
             <input type="number" name="stock" class="form-control" value="{{ old('stock') }}" min="0" required>
             @error('stock')<div class="text-danger">{{ $message }}</div>@enderror
+        </div>
+        <div class="form-group">
+            <label>Car Image</label>
+            <input type="file" name="image" class="form-control" accept="image/*">
+            @error('image')<div class="text-danger">{{ $message }}</div>@enderror
         </div>
         <div style="margin-top:1.2rem;">
             <button type="submit" class="button" style="background:var(--primary); color:#fff; padding:0.6rem 1.2rem; border-radius:8px;">Create</button>

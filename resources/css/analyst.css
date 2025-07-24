@@ -1,18 +1,29 @@
 /* Analysts styles */
 :root {
-    --primary: #16610E;
-    --primary-light: #82d48a;
-    --secondary: #F97A00;
-    --accent: #FED16A;
-    --text-dark: #222;
-    --text-light: #666;
-    --background: #fff;
-    --text: #333333;
-    --text2: #FFF4A4;
+    --primary: #40ca74;
+    --secondary: #8cf0b1;
+    --accent: #45fd89;
+    --text: #0b0e0c;
+    --background: #f5faf7;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --success: #38c172;
     --danger: #e3342f;
     --warning: #ffed4a;
+}
+[data-theme="dark"] {
+    --primary: #35c06a;
+    --secondary: #0f7133;
+    --accent: #02bb46;
+    --text: #f1f4f2;
+    --background: #050a07;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --success: #38c172;
+    --danger: #e3342f;
+    --warning: #ffed4a;
+}
+
+html {
+    transition: background 0.3s, color 0.3s;
 }
 
 .page-header {
@@ -72,10 +83,10 @@
     border-bottom: 2px solid var(--background);
 }
 .analyst-table tr:nth-child(even) {
-    background: #f8fafc;
+    background: var(--background);
 }
 .analyst-table tr:hover {
-    background: #f4e18533;
+    background: var(--secondary);
 }
 
 .analyst-form {
@@ -96,7 +107,7 @@
     border-radius: 8px;
     padding: 0.7rem 1rem;
     font-size: 1rem;
-    background: #f8fafc;
+    background: var(--background);
     transition: border-color 0.2s;
 }
 .analyst-form-input:focus {
@@ -114,7 +125,7 @@
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(243,149,13,0.08);
+    box-shadow: var(--shadow);
 }
 .analyst-btn:hover {
     background: var(--primary);
@@ -140,16 +151,16 @@
     box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04);
 }
 .analyst-alert-info {
-    background: #e3f6fd;
+    background: var(--secondary);
     color: var(--primary);
 }
 .analyst-alert-success {
-    background: #e6f9ed;
-    color: #1a7f37;
+    background: var(--success);
+    color: var(--primary);
 }
 .analyst-alert-warning {
-    background: #fff7e6;
-    color: #b26a00;
+    background: var(--warning);
+    color: var(--accent);
 }
 
 /* Dashboard Content Card for Analyst (matches admin/manufacturer style) */
@@ -163,7 +174,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--secondary);
 }
 
 @media (max-width: 768px) {

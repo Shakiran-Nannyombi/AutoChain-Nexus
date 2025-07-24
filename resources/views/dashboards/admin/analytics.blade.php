@@ -12,21 +12,21 @@
 
 @section('content')
   <div class="content-card analytics-page" style="background: var(--background); box-shadow: var(--shadow); border-radius: 18px; padding: 2.5rem 2rem;">
-    <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700;"><i class="fas fa-chart-line"></i> Analytics</h2>
+    <h2 style="color: var(--text); font-size: 2rem; margin-bottom: 2.5rem; font-weight: 700;"><i class="fas fa-chart-line"></i> Analytics</h2>
     <!-- Modern Stat Cards Grid -->
     <div class="modern-analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 2.5rem;">
       <!-- Stat Card: Total Users -->
-      <div style="background: var(--primary); border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; color: #fff;">
+      <div style="background: linear-gradient(90deg, #25eb71 0%, #04722b 100%); border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; color: #fff;">
         <div style="font-size: 1.1rem; color: #fff; font-weight: 600; margin-bottom: 0.5rem;">Total Users</div>
         <div style="font-size: 2.5rem; font-weight: bold; color: #fff;">{{ $totalUsers }}</div>
       </div>
       <!-- Stat Card: Pending Approvals -->
-      <div style="background: var(--secondary); border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; color: #fff;">
+      <div style="background:linear-gradient(90deg, #25eb71 0%, #04722b 100%); border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; color: #fff;">
         <div style="font-size: 1.1rem; color: #fff; font-weight: 600; margin-bottom: 0.5rem;">Pending Approvals</div>
         <div style="font-size: 2.5rem; font-weight: bold; color: #fff;">{{ $pendingUsers }}</div>
       </div>
       <!-- Stat Card: Active Users -->
-      <div style="background: var(--success); border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; color: #fff;">
+      <div style="background: linear-gradient(90deg, #25eb71 0%, #04722b 100%); border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; display: flex; flex-direction: column; align-items: flex-start; color: #fff;">
         <div style="font-size: 1.1rem; color: #fff; font-weight: 600; margin-bottom: 0.5rem;">Active Users</div>
         <div style="font-size: 2.5rem; font-weight: bold; color: #fff;">{{ $approvedUsers }}</div>
       </div>
@@ -85,17 +85,17 @@
     </div>
     <!-- New Users (Last 7 Days) ECharts Bar Chart Card -->
     <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; width: 100%; margin-bottom: 2.5rem;">
-      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: var(--secondary); font-weight: 600; text-align: left;">New Users (Last 7 Days)</h3>
+      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: black; font-weight: 600; text-align: left;">New Users (Last 7 Days)</h3>
       <div id="newUsersBarChart" style="width: 100%; min-width: 320px; height: 320px;"></div>
                 </div>
     <!-- User Sessions Per Month (Last 12 Months) Line Chart Card -->
     <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; width: 100%; margin-bottom: 2.5rem;">
-      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: #F97A00; font-weight: 600; text-align: left;">User Sessions Per Month (Last 12 Months)</h3>
+      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: black; font-weight: 600; text-align: left;">User Sessions Per Month (Last 12 Months)</h3>
       <div id="userSessionsLineChart" style="width: 100%; min-width: 320px; height: 320px; border: 1px solid #eee;"></div>
             </div>
     <!-- Login Activity Area Chart Card -->
     <div style="background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 2rem; width: 100%; margin-bottom: 2.5rem;">
-      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color: #482607; font-weight: 600; text-align: left;">Login activity</h3>
+      <h3 style="margin-bottom: 1.2rem; font-size: 1.8rem; color:black; font-weight: 600; text-align: left;">Login activity</h3>
       <div id="loginActivityChart" style="width: 100%; min-width: 320px; height: 320px; border: 1px solid #eee;"></div>
     </div>
     <!-- The rest of your analytics page content (session charts, etc.) can follow here -->

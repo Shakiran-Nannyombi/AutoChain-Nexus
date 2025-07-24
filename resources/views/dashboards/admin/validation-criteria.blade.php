@@ -12,7 +12,7 @@
 
 @section('content')
 <div class="content-card validation-criteria-page">
-    <h2 style="color: var(--primary) !important; font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: bold;">
+    <h2 style="color: var(--text) !important; font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: bold;">
         <i class="fas fa-list-alt"></i> Validation Criteria</h2>
         <div class="validation-grid">
             <!-- Add New Validation Rule -->
@@ -100,7 +100,7 @@
         <div id="edit-modal" class="modal" style="display:none;">
             <form id="edit-form" method="POST" style="padding: 1.1rem 1.2rem; border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); background: #fff; max-width: 700px; margin: 2rem auto; position: relative; display: flex; flex-direction: column; gap: 0.4rem;">
                 <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.1rem;">
-                    <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary, #16610E); font-weight: 700;">Edit Validation Rule</h3>
+                    <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary); font-weight: 700;">Edit Validation Rule</h3>
                     <span class="close-button" style="font-size: 1.5rem; cursor: pointer; color: #888; transition: color 0.2s;">&times;</span>
                 </div>
                     @csrf

@@ -214,49 +214,7 @@ public function trends()
         ]);
     }
 
-    public function applyToManufacturer(Request $request)
-    {
-        $request->validate([
-            'manufacturer_id' => 'required|exists:users,id',
-        ]);
-        $analystId = optional(Auth::user())->id;
-        $manufacturerId = $request->manufacturer_id;
-        // Only allow if manufacturer doesn't already have an approved analyst
-        $exists = DB::table('analyst_manufacturer')
-            ->where('manufacturer_id', $manufacturerId)
-            ->where('status', 'approved')
-            ->exists();
-        if ($exists) {
-            return back()->with('error', 'This manufacturer already has an approved analyst.');
-        }
-        // Only allow one application per analyst-manufacturer pair
-        $alreadyApplied = DB::table('analyst_manufacturer')
-            ->where('manufacturer_id', $manufacturerId)
-            ->where('analyst_id', $analystId)
-            ->exists();
-        if ($alreadyApplied) {
-            return back()->with('error', 'You have already applied to this manufacturer.');
-        }
-        DB::table('analyst_manufacturer')->insert([
-            'analyst_id' => $analystId,
-            'manufacturer_id' => $manufacturerId,
-            'status' => 'pending',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        return back()->with('success', 'Application sent!');
-    }
-
-    public function myApplications()
-    {
-        $analystId = optional(Auth::user())->id;
-        $applications = DB::table('analyst_manufacturer')
-            ->where('analyst_id', $analystId)
-            ->join('users', 'analyst_manufacturer.manufacturer_id', '=', 'users.id')
-            ->select('analyst_manufacturer.*', 'users.name as manufacturer_name', 'users.company as manufacturer_company')
-            ->get();
-        return view('dashboards.analyst.my-applications', compact('applications'));
-    }
+    // Removed analyst-manufacturer application logic and myApplications method
 
     public function forecasting() {
         return view('dashboards.analyst.forecasting');

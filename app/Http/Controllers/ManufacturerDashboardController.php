@@ -395,56 +395,45 @@ class ManufacturerDashboardController extends Controller
 
     public function index()
     {
-        // Get all vendors with their analytics fields
-        $vendors = DB::table('vendors')->get();
-        $segmentAnalytics = [];
-        $vendorAnalytics = [];
-        $segmentLabels = [
-            'Platinum' => 'Platinum',
-            'Gold' => 'Gold',
-            'Silver' => 'Silver',
-        ];
-        $segmentColors = [
-            'Platinum' => '#E5C100',
-            'Gold' => '#FFD700',
-            'Silver' => '#C0C0C0',
-        ];
-        // Group vendors by segment_name
-        $segments = $vendors->groupBy('segment_name');
-        foreach ($segments as $segment => $segmentVendors) {
-            $segmentAnalytics[$segment] = [
-                'count' => $segmentVendors->count(),
-                'total_orders' => $segmentVendors->sum('total_orders'),
-                'total_value' => $segmentVendors->sum(function($vendor) {
-                    // Remove everything except digits and dots, then cast to float
-                    return (float) preg_replace('/[^\d.]/', '', $vendor->total_value);
-                }),
-            ];
-        }
-        foreach ($vendors as $vendor) {
-            $vendorAnalytics[] = [
-                'name' => $vendor->name,
-                'segment' => $vendor->segment_name,
-                'total_orders' => $vendor->total_orders,
-                'most_ordered_product' => $vendor->most_ordered_product,
-                'fulfillment_rate' => $vendor->fulfillment_rate,
-                'total_value' => $vendor->total_value,
-                'order_frequency' => $vendor->order_frequency,
-                'cancellation_rate' => $vendor->cancellation_rate,
-            ];
-        }
-        // Top 5 products overall
-        $orders = DB::table('vendor_orders')->get();
-        $topProducts = $orders->groupBy('product')->map(function($orders) {
-            return $orders->count();
-        })->sortDesc()->take(5)->toArray();
-        return view('dashboards.manufacturer.index', [
-            'segmentAnalytics' => $segmentAnalytics,
-            'vendorAnalytics' => $vendorAnalytics,
-            'segmentLabels' => $segmentLabels,
-            'segmentColors' => $segmentColors,
-            'topProducts' => $topProducts,
-        ]);
+        $manufacturerId = Auth::id();
+        // Active Orders: count of fulfilled vendor_orders for this manufacturer
+        $activeOrders = \DB::table('vendor_orders')
+            ->where('manufacturer_id', $manufacturerId)
+            ->where('status', 'fulfilled')
+            ->count();
+        // Total Revenue: sum of total_amount for all vendor_orders for this manufacturer
+        $totalRevenue = \DB::table('vendor_orders')
+            ->where('manufacturer_id', $manufacturerId)
+            ->sum('total_amount');
+        // Inventory: count of products for this manufacturer
+        $inventoryCount = \DB::table('products')
+            ->where('manufacturer_id', $manufacturerId)
+            ->count();
+        // Active Vendors: count of unique vendor_ids in fulfilled vendor_orders for this manufacturer
+        $activeVendors = \DB::table('vendor_orders')
+            ->where('manufacturer_id', $manufacturerId)
+            ->where('status', 'fulfilled')
+            ->distinct('vendor_id')
+            ->count('vendor_id');
+        // Recent Orders: last 5 fulfilled vendor_orders for this manufacturer
+        $recentOrders = \DB::table('vendor_orders')
+            ->where('manufacturer_id', $manufacturerId)
+            ->where('status', 'fulfilled')
+            ->orderByDesc('ordered_at')
+            ->limit(5)
+            ->get();
+        // Low Stock Products: products for this manufacturer with stock < 5
+        $lowStockProducts = \DB::table('products')
+            ->where('manufacturer_id', $manufacturerId)
+            ->where('stock', '<', 5)
+            ->get();
+        // Demo revenue values for dashboard display
+        $monthlyRevenue = 12500000.00;
+        $totalRevenue = 98765432.10;
+        return view('dashboards.manufacturer.index', compact(
+            'activeOrders', 'monthlyRevenue', 'inventoryCount', 'activeVendors',
+            'recentOrders', 'lowStockProducts', 'totalRevenue'
+        ));
     }
 
     public function updateProcessFlowItem(Request $request)
@@ -487,32 +476,18 @@ class ManufacturerDashboardController extends Controller
     public function orders(Request $request)
     {
         $manufacturerId = session('user_id') ?? Auth::id();
-        $query = \App\Models\ChecklistRequest::where('manufacturer_id', $manufacturerId)->with('supplier');
-
-        // Filter by status
-        $status = $request->input('status');
-        if ($status && in_array($status, ['pending', 'fulfilled', 'cancelled'])) {
-            $query->where('status', $status);
-        }
-
-        // Filter by supplier name or email
-        $search = $request->input('search');
-        if ($search) {
-            $query->whereHas('supplier', function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%") ;
-            });
-        }
-
-        $supplierOrders = $query->orderByDesc('created_at')->get();
+        // Load supplier orders (all for now, or filter by supplier if needed)
+        $supplierOrders = \App\Models\SupplierOrder::with(['supplier', 'items'])
+            ->orderByDesc('created_at')
+            ->get();
         $vendorOrdersQuery = \App\Models\VendorOrder::where('manufacturer_id', $manufacturerId);
         $vendorStatus = $request->input('vendor_status');
         if ($vendorStatus && in_array($vendorStatus, ['fulfilled', 'cancelled'])) {
             $vendorOrdersQuery->where('status', $vendorStatus);
         }
-        $vendorOrders = $vendorOrdersQuery->get();
+        $vendorOrders = $vendorOrdersQuery->orderByDesc('created_at')->get();
         $productPrices = \DB::table('products')->pluck('price', 'name');
-        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'search', 'status', 'productPrices'));
+        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'productPrices'));
     }
 
     public function ordersPartial(Request $request)

@@ -9,22 +9,22 @@
 @section('content')
 <div class="content-card">
     <div class="products-header-row">
-        <h2 class="page-title" style="color: var(--primary);"><i class="fas fa-box"></i> Products Overview</h2>
+        <h2 class="page-title" style="color: var(--text); font-size: 2rem; font-weight: bold; margin-bottom: 0.2rem;"><i class="fas fa-box"></i> Products Overview</h2>
         <a href="{{ route('manufacturer.products.create') }}" class="button add-product-btn">+ Add Product</a>
     </div>
     <!-- Summary Stats Row -->
     <div class="products-stats-row">
-        <div class="stat-card mini dark-primary">
-            <div class="stat-label">Total Products</div>
-            <div class="stat-value">{{ $products->count() ?? 0 }}</div>
+        <div class="stat-card mini">
+            <div class="stat-label" style="color: black;">Total Products</div>
+            <div class="stat-value" style="color: black;">{{ $products->count() ?? 0 }}</div>
         </div>
-        <div class="stat-card mini dark-danger">
-            <div class="stat-label">Out of Stock</div>
-            <div class="stat-value">{{ $products->where('stock', '<', 100)->count() }}</div>
+        <div class="stat-card mini">
+            <div class="stat-label" style="color: black;">Out of Stock</div>
+            <div class="stat-value" style="color: black;">{{ $products->where('stock', '<', 100)->count() }}</div>
         </div>
-        <div class="stat-card mini dark-secondary">
-            <div class="stat-label">Categories</div>
-            <div class="stat-value">{{ $categoryCount ?? 0 }}</div>
+        <div class="stat-card mini">
+            <div class="stat-label" style="color: black;">Categories</div>
+            <div class="stat-value" style="color: black;">{{ $categoryCount ?? 0 }}</div>
         </div>
     </div>
     <!-- Search/Filter Bar -->
@@ -39,15 +39,15 @@
         <button type="submit" class="button search-btn" id="search-btn"><i class="fas fa-search"></i> Search</button>
     </form>
     <!-- Products Table -->
-    <table class="dashboard-table products-table" id="products-table">
+    <table class="dashboard-table products-table" id="products-table"> 
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th style="color: var(--text);">Name</th>
+                <th style="color: var(--text);">Category</th>
+                <th style="color: var(--text);">Price</th>
+                <th style="color: var(--text);">Stock</th>
+                <th style="color: var(--text);">Status</th>
+                <th style="color: var(--text);">Actions</th>
             </tr>
         </thead>
         <tbody>

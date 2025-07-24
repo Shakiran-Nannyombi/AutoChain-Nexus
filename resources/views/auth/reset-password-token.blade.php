@@ -1,23 +1,29 @@
 @section('title', 'Enter Token')
 <x-guest-layout>
-    <nav class="login-navbar">
+    <nav class="login-navbar" style="display: flex; align-items: center; justify-content: space-between;">
         <div class="navbar-logo">
             <a href="/">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 40px;">
             </a>
             <span class="navbar-brand">Autochain Nexus</span>
         </div>
+        <button class="navbar-hamburger" aria-label="Open menu" onclick="document.querySelector('.navbar-links').classList.toggle('open')">
+            &#9776;
+        </button>
         <div class="navbar-links">
             <a href="/">Home</a>
             <a href="/login">Login</a>
             <a href="/register">Register</a>
         </div>
+        <button id="darkModeToggleAuth" aria-label="Toggle dark mode" style="margin-left: 1.2rem; background: var(--background); color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: var(--shadow); cursor: pointer; transition: background 0.2s, color 0.2s; padding: 0;">
+            <span id="darkModeIconAuth">🌙</span>
+        </button>
     </nav>
     <div class="login-split-container">
         <!-- Left: Illustration -->
         <div class="login-split-left">
             <div class="login-illustration-wrapper">
-                <div class="login-illustration-text">Verify your token</div>
+                <div class="login-illustration-text" style="color: var(--text);">Verify your token</div>
                 <div class="login-split-illustration">
                     <img src="{{ asset('images/verifytoken.png') }}" alt="Verify Token Illustration" style="max-width: 420px; width: 100%; height: auto; display: block; margin: 2rem auto 0 auto;">
                 </div>
@@ -38,7 +44,7 @@
                 </ul>
             </div>
         @endif
-        <form method="POST" action="{{ route('password.token.submit') }}" class="login-form">
+        <form method="POST" action="{{ route('password.token.submit') }}" class="login-form" style="color: var(--text);">
             @csrf
             <div class="input-group">
                             <label for="email">Email Address <span class="required-asterisk">*</span></label>

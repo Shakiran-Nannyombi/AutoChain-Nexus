@@ -30,11 +30,11 @@
         <div class="profile-summary-col">
             <div class="profile-summary-card">
                 <div class="profile-summary-avatar">
-                    @php $userProfilePhoto = $user->profile_photo; @endphp
+                    @php $userProfilePhoto = $user->profile_picture ?? null; @endphp
         @if($userProfilePhoto)
                         <img src="{{ asset($userProfilePhoto) }}" alt="Profile Photo" class="profile-avatar-lg">
         @else
-                        <img src="{{ asset('images/profile.png') }}" alt="Default Profile Photo" class="profile-avatar-lg">
+                        <img src="{{ asset('images/profile/default.png') }}" alt="Default Profile Photo" class="profile-avatar-lg">
         @endif
                 </div>
                 <div class="profile-summary-info">

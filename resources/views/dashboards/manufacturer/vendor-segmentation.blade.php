@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Vendor Segmentation')
+@section('title', 'Manufacturer Dashboard')
 
 @section('sidebar-content')
     @include('dashboards.manufacturer.sidebar')
@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="content-card">
-    <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: bold;">
+    <h2 style="color: var(--text); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: bold;">
         <i class="fas fa-project-diagram"></i> Vendor Segmentation Analytics
     </h2>
     <div style="margin-bottom: 1.2rem; color: var(--primary); font-size: 1.08rem;">
@@ -30,7 +30,7 @@
     </div>
     <!-- Segmentation Bar -->
     <div style="margin-bottom: 2rem;">
-        <h3 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.3rem;">
+        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.3rem;">
             <i class="fas fa-industry"></i> Vendor Segment Bar
         </h3>
         <div style="display: flex; align-items: center; gap: 1rem;">

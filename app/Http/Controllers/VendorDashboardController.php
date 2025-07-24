@@ -81,22 +81,11 @@ class VendorDashboardController extends Controller
         $unreadNotifications = $user ? $user->unreadNotifications()->take(5)->get() : collect();
         $allNotifications = $user ? $user->notifications()->take(10)->get() : collect();
 
-        // Top selling products by segment
-        $topProductsBySegment = [];
-        $segments = [1, 2, 3]; // 1: Occasional Buyers, 2: High Value, 3: At Risk
-        foreach ($segments as $segment) {
-            $customerIds = Customer::where('segment', $segment)->pluck('id');
-            $products = Product::whereHas('purchases', function ($query) use ($customerIds) {
-                $query->whereIn('customer_id', $customerIds);
-            })
-            ->withCount(['purchases as segment_purchases_count' => function ($query) use ($customerIds) {
-                $query->whereIn('customer_id', $customerIds);
-            }])
-            ->orderBy('segment_purchases_count', 'desc')
-            ->take(5)
+        $realTimeOrders = \App\Models\RetailerOrder::where('vendor_id', $vendorId)
+            ->with('retailer')
+            ->orderByDesc('created_at')
+            ->take(10)
             ->get();
-            $topProductsBySegment[$segment] = $products;
-        }
 
         return view('dashboards.vendor.index', compact(
             'customerSegmentCounts',
@@ -110,7 +99,36 @@ class VendorDashboardController extends Controller
             'bestSellingCars',
             'unreadNotifications',
             'allNotifications',
-            'topProductsBySegment'
+            'realTimeOrders' // add this
+        ));
+    }
+
+    public function customerSegmentation()
+    {
+        $customerSegmentCounts = \App\Models\Customer::select('segment', \DB::raw('count(*) as count'))
+            ->whereNotNull('segment')
+            ->groupBy('segment')
+            ->get();
+
+        $segmentNames = [
+            1 => 'Occasional Buyers',
+            2 => 'High Value Customers',
+            3 => 'At Risk Customers',
+        ];
+
+        $segmentSummaries = \App\Models\Customer::select(
+            'segment',
+            \DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
+            \DB::raw('AVG((SELECT COUNT(*) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
+            \DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
+            \DB::raw('COUNT(*) as count')
+        )
+        ->whereNotNull('segment')
+        ->groupBy('segment')
+        ->get();
+
+        return view('dashboards.vendor.customer-segmentation', compact(
+            'customerSegmentCounts', 'segmentNames', 'segmentSummaries'
         ));
     }
 } 

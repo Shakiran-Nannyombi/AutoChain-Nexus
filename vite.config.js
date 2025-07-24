@@ -19,6 +19,7 @@ export default defineConfig({
                 'resources/css/vendor.css',
                 'resources/css/chat.css',
                 'resources/js/app.js',
+                'resources/js/darkmode.js',
                 'resources/js/slider.js',
             ],
             refresh: true,

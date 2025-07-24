@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="content-card">
-        <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-file-alt"></i> Production Reports</h2>
+        <h2 style="color: var(--text); font-size: 1.8rem; margin-bottom: 1.5rem; font-weight:bold;"><i class="fas fa-file-alt"></i> Production Reports</h2>
         <!-- Filter, stats, and table content below -->
         <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem; margin-bottom: 2rem;">
             <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Filter Reports</h3>
@@ -28,22 +28,22 @@
         </div>
         <!-- Production Summary Statistics -->
         <div style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
-            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, var(--primary), #0d3a07); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+            <div style="flex:1; min-width:200px; background: #090857; color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
                 <div style="font-size: 1.1rem; opacity: 0.9;">Total Items Processed</div>
                 <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalItemsProcessed }}</div>
             </div>
-            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #27ae60, #16610e); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+            <div style="flex:1; min-width:200px; background: #090857; color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
                 <div style="font-size: 1.1rem; opacity: 0.9;">Total Completed Items</div>
                 <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalCompletedItems }}</div>
             </div>
-            <div style="flex:1; min-width:200px; background: linear-gradient(135deg, #b71c1c, #e57373); color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
+            <div style="flex:1; min-width:200px; background: #090857; color: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; text-align: center;">
                 <div style="font-size: 1.1rem; opacity: 0.9;">Total Failed Items</div>
                 <div style="font-size: 2.2rem; font-weight: bold; margin-top: 0.5rem;">{{ $totalFailedItems }}</div>
             </div>
         </div>
         <!-- Detailed Process Flow Table -->
         <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 2rem;">
-            <h3 style="color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Detailed Process Flow</h3>
+            <h3 style="color: var(--text); font-size: 1.2rem; font-weight: 600; margin-bottom: 1.2rem;">Detailed Process Flow</h3>
             <div style="overflow-x:auto;">
                 <table style="width:100%; border-collapse: collapse;">
                     <thead style="background: #f8f8f8;">

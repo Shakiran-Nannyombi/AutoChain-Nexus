@@ -1,241 +1,184 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Retailer Orders')
+@section('title', 'Order Details')
 
 @section('sidebar-content')
     @include('dashboards.vendor.sidebar')
 @endsection
 
 @section('content')
-<div class="container">
-    <div class="page-header">
-        <h1>Retailer Orders</h1>
-        <p>Manage orders from retailers</p>
-    </div>
-
-    <div class="orders-container">
-        <div class="orders-header">
-            <div class="orders-stats">
-                <div class="stat-card">
-                    <div class="stat-number">{{ $retailerOrders->where('status', 'pending')->count() }}</div>
-                    <div class="stat-label">Pending</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ $retailerOrders->where('status', 'confirmed')->count() }}</div>
-                    <div class="stat-label">Confirmed</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ $retailerOrders->where('status', 'shipped')->count() }}</div>
-                    <div class="stat-label">Shipped</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ $retailerOrders->where('status', 'delivered')->count() }}</div>
-                    <div class="stat-label">Delivered</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="orders-table-container">
-            <table class="orders-table">
-                <thead>
+<div class="content-card" style="margin-bottom: 2rem;">
+    <h2  style="font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; color: var(--text); letter-spacing: 0.01em;">Retailer Order Details</h2>
+    <div style="overflow-x: auto; margin-bottom: 2rem;">
+        <table class="orders-table" style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden;">
+            <thead style="background: var(--primary-light); color: #d8f9db;">
+                <tr>
+                    <th style="padding: 0.7rem;">Order ID</th>
+                    <th style="padding: 0.7rem;">Retailer</th>
+                    <th style="padding: 0.7rem;">Product</th>
+                    <th style="padding: 0.7rem;">Status</th>
+                    <th style="padding: 0.7rem;">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($retailerOrders as $order)
                     <tr>
-                        <th>Order ID</th>
-                        <th>Retailer</th>
-                        <th>Customer</th>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Status</th>
-                        <th>Ordered At</th>
-                        <th>Actions</th>
+                        <td style="padding: 0.7rem;">{{ $order->id }}</td>
+                        <td style="padding: 0.7rem;">{{ $order->retailer->name ?? 'N/A' }}</td>
+                        <td style="padding: 0.7rem;">{{ $order->car_model ?? 'N/A' }}</td>
+                        <td style="padding: 0.7rem;">{{ ucfirst($order->status) }}</td>
+                        <td style="padding: 0.7rem;"><a href="{{ route('vendor.retailer-orders.show', $order->id) }}">View</a></td>
                     </tr>
-                </thead>
-                <tbody>
-                    @forelse($retailerOrders as $order)
-                        <tr>
-                            <td>#{{ $order->id }}</td>
-                            <td>{{ $order->retailer->name ?? 'N/A' }}</td>
-                            <td>{{ $order->customer_name }}</td>
-                            <td>{{ $order->car_model }}</td>
-                            <td>{{ $order->quantity }}</td>
-                            <td>
-                                <span class="status-badge status-{{ $order->status }}">
-                                    {{ ucfirst($order->status) }}
-                                </span>
-                            </td>
-                            <td>{{ $order->ordered_at ? \Carbon\Carbon::parse($order->ordered_at)->format('Y-m-d H:i') : 'N/A' }}</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="{{ route('vendor.retailer-orders.show', $order->id) }}" 
-                                       class="button button-blue">View</a>
-                                    
-                                    @if($order->status === 'pending')
-                                        <button class="button button-green confirm-order" 
-                                                data-order-id="{{ $order->id }}">Confirm</button>
-                                        <button class="button button-red reject-order" 
-                                                data-order-id="{{ $order->id }}">Reject</button>
-                                    @elseif($order->status === 'confirmed')
-                                        <button class="button button-blue ship-order" 
-                                                data-order-id="{{ $order->id }}">Ship</button>
-                                    @elseif($order->status === 'shipped')
-                                        <button class="button button-green deliver-order" 
-                                                data-order-id="{{ $order->id }}">Mark Delivered</button>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center">No retailer orders found.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @if(isset($order))
+    <div class="content-card" style="margin-bottom: 2rem;">
+        <div class="order-details-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="info-card">
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Order Status</h3>
+                <div class="status-display">
+                    <span class="status-badge status-{{ $order->status }}">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                </div>
+                <div class="status-timeline">
+                    @if($order->ordered_at)
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <strong>Ordered:</strong> {{ \Carbon\Carbon::parse($order->ordered_at)->format('M d, Y H:i') }}
+                            </div>
+                        </div>
+                    @endif
+                    @if($order->confirmed_at)
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <strong>Confirmed:</strong> {{ \Carbon\Carbon::parse($order->confirmed_at)->format('M d, Y H:i') }}
+                            </div>
+                        </div>
+                    @endif
+                    @if($order->shipped_at)
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <strong>Shipped:</strong> {{ \Carbon\Carbon::parse($order->shipped_at)->format('M d, Y H:i') }}
+                            </div>
+                        </div>
+                    @endif
+                    @if($order->delivered_at)
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <strong>Delivered:</strong> {{ \Carbon\Carbon::parse($order->delivered_at)->format('M d, Y H:i') }}
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div class="info-card">
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Customer Information</h3>
+                <div class="info-item"><label>Customer Name:</label> <span>{{ $order->customer_name }}</span></div>
+                <div class="info-item"><label>Retailer:</label> <span>{{ $order->retailer->name ?? 'N/A' }}</span></div>
+            </div>
+            <div class="info-card">
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Product Details</h3>
+                <div class="info-item"><label>Car Model:</label> <span>{{ $order->car_model }}</span></div>
+                <div class="info-item"><label>Quantity:</label> <span>{{ $order->quantity }}</span></div>
+                @if($order->total_amount)
+                <div class="info-item"><label>Total Amount:</label> <span>${{ number_format($order->total_amount, 2) }}</span></div>
+                @endif
+            </div>
+            <div class="info-card">
+                <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Actions</h3>
+                <div class="action-buttons">
+                    @if($order->status === 'pending')
+                        <button class="button button-green confirm-order" data-order-id="{{ $order->id }}"><i class="fas fa-check"></i> Confirm Order</button>
+                        <button class="button button-red reject-order" data-order-id="{{ $order->id }}"><i class="fas fa-times"></i> Reject Order</button>
+                    @elseif($order->status === 'confirmed')
+                        <button class="button button-blue ship-order" data-order-id="{{ $order->id }}"><i class="fas fa-shipping-fast"></i> Ship Order</button>
+                    @elseif($order->status === 'shipped')
+                        <button class="button button-green deliver-order" data-order-id="{{ $order->id }}"><i class="fas fa-check-double"></i> Mark Delivered</button>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="content-card" style="margin-bottom: 2rem;">
+            <h3 style="color: var(--primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Order Notes</h3>
+            <div class="notes-content" style="margin-bottom: 1rem;">
+                @if($order->notes)
+                    <div class="notes-text">{{ $order->notes }}</div>
+                @else
+                    <div class="no-notes">No notes available for this order.</div>
+                @endif
+            </div>
+            <button class="button button-blue" onclick="openNotesModal()"><i class="fas fa-edit"></i> Update Notes</button>
+        </div>
+        <!-- Notes Modal -->
+        <div class="notes-modal" id="notesModal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Update Order Notes</h2>
+                    <span class="close" onclick="closeModal('notesModal')">&times;</span>
+                </div>
+                <form id="updateNotesForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="notes">Notes</label>
+                            <textarea id="notes" name="notes" rows="5" placeholder="Add or update notes for this order...">{{ $order->notes }}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="button button-gray" onclick="closeModal('notesModal')">Cancel</button>
+                        <button type="submit" class="button button-blue">Update Notes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- Confirm Order Modal -->
-<div id="confirmOrderModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Confirm Order</h2>
-            <span class="close">&times;</span>
-        </div>
-        <form id="confirmOrderForm">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="notes">Notes (Optional)</label>
-                    <textarea id="notes" name="notes" rows="3" placeholder="Add any notes about this order..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="estimated_delivery">Estimated Delivery Date</label>
-                    <input type="date" id="estimated_delivery" name="estimated_delivery" min="{{ date('Y-m-d', strtotime('+1 day')) }}">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="button button-gray" onclick="closeModal('confirmOrderModal')">Cancel</button>
-                <button type="submit" class="button button-green">Confirm Order</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Reject Order Modal -->
-<div id="rejectOrderModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Reject Order</h2>
-            <span class="close">&times;</span>
-        </div>
-        <form id="rejectOrderForm">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="rejection_reason">Rejection Reason *</label>
-                    <textarea id="rejection_reason" name="rejection_reason" rows="3" 
-                              placeholder="Please provide a reason for rejecting this order..." required></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="button button-gray" onclick="closeModal('rejectOrderModal')">Cancel</button>
-                <button type="submit" class="button button-red">Reject Order</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Ship Order Modal -->
-<div id="shipOrderModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Ship Order</h2>
-            <span class="close">&times;</span>
-        </div>
-        <form id="shipOrderForm">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="tracking_number">Tracking Number (Optional)</label>
-                    <input type="text" id="tracking_number" name="tracking_number" 
-                           placeholder="Enter tracking number...">
-                </div>
-                <div class="form-group">
-                    <label for="shipping_notes">Shipping Notes (Optional)</label>
-                    <textarea id="shipping_notes" name="shipping_notes" rows="3" 
-                              placeholder="Add any shipping notes..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="button button-gray" onclick="closeModal('shipOrderModal')">Cancel</button>
-                <button type="submit" class="button button-blue">Ship Order</button>
-            </div>
-        </form>
-    </div>
+    @endif
 </div>
 
 <style>
-.orders-container {
+.order-detail-container {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    overflow: hidden;
+    padding: 2rem;
+    margin-top: 1rem;
 }
 
-.orders-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.orders-stats {
-    display: flex;
+.order-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
-    flex-wrap: wrap;
+    margin-bottom: 2rem;
 }
 
-.stat-card {
+.info-card {
     background: #f8f9fa;
-    padding: 1rem;
     border-radius: 8px;
-    text-align: center;
-    min-width: 100px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
 }
 
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: 700;
+.info-card h3 {
     color: var(--primary);
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-top: 0.25rem;
-}
-
-.orders-table-container {
-    overflow-x: auto;
-}
-
-.orders-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.orders-table th,
-.orders-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.orders-table th {
-    background: #f8f9fa;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: var(--primary);
+}
+
+.status-display {
+    margin-bottom: 1rem;
 }
 
 .status-badge {
-    padding: 0.25rem 0.75rem;
+    padding: 0.5rem 1rem;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
 }
 
@@ -245,28 +188,108 @@
 .status-delivered { background: #d1e7dd; color: #0f5132; }
 .status-rejected { background: #f8d7da; color: #721c24; }
 
+.status-timeline {
+    margin-top: 1rem;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    margin-right: 0.75rem;
+}
+
+.timeline-content {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.info-item span {
+    color: var(--text-light);
+}
+
 .action-buttons {
     display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .button {
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
     border: none;
     border-radius: 6px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    display: inline-block;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
 }
 
-.button-blue { background: #007bff; color: white; }
 .button-green { background: #28a745; color: white; }
 .button-red { background: #dc3545; color: white; }
+.button-blue { background: #007bff; color: white; }
 .button-gray { background: #6c757d; color: white; }
+
+.notes-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.notes-section h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.notes-content {
+    margin-bottom: 1rem;
+}
+
+.notes-text {
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.no-notes {
+    color: var(--text-light);
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+}
 
 .modal {
     display: none;
@@ -336,169 +359,145 @@
     color: var(--text-dark);
 }
 
-.form-group input,
 .form-group textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 1rem;
-}
-
-.form-group textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 120px;
 }
 </style>
 
 @push('scripts')
+@if(isset($order))
 <script>
-let currentOrderId = null;
-
 // Modal functions
-function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'block';
+function openNotesModal() {
+    document.getElementById('notesModal').style.display = 'block';
 }
-
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
-    document.getElementById(modalId).querySelector('form').reset();
 }
-
-// Close modal when clicking outside
 window.onclick = function(event) {
     if (event.target.classList.contains('modal')) {
         event.target.style.display = 'none';
     }
 }
-
-// Close modal when clicking X
 document.querySelectorAll('.close').forEach(function(closeBtn) {
     closeBtn.onclick = function() {
         closeBtn.closest('.modal').style.display = 'none';
     }
 });
-
+// Update notes
+document.getElementById('updateNotesForm').onsubmit = function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch(`/vendor/retailer-orders/{{ $order->id }}/notes`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Optionally update notes in the UI
+        }
+    });
+};
+let currentOrderId = {{ $order->id }};
 // Confirm order
 document.querySelectorAll('.confirm-order').forEach(function(btn) {
     btn.onclick = function() {
-        currentOrderId = this.dataset.orderId;
-        openModal('confirmOrderModal');
+        if (confirm('Confirm this order?')) {
+            fetch(`/vendor/retailer-orders/${currentOrderId}/confirm`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while confirming the order.');
+            });
+        }
     }
 });
-
-document.getElementById('confirmOrderForm').onsubmit = function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch(`/vendor/retailer-orders/${currentOrderId}/confirm`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(Object.fromEntries(formData))
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while confirming the order.');
-    });
-    
-    closeModal('confirmOrderModal');
-};
-
 // Reject order
 document.querySelectorAll('.reject-order').forEach(function(btn) {
     btn.onclick = function() {
-        currentOrderId = this.dataset.orderId;
-        openModal('rejectOrderModal');
+        const reason = prompt('Please provide a reason for rejecting this order:');
+        if (reason) {
+            fetch(`/vendor/retailer-orders/${currentOrderId}/reject`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rejection_reason: reason })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while rejecting the order.');
+            });
+        }
     }
 });
-
-document.getElementById('rejectOrderForm').onsubmit = function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch(`/vendor/retailer-orders/${currentOrderId}/reject`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(Object.fromEntries(formData))
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while rejecting the order.');
-    });
-    
-    closeModal('rejectOrderModal');
-};
-
 // Ship order
 document.querySelectorAll('.ship-order').forEach(function(btn) {
     btn.onclick = function() {
-        currentOrderId = this.dataset.orderId;
-        openModal('shipOrderModal');
+        if (confirm('Mark this order as shipped?')) {
+            fetch(`/vendor/retailer-orders/${currentOrderId}/ship`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while shipping the order.');
+            });
+        }
     }
 });
-
-document.getElementById('shipOrderForm').onsubmit = function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch(`/vendor/retailer-orders/${currentOrderId}/ship`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(Object.fromEntries(formData))
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            location.reload();
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while shipping the order.');
-    });
-    
-    closeModal('shipOrderModal');
-};
-
 // Deliver order
 document.querySelectorAll('.deliver-order').forEach(function(btn) {
     btn.onclick = function() {
         if (confirm('Mark this order as delivered?')) {
-            currentOrderId = this.dataset.orderId;
-            
             fetch(`/vendor/retailer-orders/${currentOrderId}/deliver`, {
                 method: 'POST',
                 headers: {
@@ -523,5 +522,6 @@ document.querySelectorAll('.deliver-order').forEach(function(btn) {
     }
 });
 </script>
+@endif
 @endpush
 @endsection 

@@ -27,11 +27,11 @@
             @foreach($users as $user)
                 <li data-role="{{ $user->role }}" style="list-style: none;">
                     <a href="#" class="user-chat-link" data-user-id="{{ $user->id }}" style="display: flex; align-items: center; gap: 12px; padding: 0.85rem 1.5rem; border-bottom: 1px solid #f3f4f6; text-decoration: none; color: #222; transition: background 0.2s; border-radius: 0;">
-                        @php $profilePhoto = $user->profile_photo ?? ($user->documents->where('document_type', 'profile_picture')->first()->file_path ?? null); @endphp
+                        @php $profilePhoto = $user->profile_picture ?? ($user->documents->where('document_type', 'profile_picture')->first()->file_path ?? null); @endphp
                         @if($profilePhoto)
                             <img src="{{ asset($profilePhoto) }}" class="avatar" alt="avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
                         @else
-                            <span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">{{ strtoupper(substr($user->name,0,1)) }}</span>
+                            <img src="{{ asset('images/profile/default.png') }}" class="avatar" alt="avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
                         @endif
                         <span class="user-name" style="font-weight: 600; font-size: 1.05rem;">{{ $user->name }}</span>
                     </a>
@@ -155,12 +155,14 @@
           <button type="button" class="emoji-btn" data-emoji="📧">📧</button>
         </div>
       </div>
+      <div id="chat-toast" style="display:none; position:fixed; bottom:32px; right:32px; background:#2563eb; color:#fff; padding:1rem 1.5rem; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.12); font-size:1.1rem; z-index:9999; min-width:220px; max-width:350px;"></div>
     </div>
   </div>
 </div>
 @endsection 
 
 @push('scripts')
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 <script>
 let selectedUserId = null;
 let selectedUserData = null;
@@ -289,6 +291,7 @@ const userList = document.getElementById('userList');
 const demoChats = document.getElementById('demo-chats');
 const welcomeMessage = document.getElementById('welcome-message');
 const chatHeaderArea = document.getElementById('chat-header-area');
+const chatMessagesArea = document.getElementById('chat-messages-area');
 const chatInputForm = document.getElementById('chat-input-form');
 const emojiBtn = document.getElementById('emoji-btn');
 const emojiPicker = document.getElementById('emoji-picker');
@@ -370,5 +373,32 @@ document.getElementById('chat-input-form').addEventListener('submit', function(e
   e.preventDefault();
   chatInput.value = '';
 });
+function showToast(sender, message) {
+    const toast = document.getElementById('chat-toast');
+    toast.innerHTML = `<b>${sender}:</b> ${message.length > 60 ? message.slice(0, 60) + '...' : message}`;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 4000);
+}
+// Laravel Echo real-time chat listening
+if (window.Echo && currentUserId) {
+    window.Echo.private('chat.' + currentUserId)
+        .listen('MessageSent', (e) => {
+            if (selectedUserId && (e.sender_id == selectedUserId || e.sender_id == currentUserId)) {
+                fetch(`/chats/messages/${selectedUserId}`)
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.status === 'success' && data.messages) {
+                      demoChats.style.display = 'none';
+                      welcomeMessage.style.display = 'none';
+                      chatMessagesArea.innerHTML = `<div id='real-messages'>${renderMessages(data.messages, currentUserId)}</div>`;
+                    }
+                  });
+            }
+            // Show toast if message is for me and not from me
+            if (e.sender_id != currentUserId) {
+                showToast(e.sender_name, e.message);
+            }
+        });
+}
 </script>
 @endpush

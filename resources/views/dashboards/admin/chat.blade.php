@@ -14,7 +14,7 @@
   <div class="chat-flex-container" style="display: flex; flex: 1; height: 100%; overflow: hidden;">
     <!-- Sidebar: Users -->
     <div class="chat-sidebar">
-        <div class="chat-sidebar-header">Users</div>
+        <div class="chat-sidebar-header" style="color: var(--text)">Users</div>
         <div class="chat-search-bar">
             <input type="text" id="userSearch" placeholder="Search users...">
         </div>
@@ -43,11 +43,8 @@
           <div id="chat-header-status" style="font-size:0.95rem; color:#22c55e;"></div>
         </div>
       </div>
-      <div id="chat-messages-area" class="chat-messages" style="height: 70vh; overflow-y: auto; padding: 2rem 2rem 1rem 2rem; background: #f8fafc; border-radius: 0 0 18px 18px;">
-        <div style="margin-bottom: 2.5rem; text-align: center;">
-          <svg width="80" height="80" fill="none" viewBox="0 0 24 24"><path fill="#166534" d="M12 3C7.03 3 3 6.58 3 11c0 1.61.62 3.09 1.7 4.36-.23.81-.82 2.13-1.65 3.13-.18.22-.21.53-.07.78.13.25.41.37.68.29 1.52-.44 3.13-1.18 4.13-1.7C9.47 18.41 10.7 19 12 19c4.97 0 9-3.58 9-8s-4.03-8-9-8Z"/></svg>
-        </div>
-        <h1 style="color: #166534; font-size: 2.5rem; font-weight: 700; margin-bottom: 1.2rem; text-align: center;">Welcome to Admin Chat</h1>
+      <div id="chat-messages-area" class="chat-messages" style="height: 70vh; overflow-y: auto; padding: 2rem 2rem 1rem 2rem; background: #f5faf7; border-radius: 0 0 18px 18px;">
+        <h1 style="color: #40ca74; font-size: 2.5rem; font-weight: 700; margin-bottom: 1.2rem; text-align: center;">Welcome to Admin Chat</h1>
         <div style="font-size: 1.25rem; color: #222; margin-bottom: 2.2rem; max-width: 520px; margin-left: auto; margin-right: auto; text-align: center;">
           Here you can communicate directly with any user in the system. Select a user from the list on the left to view your conversation or start a new chat.
         </div>

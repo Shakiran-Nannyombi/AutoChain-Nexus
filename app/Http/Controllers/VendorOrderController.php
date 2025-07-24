@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\VendorActivity;
 use App\Notifications\VendorNotification;
+use App\Notifications\VendorOrderCreated;
 
 class VendorOrderController extends Controller
 {
@@ -17,21 +18,46 @@ class VendorOrderController extends Controller
     public function index()
     {
         $vendorId = Auth::id();
-        $orders = VendorOrder::where('vendor_id', $vendorId)
+        // Manufacturer orders (orders TO manufacturers)
+        $manufacturerOrders = VendorOrder::where('vendor_id', $vendorId)
             ->with('manufacturer')
             ->orderByDesc('created_at')
             ->get();
-            
-        // Get all manufacturers for the dropdown
-        $manufacturers = User::where('role', 'manufacturer')
-            ->where('status', 'approved')
-            ->orderBy('name')
-            ->get(['id', 'name', 'company']);          
-            
-        // Get all products for the dropdown
-        $products = Product::orderBy('name')->get(['id', 'name', 'category', 'price']);
-        
-        return view('dashboards.vendor.orders', compact('orders', 'manufacturers', 'products'));
+        // Retailer orders (orders FROM retailers)
+        $retailerOrders = \App\Models\RetailerOrder::where('vendor_id', $vendorId)
+            ->with('retailer')
+            ->orderByDesc('created_at')
+            ->get();
+        // Products for this vendor
+        $products = Product::where('vendor_id', $vendorId)->get();
+        // Stat cards
+        $totalModels = $products->count();
+        $activeModels = $products->where('status', 'active')->count();
+        $totalInventory = $products->sum('stock');
+        $pendingOrders = $retailerOrders->where('status', 'pending')->count();
+        return view('dashboards.vendor.orders', compact(
+            'manufacturerOrders',
+            'retailerOrders',
+            'products',
+            'totalModels',
+            'activeModels',
+            'totalInventory',
+            'pendingOrders'
+        ));
+    }
+
+    // Show the manufacturer orders page for the vendor
+    public function manufacturerOrdersPage()
+    {
+        $vendorId = Auth::id();
+        $manufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->get();
+        $vendorProducts = \App\Models\Product::where('vendor_id', $vendorId)->get();
+        $vendorAddresses = \App\Models\Vendor::where('user_id', $vendorId)->pluck('address')->filter()->unique();
+        $manufacturerOrders = \App\Models\VendorOrder::where('vendor_id', $vendorId)
+            ->with('manufacturer')
+            ->orderByDesc('created_at')
+            ->get();
+        return view('dashboards.vendor.manufacturer-orders', compact('manufacturers', 'vendorProducts', 'vendorAddresses', 'manufacturerOrders'));
     }
 
     // Get products for a specific manufacturer (AJAX endpoint)
@@ -82,7 +108,8 @@ class VendorOrderController extends Controller
             'total_amount' => $product->price * $validated['quantity'],
             'status' => 'pending',
             'ordered_at' => Carbon::now(),
-            'expected_delivery_date' => $validated['delivery_date'],
+            'expected_delivery_date' => $validated['delivery_date'] ?? null,
+            'delivery_point' => $request->delivery_point ?? null,
             'notes' => $validated['special_instructions'],
         ]);
 
@@ -95,8 +122,17 @@ class VendorOrderController extends Controller
         
         // Notify vendor
         Auth::user()->notify(new VendorNotification('Order Created', 'Your order #' . $order->id . ' has been created.'));
+        // Notify manufacturer (real-time)
+        if ($manufacturer) {
+            $manufacturer->notify(new VendorOrderCreated($order));
+        }
 
+        // If AJAX, return JSON. Otherwise, redirect with success message.
+        if ($request->ajax() || $request->wantsJson()) {
         return response()->json(['success' => true, 'message' => 'Order created successfully!', 'order' => $order]);
+        } else {
+            return redirect()->route('vendor.manufacturer-orders')->with('success', 'Order created successfully!');
+        }
     }
 
     // Update order status or details
