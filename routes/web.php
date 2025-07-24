@@ -310,13 +310,9 @@ Route::get('/manufacturer/dashboard', [ManufacturerDashboardController::class, '
     ->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)
     ->name('manufacturer.dashboard');
 
-Route::get('/supplier/dashboard', function () {
-    if (!session('user_id') || session('user_role') !== 'supplier') {
-        return redirect('/login');
-    }
-    
-    return view('dashboards.supplier.index');
-})->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
+Route::get('/supplier/dashboard', [App\Http\Controllers\SupplierDashboardController::class, 'index'])
+    ->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)
+    ->name('supplier.dashboard');
 
 Route::get('/vendor/dashboard', [VendorDashboardController::class, 'index'])
     ->middleware(\App\Http\Middleware\PreventBackAfterLogout::class);
@@ -562,12 +558,23 @@ Route::prefix('manufacturer')->middleware(\App\Http\Middleware\PreventBackAfterL
     Route::get('/demand-prediction/options', [App\Http\Controllers\Manufacturer\DemandPrediction::class, 'getAvailableModelsAndRegions'])->name('manufacturer.demand.options');
     Route::post('/demand-prediction/forecast', [App\Http\Controllers\Manufacturer\DemandPrediction::class, 'getDemandForecast'])->name('manufacturer.demand.forecast');
     Route::post('/chats/send', [\App\Http\Controllers\ChatController::class, 'sendChatMessage'])->name('manufacturer.chats.send');
+    Route::post('/deliveries/{id}/confirm', [\App\Http\Controllers\ManufacturerDashboardController::class, 'confirmDelivery'])->name('manufacturer.deliveries.confirm');
 });
 
 // Supplier dashboard routes
 Route::prefix('supplier')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
-    Route::get('/dashboard', function () { return view('dashboards.supplier.index'); })->name('supplier.dashboard');
     Route::get('/stock-management', [SupplierController::class, 'stockManagement'])->name('supplier.stock-management');
+    Route::get('/shipments', [\App\Http\Controllers\SupplierDashboardController::class, 'shipments'])->name('supplier.shipments');
+    Route::get('/orders', [\App\Http\Controllers\SupplierDashboardController::class, 'orders'])->name('supplier.orders');
+    Route::get('/inventory', [\App\Http\Controllers\SupplierDashboardController::class, 'inventory'])->name('supplier.inventory');
+    Route::get('/supplies/create', [\App\Http\Controllers\SupplierDashboardController::class, 'createSupply'])->name('supplier.supplies.create');
+    Route::post('/checklist-receipt/confirm/{id}', [\App\Http\Controllers\SupplierDashboardController::class, 'confirmOrder'])->name('supplier.checklist.confirm');
+    Route::post('/checklist-receipt/reject/{id}', [\App\Http\Controllers\SupplierDashboardController::class, 'rejectOrder'])->name('supplier.checklist.reject');
+    Route::post('/checklist-receipt/ship/{id}', [\App\Http\Controllers\SupplierDashboardController::class, 'shipOrder'])->name('supplier.checklist.ship');
+    Route::post('/checklist-receipt/deliver/{id}', [\App\Http\Controllers\SupplierDashboardController::class, 'deliverOrder'])->name('supplier.checklist.deliver');
+    Route::get('/delivery/{id}', [\App\Http\Controllers\SupplierDashboardController::class, 'deliveryDetails'])->name('supplier.delivery.details');
+    Route::get('/live-tracking', [\App\Http\Controllers\SupplierDashboardController::class, 'liveTracking'])->name('supplier.live-tracking');
+    Route::post('/orders/{id}/update', [\App\Http\Controllers\SupplierDashboardController::class, 'updateOrder'])->name('supplier.orders.update');
     Route::post('/stock-management/add', [SupplierController::class, 'addStock'])->name('supplier.stock.add');
     Route::get('/checklist-receipt',[SupplierController::class, 'checklistReceipt'])->name('supplier.checklist-receipt');
     Route::post('/checklist-receipt/fulfill/{id}', [SupplierController::class, 'fulfillChecklist'])->name('supplier.checklist.fulfill');
@@ -598,6 +605,8 @@ Route::prefix('supplier')->middleware(\App\Http\Middleware\PreventBackAfterLogou
         return view('dashboards.supplier.chat', compact('users'));
     })->name('supplier.chat');
 });
+
+Route::get('/supplier/delivery-details', [App\Http\Controllers\SupplierController::class, 'deliveryHistory'])->name('supplier.delivery-details');
 
 // Vendor dashboard routes
 Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout::class)->group(function () {
@@ -660,6 +669,7 @@ Route::prefix('vendor')->middleware(\App\Http\Middleware\PreventBackAfterLogout:
     Route::post('/retailer-orders/{id}/reject', [\App\Http\Controllers\VendorRetailerOrderController::class, 'reject'])->name('vendor.retailer-orders.reject');
     Route::post('/retailer-orders/{id}/ship', [\App\Http\Controllers\VendorRetailerOrderController::class, 'ship'])->name('vendor.retailer-orders.ship');
     Route::post('/retailer-orders/{id}/deliver', [\App\Http\Controllers\VendorRetailerOrderController::class, 'deliver'])->name('vendor.retailer-orders.deliver');
+    Route::get('/retailer-orders/{id}/notes', [\App\Http\Controllers\VendorRetailerOrderController::class, 'getNotes'])->name('vendor.retailer-orders.get-notes');
     Route::put('/retailer-orders/{id}/notes', [\App\Http\Controllers\VendorRetailerOrderController::class, 'updateNotes'])->name('vendor.retailer-orders.notes');
     Route::get('/analytics', [\App\Http\Controllers\VendorAnalyticsController::class, 'dashboard'])->name('vendor.analytics');
     // Vendor chat route (now renders the Blade view directly and passes $users)
