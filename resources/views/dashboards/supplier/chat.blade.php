@@ -190,21 +190,63 @@ if (chatInputForm) {
     chatInput.value = '';
     chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
     
-    // Simulate response
+    // Simulate response based on user role
     setTimeout(() => {
       const userName = document.getElementById('chat-header-name').textContent;
+      const userRole = document.querySelector(`[data-user-id="${selectedUserId}"]`).closest('li').getAttribute('data-role');
+      
+      // Different responses based on role
+      const responses = {
+        manufacturer: [
+          "Thanks for the update! I'll review the production schedule.",
+          "Got it. Let me check with the production team.",
+          "Perfect! I'll coordinate with the logistics department.",
+          "Understood. I'll get back to you with the details shortly.",
+          "Great! Please send me the specifications when ready."
+        ],
+        admin: [
+          "Thank you for reaching out. I'll review this immediately.",
+          "Noted. I'll update the system accordingly.",
+          "Thanks for the information. I'll process this request.",
+          "Received. I'll coordinate with the relevant departments.",
+          "Acknowledged. I'll follow up on this matter."
+        ],
+        vendor: [
+          "Thanks! I'll check our inventory and get back to you.",
+          "Received. Let me verify the availability.",
+          "Got it! I'll prepare the quotation for you.",
+          "Thanks for the inquiry. I'll send you the details.",
+          "Perfect! I'll coordinate the delivery schedule."
+        ],
+        retailer: [
+          "Thanks for the message! I'll check our stock levels.",
+          "Received. Let me verify the order status.",
+          "Got it! I'll update you on the delivery timeline.",
+          "Thanks! I'll coordinate with our warehouse team.",
+          "Perfect! I'll send you the tracking information."
+        ]
+      };
+      
+      const roleResponses = responses[userRole] || [
+        "Thanks for your message! I'll get back to you soon.",
+        "Received. I'll look into this and respond shortly.",
+        "Got it! Let me check and get back to you."
+      ];
+      
+      const randomResponse = roleResponses[Math.floor(Math.random() * roleResponses.length)];
+      
       const responseHtml = `
         <div style="display: flex; align-items: flex-end; margin-bottom: 1.2rem;">
           <div style="margin-right: 10px;"><span class="avatar" style="width: 38px; height: 38px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">${userName.charAt(0)}</span></div>
           <div style="background: #e3f0ff; color: #166534; border-radius: 18px; padding: 1rem 1.3rem; font-size: 1.08rem; max-width: 70vw; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
-            Thanks for your message! I'll get back to you soon.
+            ${randomResponse}
             <div style="font-size: 0.95rem; color: #6b7280; margin-top: 0.5rem; text-align: right;">${userName}, ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
           </div>
         </div>
       `;
       chatMessagesArea.innerHTML += responseHtml;
       chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
-    }, 2000);
+    }, Math.random() * 2000 + 1000); // Random delay between 1-3 seconds
   });
 }
 </script>
