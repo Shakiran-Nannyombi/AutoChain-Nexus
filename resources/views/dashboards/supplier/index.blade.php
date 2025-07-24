@@ -12,49 +12,48 @@
     @endphp
 
     <div class="content-card">
-        <h2 style="color: var(--deep-purple); margin-bottom: 1.5rem; font-size: 1.8rem;">
-            <i class="fas fa-truck"></i> Supplier Dashboard
+        <h2 style="color: var(--text); margin-bottom: 1rem; font-weight:bold; font-size: 2rem;">
+          Control Panel
         </h2>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
             <!-- Quick Stats -->
-            <div style="background: linear-gradient(135deg, var(--primary), #0d3a07); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, #0d3a07, #26741c); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-size: 2rem; font-weight: bold;">{{ $activeSupplies ?? 0 }}</div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $activeSupplies ?? '0' }}</div>
                         <div style="opacity: 0.9;">Active Supplies</div>
                     </div>
-                    <i class="fas fa-boxes" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                    <i class="fas fa-boxes" style="font-size: 2.5rem; opacity: 0.9;"></i>
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--secondary), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg,  #10073a, #231c74); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $pendingOrders ?? 0 }}</div>
                         <div style="opacity: 0.9;">Pending Orders</div>
                     </div>
-                    <i class="fas fa-clock" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                    <i class="fas fa-clock" style="font-size: 2.5rem; opacity: 0.9;"></i>
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--primary-light), #388e3c); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg,  #2f073a, #581c74); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div style="font-size: 2rem; font-weight: bold;">{{ $activeShipments ?? 0 }}</div>
                         <div style="opacity: 0.9;">Active Shipments</div>
                     </div>
-                    <i class="fas fa-shipping-fast" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                    <i class="fas fa-shipping-fast" style="font-size: 2.5rem; opacity: 0.9;"></i>
                 </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--accent), #b35400); color: white; padding: 1.5rem; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg,  #073a39, #1c6d74); color: white; padding: 1.5rem; border-radius: 12px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-size: 2rem; font-weight: bold;">{{ $monthlyRevenue ?? '$0' }}</div>
+                        <div style="font-size: 2rem; font-weight: bold;">{{ $monthlyRevenue ?? 'shs 0' }}</div>
                         <div style="opacity: 0.9;">Monthly Revenue</div>
                     </div>
-                    <i class="fas fa-dollar-sign" style="font-size: 2.5rem; opacity: 0.7;"></i>
                 </div>
             </div>
         </div>
@@ -65,22 +64,22 @@
                 <i class="fas fa-bolt"></i> Quick Actions
             </h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                <a href="/supplier/supplies/create" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="{{ route('supplier.supplies.create') }}" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
                     <i class="fas fa-plus" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
                     <div style="font-weight: 600;">Add New Supply</div>
                 </a>
                 
-                <a href="/supplier/orders" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="{{ route('supplier.orders') }}" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
                     <i class="fas fa-shopping-cart" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
                     <div style="font-weight: 600;">View Orders</div>
                 </a>
                 
-                <a href="/supplier/shipments" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="{{ route('supplier.shipments') }}" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
                     <i class="fas fa-shipping-fast" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
                     <div style="font-weight: 600;">Track Shipments</div>
                 </a>
                 
-                <a href="/supplier/inventory" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
+                <a href="{{ route('supplier.inventory') }}" style="display: block; padding: 1rem; background: var(--light-cyan); border-radius: 8px; text-decoration: none; color: var(--deep-purple); text-align: center; transition: transform 0.2s;">
                     <i class="fas fa-warehouse" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
                     <div style="font-weight: 600;">Check Inventory</div>
                 </a>

@@ -15,12 +15,18 @@ class RetailerOrderSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get all approved vendors and retailers
-        $vendors = User::where('role', 'vendor')->where('status', 'approved')->get();
-        $retailers = User::where('role', 'retailer')->where('status', 'approved')->get();
+        // Get all vendors (approved or not) and retailers
+        $vendors = User::where('role', 'vendor')->get();
+        $retailers = User::where('role', 'retailer')->get();
+        
+        // Make sure vendor with ID 4 is included
+        $vendor4 = User::find(4);
+        if ($vendor4 && !$vendors->contains($vendor4)) {
+            $vendors->push($vendor4);
+        }
 
         if ($vendors->isEmpty() || $retailers->isEmpty()) {
-            $this->command->info('No approved vendors or retailers found. Please create some users first.');
+            $this->command->info('No vendors or retailers found. Please create some users first.');
             return;
         }
 
@@ -102,6 +108,46 @@ class RetailerOrderSeeder extends Seeder
                 'ordered_at' => now(),
                 'notes' => 'This is a guaranteed demo pending order for UI testing.',
             ]);
+        }
+        
+        // Create orders specifically for vendor ID 4
+        $vendor4 = User::find(4);
+        if ($vendor4) {
+            foreach ($retailers as $retailer) {
+                // Create orders with different statuses
+                foreach (['pending', 'confirmed', 'shipped', 'delivered'] as $status) {
+                    $carModel = $carModels[array_rand($carModels)];
+                    $customerName = $customerNames[array_rand($customerNames)];
+                    $quantity = rand(1, 5);
+                    $totalAmount = $quantity * rand(25000, 50000);
+                    
+                    $order = RetailerOrder::create([
+                        'user_id' => $retailer->id,
+                        'vendor_id' => $vendor4->id,
+                        'customer_name' => $customerName . ' (Vendor 4)',
+                        'car_model' => $carModel,
+                        'quantity' => $quantity,
+                        'status' => $status,
+                        'total_amount' => $totalAmount,
+                        'ordered_at' => Carbon::now()->subDays(rand(1, 30)),
+                        'notes' => 'Order for Vendor ID 4 testing.',
+                    ]);
+                    
+                    // Add timestamps based on status
+                    if ($status !== 'pending') {
+                        $order->confirmed_at = Carbon::now()->subDays(rand(1, 25));
+                    }
+                    if (in_array($status, ['shipped', 'delivered'])) {
+                        $order->shipped_at = Carbon::now()->subDays(rand(1, 20));
+                    }
+                    if ($status === 'delivered') {
+                        $order->delivered_at = Carbon::now()->subDays(rand(1, 15));
+                    }
+                    $order->save();
+                }
+            }
+            
+            $this->command->info('Created orders specifically for vendor ID 4');
         }
 
         $this->command->info('Retailer orders seeded successfully!');

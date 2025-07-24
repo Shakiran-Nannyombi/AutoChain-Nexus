@@ -113,7 +113,41 @@ class SupplierController extends Controller
 
     public function deliveryHistory()
     {
-        $deliveries = Delivery::where('supplier_id', Auth::id())->get();
-        return view('dashboards.supplier.delivery-history', compact('deliveries'));
+        $supplierId = Auth::id();
+        
+        if (!$supplierId) {
+            $supplier = \App\Models\User::where('role', 'supplier')->where('status', 'approved')->first();
+            $supplierId = $supplier ? $supplier->id : null;
+        }
+        
+        // Only show completed deliveries (confirmed by manufacturer)
+        $completedDeliveries = Delivery::where('supplier_id', $supplierId)
+            ->where('status', 'completed')
+            ->with('manufacturer')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+            
+        // Calculate statistics
+        $thisMonthCount = $completedDeliveries->filter(function($delivery) {
+            return $delivery->updated_at->isCurrentMonth();
+        })->count();
+        
+        $totalMaterials = $completedDeliveries->sum(function($delivery) {
+            return is_array($delivery->materials_delivered) ? count($delivery->materials_delivered) : 0;
+        });
+        
+        $avgDeliveryTime = $completedDeliveries->avg(function($delivery) {
+            if ($delivery->created_at && $delivery->updated_at) {
+                return $delivery->created_at->diffInHours($delivery->updated_at);
+            }
+            return 24;
+        }) ?? 24;
+        
+        return view('dashboards.supplier.delivery-history', compact(
+            'completedDeliveries',
+            'thisMonthCount',
+            'totalMaterials',
+            'avgDeliveryTime'
+        ));
     }
 }

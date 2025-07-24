@@ -18,216 +18,164 @@ class VendorRetailerOrderController extends Controller
     // List all retailer orders for the current vendor
     public function index(Request $request)
     {
-        $retailerOrders = \App\Models\RetailerOrder::with(['retailer', 'vendor'])
+        $vendorId = Auth::id();
+        
+        // Get all retailer orders for this vendor
+        $retailerOrders = RetailerOrder::where('vendor_id', $vendorId)
+            ->with('retailer')
             ->orderByDesc('created_at')
             ->get();
-        // Add manufacturers for the new order form
-        $manufacturers = \App\Models\User::where('role', 'manufacturer')
-            ->where('status', 'approved')
-            ->orderBy('name')
-            ->get(['id', 'name', 'company']);
-        // Fetch only products for this vendor
-        $vendorProducts = \App\Models\Product::where('vendor_id', $vendorId)->get();
-        // Also fetch manufacturer orders for the 'My Orders' tab
-        $manufacturerOrders = \App\Models\VendorOrder::where('vendor_id', $vendorId)
-            ->with('manufacturer')
-            ->orderByDesc('created_at')
-            ->get();
-        // Fetch vendor addresses (from vendors table, address column)
-        $vendorAddresses = [];
-        $vendor = \App\Models\Vendor::where('user_id', $vendorId)->first();
-        if ($vendor && $vendor->address) {
-            // Support comma-separated or semicolon-separated addresses
-            $vendorAddresses = preg_split('/[;,]/', $vendor->address);
-            $vendorAddresses = array_map('trim', $vendorAddresses);
-            $vendorAddresses = array_filter($vendorAddresses);
-
+        
         $selectedOrder = null;
-    
-    // Get the first order if none is selected
-    if ($request->has('selected')) {
-        $selectedOrder = $retailerOrders->firstWhere('id', $request->selected);
-    } elseif ($retailerOrders->isNotEmpty()) {
-        $selectedOrder = $retailerOrders->first();
-    }
+        
+        // Get the selected order if specified, otherwise get the first order
+        if ($request->has('selected')) {
+            $selectedOrder = $retailerOrders->firstWhere('id', $request->selected);
+        } elseif ($retailerOrders->isNotEmpty()) {
+            $selectedOrder = $retailerOrders->first();
         }
-        return view('dashboards.vendor.retailer-order-details', compact('retailerOrders', 'manufacturers', 'manufacturerOrders', 'vendorProducts', 'vendorAddresses', 'selectedOrder'));
+        
+        return view('dashboards.vendor.retailer-order-details', compact('retailerOrders', 'selectedOrder'));
     }
 
     // Show a specific retailer order
     public function show($id)
     {
         $vendorId = Auth::id();
-        $order = RetailerOrder::where('vendor_id', $vendorId)
+        
+        // Get the selected order
+        $selectedOrder = RetailerOrder::where('vendor_id', $vendorId)
             ->with('retailer')
             ->findOrFail($id);
         
-        return view('dashboards.vendor.retailer-order-show', compact('order'));
+        return view('dashboards.vendor.retailer-order-show', compact('selectedOrder'));
     }
 
     // Confirm a retailer order
     public function confirm(Request $request, $id)
     {
-        $vendorId = Auth::id();
-        $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
-        
-        $validated = $request->validate([
-            'notes' => 'nullable|string',
-            'estimated_delivery' => 'nullable|date|after:today',
-        ]);
+        try {
+            $vendorId = Auth::id();
+            $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
+            
+            $validated = $request->validate([
+                'notes' => 'nullable|string',
+                'estimated_delivery' => 'nullable|date|after:today',
+            ]);
 
-        $order->update([
-            'status' => 'confirmed',
-            'confirmed_at' => Carbon::now(),
-            'notes' => $validated['notes'] ?? $order->notes,
-        ]);
+            $order->update([
+                'status' => 'confirmed',
+                'confirmed_at' => Carbon::now(),
+                'notes' => $validated['notes'] ?? $order->notes,
+            ]);
 
-        // Log activity
-        VendorActivity::create([
-            'vendor_id' => $vendorId,
-            'activity' => 'Confirmed retailer order',
-            'details' => 'Order ID: ' . $order->id . ', Customer: ' . $order->customer_name . ', Product: ' . $order->car_model,
-        ]);
+            // Refresh the order to get the updated data with timestamps
+            $order->refresh();
 
-        // Notify vendor
-        $vendor = Auth::user();
-        if (method_exists($vendor, 'notify')) {
-            $vendor->notify(new VendorNotification(
-                'Order Confirmed', 
-                'Retailer order #' . $order->id . ' has been confirmed.'
-            ));
+            // Log activity
+            VendorActivity::create([
+                'vendor_id' => $vendorId,
+                'activity' => 'Confirmed retailer order',
+                'details' => 'Order ID: ' . $order->id . ', Customer: ' . $order->customer_name . ', Product: ' . $order->car_model,
+            ]);
+
+            // Always return JSON for AJAX requests
+            return response()->json([
+                'success' => true, 
+                'message' => 'Order confirmed successfully!', 
+                'order' => $order
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error confirming order: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to confirm order: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Notify retailer
-        $retailer = User::find($order->retailer_id);
-        if ($retailer) {
-            $retailer->notify(new RetailerNotification(
-                'Order Confirmed', 
-                'Your order #' . $order->id . ' has been confirmed by the vendor.'
-            ));
-        }
-
-        return response()->json([
-            'success' => true, 
-            'message' => 'Order confirmed successfully!', 
-            'order' => $order
-        ]);
     }
 
     // Ship a retailer order
     public function ship(Request $request, $id)
     {
-        $vendorId = Auth::id();
-        $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
-        
-        $validated = $request->validate([
-            'tracking_number' => 'nullable|string',
-            'shipping_notes' => 'nullable|string',
-        ]);
+        try {
+            $vendorId = Auth::id();
+            $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
+            
+            $validated = $request->validate([
+                'tracking_number' => 'nullable|string',
+                'shipping_notes' => 'nullable|string',
+            ]);
 
-        $order->update([
-            'status' => 'shipped',
-            'shipped_at' => Carbon::now(),
-            'notes' => ($order->notes ? $order->notes . "\n" : '') . 
-                      'Shipped: ' . ($validated['shipping_notes'] ?? 'Order shipped'),
-        ]);
-
-        // Create or update Delivery record
-        $driver = 'Demo Driver';
-        $destination = 'Demo Destination';
-        $progress = 75;
-        $eta = Carbon::now()->addDays(2)->format('Y-m-d H:i');
-        $tracking = [
-            ['status' => 'Package loaded', 'location' => 'Warehouse', 'timestamp' => Carbon::now()->subDays(2)->format('Y-m-d H:i')],
-            ['status' => 'Departed', 'location' => 'Warehouse', 'timestamp' => Carbon::now()->subDay()->format('Y-m-d H:i')],
-            ['status' => 'In transit', 'location' => $destination, 'timestamp' => Carbon::now()->format('Y-m-d H:i')],
-        ];
-        \App\Models\Delivery::updateOrCreate(
-            ['retailer_order_id' => $order->id],
-            [
+            $order->update([
                 'status' => 'shipped',
-                'driver' => $driver,
-                'destination' => $destination,
-                'progress' => $progress,
-                'eta' => $eta,
-                'tracking_history' => $tracking,
-            ]
-        );
+                'shipped_at' => Carbon::now(),
+                'notes' => ($order->notes ? $order->notes . "\n" : '') . 
+                          'Shipped: ' . ($validated['shipping_notes'] ?? 'Order shipped'),
+            ]);
+            
+            // Refresh the order to get the updated data with timestamps
+            $order->refresh();
 
-        // Log activity
-        VendorActivity::create([
-            'vendor_id' => $vendorId,
-            'activity' => 'Shipped retailer order',
-            'details' => 'Order ID: ' . $order->id . ', Tracking: ' . ($validated['tracking_number'] ?? 'N/A'),
-        ]);
+            // Log activity
+            VendorActivity::create([
+                'vendor_id' => $vendorId,
+                'activity' => 'Shipped retailer order',
+                'details' => 'Order ID: ' . $order->id . ', Tracking: ' . ($validated['tracking_number'] ?? 'N/A'),
+            ]);
 
-        // Notify retailer
-        $retailer = User::find($order->user_id);
-        if ($retailer) {
-            $retailer->notify(new RetailerNotification(
-                'Order Shipped', 
-                'Your order #' . $order->id . ' has been shipped by the vendor.'
-            ));
+            // Always return JSON for AJAX requests
+            return response()->json([
+                'success' => true, 
+                'message' => 'Order shipped successfully!', 
+                'order' => $order
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error shipping order: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to ship order: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true, 
-            'message' => 'Order shipped successfully!', 
-            'order' => $order
-        ]);
     }
 
     // Mark order as delivered
     public function deliver(Request $request, $id)
-{
-    $vendorId = Auth::id();
-    $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
+    {
+        try {
+            $vendorId = Auth::id();
+            $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
 
-    // Update order status and delivery time
-    $order->update([
-        'status' => 'delivered',
-        'delivered_at' => now(),
-        'notes' => $this->appendNote($order->notes, 'Delivered: ' . ($request->input('delivery_notes') ?? 'Order delivered')),
-    ]);
+            // Update order status and delivery time
+            $order->update([
+                'status' => 'delivered',
+                'delivered_at' => now(),
+                'notes' => $this->appendNote($order->notes, 'Delivered: ' . ($request->input('delivery_notes') ?? 'Order delivered')),
+            ]);
+            
+            // Refresh the order to get the updated data with timestamps
+            $order->refresh();
 
-      Log::info("Creating RetailerStock for order ID: {$order->id}");
+            // Log vendor activity
+            VendorActivity::create([
+                'vendor_id' => $vendorId,
+                'activity' => 'Delivered retailer order',
+                'details' => 'Order ID: ' . $order->id . ' has been delivered.',
+            ]);
 
-      $retailer = \App\Models\Retailer::where('user_id', $order->user_id)->first();
-
-    // Create retailer stock record
-    $stock = \App\Models\RetailerStock::create([
-        'retailer_id' => $retailer->id,
-        'vendor_id' => $vendorId,
-        'vendor_name' => Auth::user()->name,
-        'car_model' => $order->car_model,
-        'quantity_received' => $order->quantity,
-        'status' => 'pending', // So the retailer can accept/reject
-    ]);
-
-     Log::info("RetailerStock created with ID: {$stock->id}");
-
-    // Log vendor activity
-    VendorActivity::create([
-        'vendor_id' => $vendorId,
-        'activity' => 'Delivered retailer order',
-        'details' => 'Order ID: ' . $order->id . ' has been delivered and added to stock.',
-    ]);
-
-    // Notify retailer
-    $retailer = User::find($order->user_id);
-    if ($retailer) {
-        $retailer->notify(new RetailerNotification(
-            'Stock Pending Confirmation',
-            'Your order #' . $order->id . ' has been delivered and is pending your confirmation in stock.'
-        ));
+            // Always return JSON for AJAX requests
+            return response()->json([
+                'success' => true,
+                'message' => 'Order marked as delivered successfully!',
+                'order' => $order
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error delivering order: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to deliver order: ' . $e->getMessage()
+            ], 500);
+        }
     }
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Order marked as delivered and stock record created!',
-        'order' => $order
-    ]);
-}
 
 private function appendNote($existing, $new)
 {
@@ -237,44 +185,57 @@ private function appendNote($existing, $new)
     // Reject a retailer order
     public function reject(Request $request, $id)
     {
+        try {
+            $vendorId = Auth::id();
+            $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
+            
+            $validated = $request->validate([
+                'rejection_reason' => 'required|string|max:500',
+            ]);
+
+            $order->update([
+                'status' => 'rejected',
+                'notes' => ($order->notes ? $order->notes . "\n" : '') . 
+                          'Rejected: ' . $validated['rejection_reason'],
+            ]);
+            
+            // Refresh the order to get the updated data with timestamps
+            $order->refresh();
+
+            // Log activity
+            VendorActivity::create([
+                'vendor_id' => $vendorId,
+                'activity' => 'Rejected retailer order',
+                'details' => 'Order ID: ' . $order->id . ', Reason: ' . $validated['rejection_reason'],
+            ]);
+
+            // Always return JSON for AJAX requests
+            return response()->json([
+                'success' => true, 
+                'message' => 'Order rejected successfully!', 
+                'order' => $order
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error rejecting order: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reject order: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Get order notes
+    public function getNotes($id)
+    {
         $vendorId = Auth::id();
         $order = RetailerOrder::where('vendor_id', $vendorId)->findOrFail($id);
         
-        $validated = $request->validate([
-            'rejection_reason' => 'required|string|max:500',
-        ]);
-
-        $order->update([
-            'status' => 'rejected',
-            'notes' => ($order->notes ? $order->notes . "\n" : '') . 
-                      'Rejected: ' . $validated['rejection_reason'],
-        ]);
-
-        // Log activity
-        VendorActivity::create([
-            'vendor_id' => $vendorId,
-            'activity' => 'Rejected retailer order',
-            'details' => 'Order ID: ' . $order->id . ', Reason: ' . $validated['rejection_reason'],
-        ]);
-
-       
-
-        // Notify retailer
-        $retailer = User::find($order->retailer_id);
-        if ($retailer) {
-            $retailer->notify(new RetailerNotification(
-                'Order Rejected',
-                'Your order #' . $order->id . ' has been rejected. Reason: ' . $validated['rejection_reason']
-            ));
-        }
-
         return response()->json([
-            'success' => true, 
-            'message' => 'Order rejected successfully!', 
-            'order' => $order
+            'success' => true,
+            'notes' => $order->notes
         ]);
     }
-
+    
     // Update order notes
     public function updateNotes(Request $request, $id)
     {
@@ -288,11 +249,20 @@ private function appendNote($existing, $new)
         $order->update([
             'notes' => $validated['notes'],
         ]);
+        
+        // Refresh the order to get the updated data
+        $order->refresh();
 
-        return response()->json([
-            'success' => true, 
-            'message' => 'Notes updated successfully!', 
-            'order' => $order
-        ]);
+        // For AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true, 
+                'message' => 'Notes updated successfully!', 
+                'order' => $order
+            ]);
+        }
+        
+        // For regular form submissions
+        return back()->with('success', 'Notes updated successfully!');
     }
 }

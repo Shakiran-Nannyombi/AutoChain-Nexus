@@ -23,7 +23,7 @@
 </a>
 
 <a href="{{ route('vendor.customer-segmentation') }}" class="nav-item {{ request()->is('vendor/customer-segmentation*') ? 'active' : '' }}">
-    <i class="fas fa-users"></i> Customer Segmentation
+    <i class="fas fa-users"></i> Segmentation
 </a>
 
 <a href="{{ route('vendor.analytics') }}" class="nav-item {{ request()->is('vendor/analytics*') ? 'active' : '' }}">

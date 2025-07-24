@@ -486,8 +486,15 @@ class ManufacturerDashboardController extends Controller
             $vendorOrdersQuery->where('status', $vendorStatus);
         }
         $vendorOrders = $vendorOrdersQuery->orderByDesc('created_at')->get();
+        
+        // Load deliveries for this manufacturer
+        $deliveries = \App\Models\Delivery::where('manufacturer_id', $manufacturerId)
+            ->with('supplier')
+            ->orderByDesc('created_at')
+            ->get();
+        
         $productPrices = \DB::table('products')->pluck('price', 'name');
-        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'productPrices'));
+        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'deliveries', 'productPrices'));
     }
 
     public function ordersPartial(Request $request)
@@ -518,10 +525,15 @@ class ManufacturerDashboardController extends Controller
     public function remakeOrder($id)
     {
         $order = \App\Models\ChecklistRequest::findOrFail($id);
+        $materials = $order->materials_requested;
+        // If it's a string, decode it
+        if (is_string($materials)) {
+            $materials = json_decode($materials, true);
+        }
         \App\Models\ChecklistRequest::create([
             'manufacturer_id' => $order->manufacturer_id,
             'supplier_id' => $order->supplier_id,
-            'materials_requested' => $order->materials_requested,
+            'materials_requested' => $materials,
             'status' => 'pending',
         ]);
         return back()->with('success', 'Order has been remade and sent to the supplier!');
@@ -750,5 +762,13 @@ class ManufacturerDashboardController extends Controller
             }
         }
         return view('dashboards.manufacturer.select-sales-analysis', compact('files', 'preview'));
+    }
+    
+    public function confirmDelivery($id)
+    {
+        $delivery = \App\Models\Delivery::findOrFail($id);
+        $delivery->update(['status' => 'completed']);
+        
+        return redirect()->back()->with('success', 'Delivery confirmed successfully! Order is now complete.');
     }
 }

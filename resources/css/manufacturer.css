@@ -928,3 +928,98 @@ html {
 .demand-chart {
     max-height: 400px;
 } 
+
+/* --- Manufacturer Dashboard Tab and Table Styles --- */
+.tabs-container {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.tabs-container .tab-link {
+    padding: 0.7rem 2rem;
+    border: none;
+    border-radius: 8px;
+    background: #f5f5f5;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.tabs-container .tab-link.active {
+    background: var(--primary);
+    color: #fff;
+}
+.tabs-container .tab-link.active[data-tab] {
+    background: var(--accent) !important;
+    color: #111 !important;
+}
+.tabs-container .tab-link:hover:not(.active) {
+    background: #e0e0e0;
+    color: var(--primary);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.status-badge { border-radius: 8px; font-size: 0.95rem; padding: 0.2rem 0.8rem; font-weight: 600; }
+.status-badge.status-pending { background: #fffbe6; color: #b45309; }
+.status-badge.status-fulfilled { background: #eafbe7; color: #16610e; }
+.orders-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.orders-table th, .orders-table td {
+    padding: 0.75rem 1.1rem;
+    text-align: left;
+    font-size: 1.05rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+.orders-table th {
+    background: #f8fafc;
+    color: #333;
+    font-weight: 700;
+}
+.orders-table tr:last-child td {
+    border-bottom: none;
+}
+.orders-table tr {
+    transition: background 0.15s;
+}
+.orders-table tr:hover {
+    background: #f3f4f6;
+}
+.action-btn {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.98rem;
+    border-radius: 6px;
+    border: none;
+    margin-right: 0.4rem;
+    margin-bottom: 0.2rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    display: inline-block;
+}
+.action-btn.view-btn {
+    background: #22c55e;
+    color: #fff;
+}
+.action-btn.confirm-btn {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+.action-btn.confirm-btn:hover {
+    background: #1d4ed8;
+}
+.action-btn.view-btn:hover {
+    background: #16a34a;
+}
+@media (max-width: 900px) {
+    .orders-table th, .orders-table td {
+        font-size: 0.95rem;
+        padding: 0.5rem 0.5rem;
+    }
+} 

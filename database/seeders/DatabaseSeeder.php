@@ -37,8 +37,24 @@ class DatabaseSeeder extends Seeder
             //VendorOrderSeeder::class,
             ProcessFlowSeeder::class, // <-- Ensure this is included
             VendorOrderSeeder::class, // <-- Add this to seed vendor sales data
+            RetailerOrderSeeder::class, // <-- Add this to seed retailer orders
             DemandPredictionSeeder::class,
+            SupplierOrderSeeder::class, // Connect supplier order seeder
+            SupplierOrdersSeeder::class, // Connect checklist request seeder
         ]);
+
+        // Seed SupplierStock and Delivery for all approved suppliers
+        $suppliers = \App\Models\User::where('role', 'supplier')->where('status', 'approved')->get();
+        foreach ($suppliers as $supplier) {
+            // Seed 3-5 stocks per supplier
+            \App\Models\SupplierStock::factory()->count(rand(3,5))->create([
+                'supplier_id' => $supplier->id
+            ]);
+            // Seed 2-3 deliveries per supplier
+            \App\Models\Delivery::factory()->count(rand(2,3))->create([
+                'supplier_id' => $supplier->id
+            ]);
+        }
 
         // Seed demo communications for active connections
         $manufacturer = \App\Models\User::where('role', 'manufacturer')->first();

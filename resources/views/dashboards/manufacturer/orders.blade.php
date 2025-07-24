@@ -10,10 +10,11 @@
     <div class="content-card">
         <h2 style="color: var(--text); font-size: 2rem; font-weight: bold; margin-bottom: 1rem;"> Orders Management</h2>
         @php $vendorTabActive = request('vendor_status') !== null && request('vendor_status') !== ''; @endphp
-        <div class="tabs-container" style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
-            <button class="tab-link{{ !$vendorTabActive ? ' active' : '' }}" data-tab="supplier-orders" style="padding: 0.7rem 2rem; border: none; border-radius: 8px; background: var(--primary); color: #fff; font-weight: 600; cursor: pointer;">Supplier Orders</button>
-            <button class="tab-link{{ $vendorTabActive ? ' active' : '' }}" data-tab="vendor-orders" style="padding: 0.7rem 2rem; border: none; border-radius: 8px; background: #f5f5f5; color: var(--primary); font-weight: 600; cursor: pointer;">Vendor Orders</button>
-            <button class="tab-link" data-tab="invoices" style="padding: 0.7rem 2rem; border: none; border-radius: 8px; background: #f5f5f5; color: var(--primary); font-weight: 600; cursor: pointer;">Invoices</button>
+        <div class="tabs-container">
+            <button class="tab-link{{ !$vendorTabActive ? ' active' : '' }}" data-tab="supplier-orders">Supplier Orders</button>
+            <button class="tab-link" data-tab="supplier-deliveries">Deliveries</button>
+            <button class="tab-link" data-tab="vendor-orders">Vendor Orders</button>
+            <button class="tab-link" data-tab="invoices">Invoices</button>
         </div>
         @if(session('success'))
             <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
@@ -83,9 +84,9 @@
                             </td>
                             <td style="padding: 0.7rem;">{{ $order->items->count() }}</td>
                             <td style="padding: 0.7rem;">
-                                <form method="POST" action="#" style="display:inline;">
+                                <form method="POST" action="{{ route('manufacturer.remake.order', $order->id) }}" style="display:inline;">
                                     @csrf
-                                    <button type="button" style="background: var(--primary); color: white; border: none; border-radius: 6px; padding: 0.4rem 1.2rem; font-size: 0.95rem;">
+                                    <button type="submit" style="background: var(--primary); color: white; border: none; border-radius: 6px; padding: 0.4rem 1.2rem; font-size: 0.95rem; cursor: pointer;">
                                         <i class="fas fa-redo"></i> Remake Order
                                     </button>
                                 </form>
@@ -99,19 +100,67 @@
                     </tbody>
                 </table>
             </div>
-            <style>
-            .tab-link.active { background: var(--primary); color: #fff !important; }
-            .tab-link.active[data-tab='vendor-orders'] { background: var(--accent) !important; color: #111 !important; }
-            .tab-content { display: none; }
-            .tab-content.active { display: block; }
-            .status-badge { border-radius: 8px; font-size: 0.95rem; padding: 0.2rem 0.8rem; font-weight: 600; }
-            .status-badge.status-pending { background: #fffbe6; color: #b45309; }
-            .status-badge.status-fulfilled { background: #eafbe7; color: #16610e; }
-            .tab-link { padding: 0.6rem 1.5rem; border: none; border-radius: 6px; background: #f5f5f5; color: var(--primary); font-weight: 600; text-decoration: none; margin-right: 0.5rem; transition: background 0.2s; }
-            .tab-link.active, .tab-link:hover { background: var(--primary); color: #fff; }
-            </style>
         </div>
-        <div id="vendor-orders" class="tab-content{{ $vendorTabActive ? ' active' : '' }}" style="display: none;">
+        <div id="supplier-deliveries" class="tab-content">
+            <h3 style="color: var(--text); font-size: 1.5rem; margin-bottom: 1rem; font-weight:bold;"><i class="fas fa-truck"></i> Supplier Deliveries</h3>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8f8f8; color: var(--primary);">
+                            <th style="padding: 0.7rem;">Delivery ID</th>
+                            <th style="padding: 0.7rem;">Supplier</th>
+                            <th style="padding: 0.7rem;">Driver</th>
+                            <th style="padding: 0.7rem;">Materials</th>
+                            <th style="padding: 0.7rem;">Status</th>
+                            <th style="padding: 0.7rem;">Progress</th>
+                            <th style="padding: 0.7rem;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($deliveries as $delivery)
+                        <tr>
+                            <td style="padding: 0.7rem; font-weight: 600;">#DEL-{{ str_pad($delivery->id, 3, '0', STR_PAD_LEFT) }}</td>
+                            <td style="padding: 0.7rem;">{{ $delivery->supplier->name ?? 'N/A' }}</td>
+                            <td style="padding: 0.7rem;">{{ $delivery->driver }}</td>
+                            <td style="padding: 0.7rem;">
+                                @if($delivery->materials_delivered)
+                                    @foreach($delivery->materials_delivered as $material => $quantity)
+                                        <span style="background: #e3f2fd; color: #1976d2; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-right: 0.5rem;">{{ $material }}: {{ $quantity }}</span>
+                                    @endforeach
+                                @endif
+                            </td>
+                            <td style="padding: 0.7rem;">
+                                @if($delivery->status === 'delivered')
+                                    <span style="background: #17a2b8; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.95rem;">Awaiting Confirmation</span>
+                                @elseif($delivery->status === 'completed')
+                                    <span style="background: #28a745; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.95rem;">Complete</span>
+                                @else
+                                    <span style="background: #007bff; color: white; padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.95rem;">{{ ucfirst($delivery->status) }}</span>
+                                @endif
+                            </td>
+                            <td style="padding: 0.7rem;">{{ $delivery->progress }}%</td>
+                            <td style="padding: 0.7rem;">
+                                @if(in_array($delivery->status, ['delivered', 'pending', 'in_transit']))
+                                    <button onclick="confirmDelivery({{ $delivery->id }})" style="padding: 0.4rem 0.8rem; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                                        <i class="fas fa-check"></i> Confirm Delivery
+                                    </button>
+                                @elseif($delivery->status === 'completed')
+                                    <span style="color: #28a745; font-weight: 600;">✓ Confirmed</span>
+                                @else
+                                    <span style="color: #6c757d;">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" style="text-align:center; color:#888; padding:2rem;">No deliveries found.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="vendor-orders" class="tab-content">
             <h3 style="color: var(--text); font-size: 1.5rem; margin-bottom: 1rem; font-weight:bold;"><i class="fas fa-truck"></i> Vendor Orders Management</h3>
             <div style="overflow-x:auto;">
                 <table id="vendorOrdersTable" style="width:100%; border-collapse: collapse;">
@@ -152,7 +201,8 @@
                 </table>
             </div>
         </div>
-        <div id="invoices" class="tab-content" style="display:none;">
+        <div id="invoices" class="tab-content">
+            <h3 style="color: var(--text); font-size: 1.5rem; margin-bottom: 1rem; font-weight:bold;"><i class="fas fa-file-invoice"></i> Invoices</h3>
             <div style="overflow-x:auto;">
                 <table style="width:100%; border-collapse: collapse;">
                     <thead>
@@ -186,224 +236,6 @@
             </div>
         </div>
     </div>
-    <style>
-    .tab-link.active { background: var(--primary); color: #fff !important; }
-    .tab-link.active[data-tab='vendor-orders'] { background: var(--accent) !important; color: #111 !important; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .status-badge { border-radius: 8px; font-size: 0.95rem; padding: 0.2rem 0.8rem; font-weight: 600; }
-    .status-badge.status-pending { background: #fffbe6; color: #b45309; }
-    .status-badge.status-fulfilled { background: #eafbe7; color: #16610e; }
-    .orders-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        background: #fff;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    .orders-table th, .orders-table td {
-        padding: 0.75rem 1.1rem;
-        text-align: left;
-        font-size: 1.05rem;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    .orders-table th {
-        background: #f8fafc;
-        color: #333;
-        font-weight: 700;
-    }
-    .orders-table tr:last-child td {
-        border-bottom: none;
-    }
-    .orders-table tr {
-        transition: background 0.15s;
-    }
-    .orders-table tr:hover {
-        background: #f3f4f6;
-    }
-    .action-btn {
-        padding: 0.35rem 0.9rem;
-        font-size: 0.98rem;
-        border-radius: 6px;
-        border: none;
-        margin-right: 0.4rem;
-        margin-bottom: 0.2rem;
-        cursor: pointer;
-        transition: background 0.15s, color 0.15s;
-        display: inline-block;
-    }
-    .action-btn.view-btn {
-        background: #22c55e;
-        color: #fff;
-    }
-    .action-btn.confirm-btn {
-        background: #2563eb;
-        color: #fff;
-        font-weight: 600;
-    }
-    .action-btn.confirm-btn:hover {
-        background: #1d4ed8;
-    }
-    .action-btn.view-btn:hover {
-        background: #16a34a;
-    }
-    @media (max-width: 900px) {
-        .orders-table th, .orders-table td {
-            font-size: 0.95rem;
-            padding: 0.5rem 0.5rem;
-        }
-    }
-    </style>
-    <!-- Modal for Order Details -->
-    <div id="orderDetailsModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:10px; max-width:400px; width:90vw; padding:2rem; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.18);">
-            <button id="closeOrderModal" style="position:absolute; top:10px; right:15px; background:none; border:none; font-size:1.5rem; color:#888; cursor:pointer;">&times;</button>
-            <div style="text-align:center; margin-bottom:1rem;">
-                <div id="orderVendorName" style="font-weight:700; font-size:1.2rem;"></div>
-                <div id="orderVendorEmail" style="color:#888; font-size:0.98rem;"></div>
-            </div>
-            <div style="margin-bottom:0.7rem;"><strong>Product:</strong> <span id="orderProduct"></span></div>
-            <div style="margin-bottom:0.7rem;"><strong>Quantity:</strong> <span id="orderQuantity"></span></div>
-            <div style="margin-bottom:0.7rem;"><strong>Total Amount:</strong> shs <span id="orderTotalAmount"></span></div>
-            <div style="margin-bottom:0.7rem;"><strong>Status:</strong> <span id="orderStatus"></span></div>
-            <div style="margin-bottom:0.7rem;"><strong>Ordered At:</strong> <span id="orderOrderedAt"></span></div>
-        </div>
-    </div>
-    <!-- Modal for Confirming Vendor Order -->
-    <div id="confirmOrderModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:14px; max-width:420px; width:95vw; padding:2.2rem 2rem 1.5rem 2rem; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.18);">
-            <button id="closeConfirmOrderModal" style="position:absolute; top:12px; right:18px; background:none; border:none; font-size:1.7rem; color:#888; cursor:pointer;">&times;</button>
-            <div id="confirmOrderSummary" style="margin-bottom:1.5rem; background:#f8fafc; border-radius:8px; padding:1rem 1.2rem;">
-                <div style="font-weight:700; font-size:1.1rem; color:var(--primary); margin-bottom:0.3rem;">Confirm Vendor Order</div>
-                <div style="font-size:1rem; color:#333;"><span id="confirmOrderVendor"></span></div>
-                <div style="font-size:0.98rem; color:#666; margin-bottom:0.2rem;"><span id="confirmOrderVendorEmail"></span></div>
-                <div style="font-size:0.98rem; color:#444;"><b>Product:</b> <span id="confirmOrderProduct"></span></div>
-                <div style="font-size:0.98rem; color:#444;"><b>Quantity:</b> <span id="confirmOrderQuantity"></span></div>
-                <div style="font-size:0.98rem; color:#444;"><b>Total:</b> shs <span id="confirmOrderTotal"></span></div>
-            </div>
-            <form id="confirmOrderForm" method="POST">
-                @csrf
-                <input type="hidden" name="order_id" id="confirmOrderId">
-                <div style="margin-bottom:1.1rem;">
-                    <label for="delivery_date" style="font-weight:600;">Delivery Date</label>
-                    <input type="date" name="delivery_date" id="delivery_date" class="form-control" required style="width:100%;padding:0.5rem;">
-                </div>
-                <div style="margin-bottom:1.1rem;">
-                    <label for="delivery_address" style="font-weight:600;">Delivery Address</label>
-                    <input type="text" name="delivery_address" id="delivery_address" class="form-control" required style="width:100%;padding:0.5rem;">
-                </div>
-                <div style="margin-bottom:1.1rem;">
-                    <label for="driver_name" style="font-weight:600;">Driver Name</label>
-                    <input type="text" name="driver_name" id="driver_name" class="form-control" required style="width:100%;padding:0.5rem;">
-                </div>
-                <div style="display:flex; gap:0.7rem; margin-top:1.5rem;">
-                    <button type="button" id="cancelConfirmOrder" class="btn btn-secondary" style="flex:1; background:#eee; color:#333; border-radius:7px; padding:0.7rem 0; font-weight:600; border:none;">Cancel</button>
-                    <button type="submit" class="btn btn-success" style="flex:2; background:var(--primary); color:#fff; border-radius:7px; padding:0.7rem 0; font-weight:700; border:none;">Confirm &amp; Send Email</button>
-                </div>
-            </form>
-            <div id="confirmOrderSpinner" style="display:none; text-align:center; margin-top:1rem;"><span>Processing...</span></div>
-        </div>
-    </div>
-    <style>
-    .tab-link.active { background: var(--primary); color: #fff !important; }
-    .tab-link.active[data-tab='vendor-orders'] { background: var(--accent) !important; color: #111 !important; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .status-badge { border-radius: 8px; font-size: 0.95rem; padding: 0.2rem 0.8rem; font-weight: 600; }
-    .status-badge.status-pending { background: #fffbe6; color: #b45309; }
-    .status-badge.status-fulfilled { background: #eafbe7; color: #16610e; }
-    .orders-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        background: #fff;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    .orders-table th, .orders-table td {
-        padding: 0.75rem 1.1rem;
-        text-align: left;
-        font-size: 1.05rem;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    .orders-table th {
-        background: #f8fafc;
-        color: #333;
-        font-weight: 700;
-    }
-    .orders-table tr:last-child td {
-        border-bottom: none;
-    }
-    .orders-table tr {
-        transition: background 0.15s;
-    }
-    .orders-table tr:hover {
-        background: #f3f4f6;
-    }
-    .action-btn {
-        padding: 0.35rem 0.9rem;
-        font-size: 0.98rem;
-        border-radius: 6px;
-        border: none;
-        margin-right: 0.4rem;
-        margin-bottom: 0.2rem;
-        cursor: pointer;
-        transition: background 0.15s, color 0.15s;
-        display: inline-block;
-    }
-    .action-btn.view-btn {
-        background: #22c55e;
-        color: #fff;
-    }
-    .action-btn.confirm-btn {
-        background: #2563eb;
-        color: #fff;
-        font-weight: 600;
-    }
-    .action-btn.confirm-btn:hover {
-        background: #1d4ed8;
-    }
-    .action-btn.view-btn:hover {
-        background: #16a34a;
-    }
-    @media (max-width: 900px) {
-        .orders-table th, .orders-table td {
-            font-size: 0.95rem;
-            padding: 0.5rem 0.5rem;
-        }
-    }
-    </style>
-    <style>
-    .toast-success {
-        position: fixed;
-        top: 2.5rem;
-        right: 2.5rem;
-        background: #22c55e;
-        color: #fff;
-        padding: 1.1rem 2.2rem;
-        border-radius: 10px;
-        font-size: 1.15rem;
-        font-weight: 600;
-        box-shadow: 0 4px 24px rgba(34,197,94,0.13);
-        z-index: 99999;
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
-        animation: fadeIn 0.4s;
-    }
-    .toast-success .toast-icon {
-        font-size: 1.5rem;
-        margin-right: 0.7rem;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    </style>
-    <div id="toastSuccess" class="toast-success" style="display:none;"><span class="toast-icon">✔️</span><span id="toastSuccessMsg"></span></div>
     <!-- Modal for Order Details -->
     <div id="orderDetailsModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
         <div style="background:#fff; border-radius:10px; max-width:400px; width:90vw; padding:2rem; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.18);">
@@ -497,25 +329,25 @@
         }
         tabLinks.forEach(link => {
             link.addEventListener('click', function() {
-                tabLinks.forEach(l => l.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-                tabContents.forEach(c => c.style.display = 'none');
-                this.classList.add('active');
-                // Custom: force accent background and black text for Vendor Orders tab
-                if(this.dataset.tab === 'vendor-orders') {
-                    this.style.background = 'var(--accent)';
-                    this.style.color = '#111';
-                } else {
-                    this.style.background = 'var(--primary)';
-                    this.style.color = '#fff';
-                }
-                // Reset other tab styles
+                // Remove active class and reset styles
                 tabLinks.forEach(l => {
-                    if(l !== this) {
-                        l.style.background = (l.dataset.tab === 'vendor-orders') ? '#f5f5f5' : 'var(--primary)';
-                        l.style.color = (l.dataset.tab === 'vendor-orders') ? 'var(--primary)' : '#fff';
-                    }
+                    l.classList.remove('active');
+                    l.style.background = '#f5f5f5';
+                    l.style.color = 'var(--primary)';
                 });
+                
+                // Hide all tab contents
+                tabContents.forEach(c => {
+                    c.classList.remove('active');
+                    c.style.display = 'none';
+                });
+                
+                // Activate clicked tab
+                this.classList.add('active');
+                this.style.background = 'var(--primary)';
+                this.style.color = '#fff';
+                
+                // Show corresponding content
                 const tab = document.getElementById(this.dataset.tab);
                 tab.classList.add('active');
                 tab.style.display = '';
@@ -698,5 +530,16 @@
             });
         });
     });
+    
+    function confirmDelivery(deliveryId) {
+        if (confirm('Are you sure you want to confirm this delivery as received?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/manufacturer/deliveries/${deliveryId}/confirm`;
+            form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">';
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
     </script>
 @endsection
