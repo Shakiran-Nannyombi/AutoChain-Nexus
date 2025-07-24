@@ -473,7 +473,7 @@ Route::post('/admin/login', function (Request $request) {
     ]);
 })->name('admin.login.submit');
 
-// Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
 Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'list'])->name('customer.list');
 Route::get('/customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'show'])->name('customer.show');
