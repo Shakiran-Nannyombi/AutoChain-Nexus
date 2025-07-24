@@ -12,8 +12,8 @@
         <i class="fas fa-shopping-cart"></i> Welcome to Our Auto Parts Marketplace
     </h2>
 
-    <!-- Recommended Products (based on segmentation) -->
-    @if(isset($recommendations) && $recommendations->count() > 0)
+    <!-- Recommended Products (dynamic) -->
+    @if($recommendations->count() > 0)
         <div style="margin-bottom: 2rem;">
             <h3 style="color: var(--blue); font-size: 1.2rem;">
                 <i class="fas fa-thumbs-up"></i> Recommended For You
@@ -25,6 +25,7 @@
                             <h4 style="color: var(--primary); font-size: 1.1rem;">{{ $product->name }}</h4>
                             <div style="color: #666;">{{ $product->category ?? 'General' }}</div>
                             <div style="color: var(--accent); font-weight: 600;">${{ number_format($product->price, 2) }}</div>
+                            <div style="color: #888; font-size: 0.95em;">Retailer Stock: {{ $product->retailer_stock }}</div>
                             <a href="{{ route('customer.product.show', $product->id) }}" class="btn btn-sm btn-primary mt-2">View Details</a>
                         </div>
                     </div>
@@ -33,8 +34,8 @@
         </div>
     @endif
 
-    <!-- Top Selling Products in Your Segment -->
-    @if(isset($topSegmentProducts) && $topSegmentProducts->count() > 0)
+    <!-- Top Selling Products in Your Segment (dynamic) -->
+    @if($topSegmentProducts->count() > 0)
         <div style="margin-bottom: 2rem;">
             <h3 style="color: var(--purple); font-size: 1.2rem;">
                 <i class="fas fa-chart-bar"></i> Top Selling Products in Your Segment
@@ -55,7 +56,7 @@
         </div>
     @endif
 
-    <!-- Available Products -->
+    <!-- Available Products (dynamic) -->
     @if($availableProducts->count() > 0)
         <div style="margin-bottom: 2rem;">
             <h3 style="color: var(--green); font-size: 1.4rem;">

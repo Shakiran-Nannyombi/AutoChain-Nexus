@@ -23,13 +23,14 @@ class CustomerController extends Controller
             ->where('status', 'approved')
             ->get();
         
-        // Get available products from all vendors
-        $availableProducts = Product::with('vendor')
-            ->where('stock', '>', 0)
-            ->orderBy('name')
-            ->take(10)
-            ->get();
+       
         
+        // Get available products from retailer stocks
+        $availableProducts = Product::join('retailer_stocks', 'products.name', '=', 'retailer_stocks.car_model')
+            ->where('retailer_stocks.quantity_received', '>', 0)
+            ->select('products.*', 'retailer_stocks.quantity_received as retailer_stock')
+            ->get();
+
         // Get recent stock movements (accepted deliveries to retailers)
         $recentStockMovements = RetailerStock::where('status', 'accepted')
             ->with(['retailer', 'vendor'])
