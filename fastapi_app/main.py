@@ -25,6 +25,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {"message": "FastAPI ML Service is running", "status": "healthy"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
 base_dir = os.path.dirname(__file__)
 
 # Load DB config
