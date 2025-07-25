@@ -127,14 +127,14 @@ const chatMessagesArea = document.getElementById('chat-messages-area');
 
 if (userList) {
   userList.addEventListener('click', function(e) {
-    const link = e.target.closest('.user-chat-link');
-    if (!link) return;
-    e.preventDefault();
+  const link = e.target.closest('.user-chat-link');
+  if (!link) return;
+  e.preventDefault();
     
     const userId = link.getAttribute('data-user-id');
-    const role = link.closest('li').getAttribute('data-role');
-    const name = link.querySelector('.user-name')?.textContent || '';
-    const avatarEl = link.querySelector('.avatar');
+  const role = link.closest('li').getAttribute('data-role');
+  const name = link.querySelector('.user-name')?.textContent || '';
+  const avatarEl = link.querySelector('.avatar');
     
     selectedUserId = userId;
     
@@ -146,8 +146,8 @@ if (userList) {
     if (document.getElementById('chat-header-name')) document.getElementById('chat-header-name').textContent = name;
     const headerAvatar = document.getElementById('chat-header-avatar');
     if (headerAvatar) {
-      headerAvatar.innerHTML = '';
-      if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
+    headerAvatar.innerHTML = '';
+    if (avatarEl) headerAvatar.appendChild(avatarEl.cloneNode(true));
     }
     if (document.getElementById('chat-header-status')) document.getElementById('chat-header-status').textContent = 'Online';
     
@@ -159,9 +159,9 @@ if (userList) {
       demoChats.style.display = '';
       welcomeMessage.style.display = 'none';
       demoChats.querySelector('.demo-chat[data-role="' + role + '"]').style.display = '';
-    } else {
-      demoChats.style.display = 'none';
-      welcomeMessage.style.display = '';
+  } else {
+    demoChats.style.display = 'none';
+    welcomeMessage.style.display = '';
     }
   });
 }

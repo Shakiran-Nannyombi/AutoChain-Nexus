@@ -20,7 +20,6 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'John Mayanja',
                 'password' => Hash::make('autochainnexus'),
-                'phone' => '0123456789',
                 'company' => 'Autochain Nexus',
                 'address' => 'Kampala, Uganda',
                 // 'role' => 'Admin',

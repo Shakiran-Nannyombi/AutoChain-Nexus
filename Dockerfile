@@ -32,6 +32,10 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=ext-zip
 RUN npm install && npm run build
 
+# Create storage link and set public permissions
+RUN php artisan storage:link || true
+RUN chmod -R 755 /var/www/html/public
+
 # Set permissions and create cache directories
 RUN mkdir -p /var/www/html/storage/framework/cache/data \
     && mkdir -p /var/www/html/storage/framework/sessions \
