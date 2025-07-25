@@ -28,7 +28,7 @@ app.add_middleware(
 base_dir = os.path.dirname(__file__)
 
 # Load DB config
-with open(os.path.join(base_dir, '..', 'ml', 'db_config.json')) as f:
+with open(os.path.join(base_dir, 'db_config.json')) as f:
     db_config = json.load(f)
 
 def get_sales_df():
@@ -298,7 +298,7 @@ async def api_predict(request: Request):
 def get_retailer_segments():
     import pandas as pd
     import os
-    csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ml', 'retailer_segments.csv'))
+    csv_path = os.path.join(os.path.dirname(__file__), 'retailer_segments.csv')
     if not os.path.exists(csv_path):
         return {"success": False, "error": "Segmentation file not found."}
     df = pd.read_csv(csv_path)
