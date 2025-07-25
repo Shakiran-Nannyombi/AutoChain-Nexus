@@ -1,29 +1,28 @@
 # Autochain Nexus
 
-### Live Car Inventory Management System
+## Live Car Inventory Management System
 
-<div align="center">
-  <img src="public/images/logo.png" alt="Autochain Nexus Logo" width="200" style="background-color: white; padding: 20px; border-radius: 10px;">
-</div>
+![Autochain Nexus Logo](public/images/homescreenshot.png)
 
 **🌐 Live System**: [https://autochainnexus.duckdns.org](https://autochainnexus.duckdns.org)
 
-This is a multi-role inventory management system built with Laravel 12, featuring role-based dashboards, automated vendor validation, and cloud-native microservices architecture. 
+This is a multi-role inventory management system built with Laravel 11, featuring role-based dashboards, automated vendor validation, and cloud-native microservices architecture.
 
 This system serves manufacturers, suppliers, vendors, retailers, analysts, and administrators with tailored interfaces and workflows.
 
 ## Deployment Architecture with Production Services
 
-- **Main Application**: [Laravel on Render](https://laravel-service.onrender.com)
-- **ML/Analytics API**: [FastAPI Service](https://fastapi-ml-service.onrender.com)
-- **Email Service**: [Spring Boot Email API](https://email-api-service.onrender.com)
-- **Document Validator**: [Spring Boot Validator API](https://validator-api-service.onrender.com)
+- **Main Application**: [Laravel on Render](https://your-laravel-service.onrender.com)
+- **ML/Analytics API**: [FastAPI Service](https://your-fastapi-service.onrender.com)
+- **Email Service**: [Spring Boot Email API](https://your-email-service.onrender.com)
+- **Document Validator**: [Spring Boot Validator API](https://your-validator-service.onrender.com)
 - **Database**: Supabase PostgreSQL (Cloud)
 - **Custom Domain**: autochainnexus.duckdns.org
 
 ## Key Features of our System
 
 ### Multi-Role Authentication System
+
 - **6 User Roles**: Admin, Manufacturer, Supplier, Vendor, Retailer, Analyst
 - **Secure Registration**: Multi-step approval process with document upload
 - **Role-Based Access Control**: Each role has specific permissions and dashboard access
@@ -31,6 +30,7 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 - **Password Reset**: Secure email-based password reset functionality
 
 ### Admin Dashboard
+
 - **User Management**: Approve/reject new user applications
 - **System Analytics**: Real-time charts and metrics
 - **Global Search**: Search across users and dashboard pages
@@ -41,7 +41,8 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 - **Communications**: Internal messaging system
 - **User Activity Monitoring**: Track user logins and activity
 
-###  Manufacturer Dashboard
+### Manufacturer Dashboard
+
 - **Inventory Overview**: Real-time stock levels and alerts
 - **Production Planning**: Demand prediction and capacity planning
 - **Quality Control**: Checklists and quality assurance tools
@@ -50,7 +51,8 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 - **Chat System**: Internal communication platform
 - **Document Management**: Upload and manage production documents
 
-###  Retailer Dashboard
+### Retailer Dashboard
+
 - **Stock Overview**: Current inventory levels and alerts
 - **Sales Updates**: Real-time sales data and trends
 - **Order Management**: Place and track orders with suppliers
@@ -59,6 +61,7 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 - **Analytics**: Sales performance and inventory turnover
 
 ### Analyst Dashboard
+
 - **Data Analytics**: Comprehensive business intelligence
 - **Inventory Analysis**: Stock optimization recommendations
 - **Market Trends**: Industry analysis and forecasting
@@ -67,6 +70,7 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 - **Custom Reports**: Generate tailored business reports
 
 ### Supplier Dashboard
+
 - **Order Management**: Track incoming orders and fulfillment
 - **Inventory Tracking**: Real-time stock levels
 - **Delivery History**: Complete delivery tracking
@@ -75,6 +79,7 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 - **Performance Metrics**: Supplier performance analytics
 
 ### Vendor Dashboard
+
 - **Delivery Management**: Track deliveries and schedules
 - **Inventory Control**: Stock management and alerts
 - **Order Processing**: Handle incoming orders
@@ -84,7 +89,7 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 
 ## Vendor Onboarding & Approval Flow
 
-The vendor registration and approval process is designed to ensure only qualified vendors gain access to the system. And here's how it works:
+The vendor registration and approval process is designed to ensure only qualified vendors gain access to the system. Here's how it works:
 
 1. **Registration**
    - Vendor completes the registration form, uploads required documents, and selects a manufacturer (from approved manufacturers) whose facility they wish to visit.
@@ -111,7 +116,8 @@ The vendor registration and approval process is designed to ensure only qualifie
 ## Cloud-Native Architecture
 
 ### Core Technologies
-- **Backend**: Laravel 12 (PHP 8.2+)
+
+- **Backend**: Laravel 11 (PHP 8.2+)
 - **Frontend**: Blade templates with Tailwind CSS
 - **Database**: PostgreSQL (Supabase Cloud)
 - **Asset Bundling**: Vite
@@ -119,6 +125,7 @@ The vendor registration and approval process is designed to ensure only qualifie
 - **Deployment**: Docker containers on Render
 
 ### Microservices Architecture
+
 - **Main App**: Laravel (PHP) - User interfaces, business logic
 - **ML/Analytics API**: FastAPI (Python) - Demand forecasting, segmentation
 - **Email Service**: Spring Boot (Java) - Email notifications
@@ -126,6 +133,7 @@ The vendor registration and approval process is designed to ensure only qualifie
 - **Database**: Supabase PostgreSQL - Managed cloud database
 
 ### Cloud Infrastructure
+
 - **Hosting**: Render (Docker-based deployment)
 - **Database**: Supabase (PostgreSQL as a Service)
 - **Domain**: Duck DNS (autochainnexus.duckdns.org)
@@ -133,20 +141,22 @@ The vendor registration and approval process is designed to ensure only qualifie
 - **File Storage**: Render persistent storage
 - **Environment**: Production-ready with environment variables
 
-##  Prerequisites
+## Prerequisites
 
 Before installation, ensure you have:
+
 - **PHP 8.2** or higher
 - **Composer**
 - **Node.js** and **npm**
-- **Java 17** or higher
-- **Maven**
-- **MySQL** database server
+- **Java 17** or higher (for microservices)
+- **Maven** (for Spring Boot services)
+- **PostgreSQL** database server (or MySQL for local development)
 - **Git**
 
 ## Local Development Setup
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/Jerome-B-Nuwagaba/Inventory-Mgt-System-25
 cd Inventory-Mgt-System-25
@@ -155,16 +165,19 @@ cd Inventory-Mgt-System-25
 ### 2. Laravel Backend Setup
 
 1. **Install PHP Dependencies:**
+
     ```bash
     composer install
     ```
 
 2. **Environment Configuration:**
+
     ```bash
     cp .env.example .env
     ```
 
    Update `.env` with your database credentials:
+
    ```env
    # For local development (MySQL)
    DB_CONNECTION=mysql
@@ -185,21 +198,25 @@ cd Inventory-Mgt-System-25
    ```
 
 3. **Generate Application Key:**
+
     ```bash
     php artisan key:generate
     ```
 
 4. **Database Setup:**
+
     ```bash
     php artisan migrate --seed
     ```
 
 5. **Storage Setup:**
+
     ```bash
     php artisan storage:link
     ```
 
 6. **Frontend Assets:**
+
     ```bash
     npm install
     npm run dev
@@ -208,6 +225,7 @@ cd Inventory-Mgt-System-25
 ### 3. Microservices Setup
 
 #### FastAPI ML Service
+
 ```bash
 cd fastapi_app
 pip install -r requirements.txt
@@ -215,51 +233,60 @@ uvicorn main:app --reload --port 8001
 ```
 
 #### Email API (Spring Boot)
+
 ```bash
 cd email-api
 mvn spring-boot:run
 ```
 
 #### Validator API (Spring Boot)
+
 ```bash
 cd validator-api
 mvn spring-boot:run
 ```
 
-## How to run the Application
+## How to Run the Application
 
 ### Local Development
+
 Start all services in separate terminals:
 
 1. **Laravel Development Server:**
+
     ```bash
     php artisan serve
     ```
 
 2. **Laravel Queue Worker:**
+
     ```bash
     php artisan queue:work
     ```
 
 3. **FastAPI ML Service:**
+
     ```bash
     cd fastapi_app
     uvicorn main:app --reload --port 8001
     ```
 
 4. **Email API:**
+
     ```bash
     cd email-api
     mvn spring-boot:run
     ```
 
 5. **Validator API:**
+
     ```bash
     cd validator-api
     mvn spring-boot:run
     ```
 
 6. **Frontend Assets:**
+
    ```bash
    npm run dev
    ```
@@ -287,9 +314,9 @@ The system creates a default admin user during seeding:
 
 Access the admin dashboard at `/admin/dashboard`
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```text
 Inventory-Mgt-System-25/
 ├── app/                   # Laravel application core
 │   ├── Http/Controllers/  # Role-based controllers
@@ -318,13 +345,37 @@ Inventory-Mgt-System-25/
 ├── ml/                    # Machine Learning scripts
 │   ├── scripts/           # Forecasting algorithms
 │   └── data/              # Training data
+├── public/
+│   ├── css/               # Compiled stylesheets
+│   ├── js/                # Compiled JavaScript
+│   └── images/            # Static images and assets
+├── routes/
+│   ├── web.php            # Web routes
+│   ├── api.php            # API routes
+│   └── auth.php           # Authentication routes
+├── config/
+│   ├── database.php       # Database configuration
+│   ├── services.php       # External service configs
+│   └── app.php            # Application settings
+├── storage/
+│   ├── app/uploads/       # User uploaded files
+│   └── logs/              # Application logs
+├── tests/
+│   ├── Feature/           # Feature tests
+│   └── Unit/              # Unit tests
+├── .env.example           # Environment template
 ├── Dockerfile             # Main Laravel app Docker config
-└── render.yaml            # Render deployment configuration
+├── docker-compose.yml     # Local development orchestration
+├── render.yaml            # Render deployment configuration
+├── composer.json          # PHP dependencies
+├── package.json           # Node.js dependencies
+└── README.md              # This file
 ```
 
 ## Available Commands
 
 ### Laravel Artisan Commands
+
 ```bash
 # User management
 php artisan approve-user {email}
@@ -333,6 +384,55 @@ php artisan list-pending-users
 
 # Scheduled tasks
 php artisan send-scheduled-reports
+
+# Database operations
+php artisan migrate
+php artisan migrate:fresh --seed
+php artisan db:seed
+
+# Queue management
+php artisan queue:work
+php artisan queue:restart
+
+# Cache management
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+# Storage operations
+php artisan storage:link
+```
+
+### Development Commands
+
+```bash
+# Frontend asset compilation
+npm run dev          # Development build with hot reload
+npm run build        # Production build
+npm run watch        # Watch for changes
+
+# Testing
+php artisan test     # Run all tests
+php artisan test --filter=UserTest  # Run specific test
+
+# Code quality
+./vendor/bin/phpstan analyse    # Static analysis
+./vendor/bin/php-cs-fixer fix   # Code formatting
+```
+
+### Docker Commands
+
+```bash
+# Local development with Docker
+docker-compose up -d              # Start all services
+docker-compose down               # Stop all services
+docker-compose logs laravel       # View Laravel logs
+docker-compose exec laravel bash  # Access Laravel container
+
+# Production deployment preparation
+docker build -t inventory-system .
+docker run -p 8000:80 inventory-system
 ```
 
 ## UI/UX Features
@@ -354,24 +454,28 @@ php artisan send-scheduled-reports
 ## API Endpoints & Services
 
 ### Production Service URLs
-- **Main Application**: https://autochainnexus.duckdns.org
-- **FastAPI ML Service**: https://fastapi-ml-service.onrender.com
-- **Email API**: https://email-api-service.onrender.com
-- **Validator API**: https://validator-api-service.onrender.com
+
+- **Main Application**: <https://autochainnexus.duckdns.org>
+- **FastAPI ML Service**: <https://your-fastapi-service.onrender.com>
+- **Email API**: <https://your-email-service.onrender.com>
+- **Validator API**: <https://your-validator-service.onrender.com>
 
 ### Key API Endpoints
 
-#### FastAPI ML Service
+#### FastAPI ML Service Endpoints
+
 - `POST /forecast` - Demand forecasting for car models
 - `POST /segment-vendors` - Vendor segmentation analysis
 - `POST /segment-retailers` - Retailer segmentation analysis
 - `GET /health` - Service health check
 
 #### Email API
+
 - `POST /send-email` - Send notification emails
 - `GET /health` - Service health check
 
 #### Validator API
+
 - `POST /validate-documents` - Document validation
 - `POST /process-pdf` - PDF document processing
 - `GET /health` - Service health check
@@ -379,6 +483,7 @@ php artisan send-scheduled-reports
 ## Database Schema
 
 The system uses PostgreSQL (Supabase) with comprehensive tables for:
+
 - Users and role management (6 user types)
 - Inventory tracking and stock management
 - Order management and fulfillment
@@ -411,15 +516,6 @@ For technical support or questions, please contact the development team or creat
 - **PWA Ready**: Progressive Web App capabilities
 - **Real-time Updates**: WebSocket support for live notifications
 
-## Security Features
-
-- **SSL/TLS Encryption**: HTTPS with Let's Encrypt certificates
-- **Role-Based Access Control**: 6-tier permission system
-- **Document Validation**: Automated PDF processing and scoring
-- **Secure Authentication**: Laravel Breeze with custom extensions
-- **Environment Variables**: Secure configuration management
-- **Database Security**: PostgreSQL with SSL connections
-
 ## Performance & Monitoring
 
 - **Cloud Hosting**: Render platform with auto-scaling
@@ -432,6 +528,6 @@ For technical support or questions, please contact the development team or creat
 
 **🌐 Live System**: [https://autochainnexus.duckdns.org](https://autochainnexus.duckdns.org)
 
-**Built with ❤️ using Laravel 12, FastAPI, Spring Boot, and cloud-native technologies**
+### Built with ❤️ using Laravel 11, FastAPI, Spring Boot, and cloud-native technologies
 
-*Deployed on Render • Database by Supabase • Domain by Duck DNS*
+#### Deployed on Render • Database by Supabase • Domain by Duck DNS
