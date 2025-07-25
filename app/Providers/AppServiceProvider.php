@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use App\Mail\CustomMailer;
 use App\Mail\SymfonyEventDispatcherAdapter;
 use Psr\Log\LoggerInterface;
@@ -39,6 +40,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+        
+        // Force HTTPS in production
+        if (env('FORCE_HTTPS', false)) {
+            \URL::forceScheme('https');
+        }
 
         // Share notifications data with header partial
         View::composer('layouts.partials.header', function ($view) {

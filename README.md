@@ -4,7 +4,7 @@
 
 ![Autochain Nexus Logo](public/images/homescreenshot.png)
 
-**🌐 Live System**: [https://autochainnexus.duckdns.org](https://autochainnexus.duckdns.org)
+**🌐 Live System**: [https://laravel-service.onrender.com](https://laravel-service.onrender.com)
 
 This is a multi-role inventory management system built with Laravel 11, featuring role-based dashboards, automated vendor validation, and cloud-native microservices architecture.
 
@@ -12,12 +12,12 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 
 ## Deployment Architecture with Production Services
 
-- **Main Application**: [Laravel on Render](https://your-laravel-service.onrender.com)
-- **ML/Analytics API**: [FastAPI Service](https://your-fastapi-service.onrender.com)
-- **Email Service**: [Spring Boot Email API](https://your-email-service.onrender.com)
-- **Document Validator**: [Spring Boot Validator API](https://your-validator-service.onrender.com)
+- **Main Application**: [Laravel on Render](https://laravel-service.onrender.com)
+- **ML/Analytics API**: [FastAPI Service](https://fastapi-service-m1uo.onrender.com)
+- **Email Service**: [Spring Boot Email API](https://email-api-service.onrender.com)
+- **Document Validator**: [Spring Boot Validator API](https://validator-api-service.onrender.com)
 - **Database**: Supabase PostgreSQL (Cloud)
-- **Custom Domain**: autochainnexus.duckdns.org
+- **Custom Domain**: laravel-service.onrender.com
 
 ## Key Features of our System
 
@@ -136,7 +136,7 @@ The vendor registration and approval process is designed to ensure only qualifie
 
 - **Hosting**: Render (Docker-based deployment)
 - **Database**: Supabase (PostgreSQL as a Service)
-- **Domain**: Duck DNS (autochainnexus.duckdns.org)
+- **Domain**: Render (laravel-service.onrender.com)
 - **SSL**: Automatic Let's Encrypt certificates
 - **File Storage**: Render persistent storage
 - **Environment**: Production-ready with environment variables
@@ -303,7 +303,7 @@ The system is deployed using Docker containers on Render:
 4. **Validator API**: Deployed from `validator-api/` directory
 5. **Database**: Supabase PostgreSQL (managed service)
 
-**Live System**: [https://autochainnexus.duckdns.org](https://autochainnexus.duckdns.org)
+**Live System**: [https://laravel-service.onrender.com](https://laravel-service.onrender.com)
 
 ## Default Admin Access
 
@@ -455,10 +455,10 @@ docker run -p 8000:80 inventory-system
 
 ### Production Service URLs
 
-- **Main Application**: <https://autochainnexus.duckdns.org>
-- **FastAPI ML Service**: <https://your-fastapi-service.onrender.com>
-- **Email API**: <https://your-email-service.onrender.com>
-- **Validator API**: <https://your-validator-service.onrender.com>
+- **Main Application**: https://laravel-service.onrender.com
+- **FastAPI ML Service**: https://fastapi-service-m1uo.onrender.com
+- **Email API**: https://email-api-service.onrender.com
+- **Validator API**: https://validator-api-service.onrender.com
 
 ### Key API Endpoints
 
@@ -526,8 +526,8 @@ For technical support or questions, please contact the development team or creat
 
 ---
 
-**🌐 Live System**: [https://autochainnexus.duckdns.org](https://autochainnexus.duckdns.org)
+**🌐 Live System**: [https://laravel-service.onrender.com](https://laravel-service.onrender.com)
 
 ### Built with ❤️ using Laravel 11, FastAPI, Spring Boot, and cloud-native technologies
 
-#### Deployed on Render • Database by Supabase • Domain by Duck DNS
+#### Deployed on Render • Database by Supabase • Domain by Render
