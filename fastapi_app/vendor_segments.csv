@@ -1,0 +1,21 @@
+vendor_id,name,segment_name,total_orders,total_quantity,total_value,most_ordered_product,order_frequency,fulfillment_rate,cancellation_rate
+1,Ava Carter,Silver,23,10164,"shs 280,644,000,000,000",Hyundai Sonata,2,100.0,0.0
+2,Benjamin Lee,Silver,33,18872,"shs 501,592,000,000,000",Toyota Corolla,3,100.0,0.0
+3,Chloe Kim,Gold,51,26712,"shs 780,332,000,000,000",Toyota Corolla,4,100.0,0.0
+4,David Patel,Silver,34,18508,"shs 508,592,000,000,000",Toyota Corolla,3,100.0,0.0
+5,Ella Zhang,Gold,39,24864,"shs 623,868,000,000,000",Honda Civic,4,100.0,0.0
+6,Frank Müller,Gold,41,26460,"shs 707,504,000,000,000",Toyota Corolla,4,100.0,0.0
+7,Grace Park,Gold,37,17472,"shs 630,952,000,000,000",BMW 3 Series,3,100.0,0.0
+8,Henry Kim,Silver,32,16296,"shs 416,360,000,000,000",Toyota Corolla,3,100.0,0.0
+9,Isabella Rossi,Platinum,65,35616,"shs 1,066,268,000,000,000",Toyota Corolla,5,100.0,0.0
+10,Jack Wilson,Platinum,37,25368,"shs 861,028,000,000,000",Ford F-150,3,100.0,0.0
+11,Katherine Lee,Gold,35,18172,"shs 639,968,000,000,000",Hyundai Sonata,3,100.0,0.0
+12,Liam Brown,Gold,46,26292,"shs 722,400,000,000,000",Honda Civic,4,100.0,0.0
+13,Mia Garcia,Silver,34,16296,"shs 395,892,000,000,000",Toyota Corolla,3,100.0,0.0
+14,Noah Smith,Gold,54,25956,"shs 716,492,000,000,000",Honda Civic,4,100.0,0.0
+15,Olivia Davis,Silver,27,16772,"shs 401,156,000,000,000",Toyota Corolla,2,100.0,0.0
+16,Paul Walker,Platinum,56,32648,"shs 888,020,000,000,000",Toyota Corolla,5,100.0,0.0
+17,Quinn Harris,Platinum,52,30016,"shs 851,872,000,000,000",Toyota Corolla,4,100.0,0.0
+18,Ryan Clark,Gold,38,22764,"shs 679,448,000,000,000",Toyota Corolla,3,100.0,0.0
+19,Sophia Martinez,Silver,37,18704,"shs 497,224,000,000,000",Honda Civic,4,100.0,0.0
+20,Tyler Nguyen,Silver,28,14420,"shs 479,528,000,000,000",Ford F-150,2,100.0,0.0
