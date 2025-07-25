@@ -19,7 +19,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'System Admin',
                 'email' => 'admin@autochain.com',
-                'password' => Hash::make('adminpassword'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'admin',
                 'status' => 'approved',
                 'company' => 'AutoChain HQ',
@@ -35,7 +35,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Ava Carter',
                 'email' => 'ava.carter@vendortech.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorTech Solutions',
@@ -51,7 +51,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Benjamin Lee',
                 'email' => 'benjamin.lee@autovend.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'AutoVend Inc.',
@@ -67,7 +67,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Chloe Kim',
                 'email' => 'chloe.kim@partsplus.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'PartsPlus',
@@ -83,7 +83,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'David Patel',
                 'email' => 'david.patel@vendormax.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorMax',
@@ -99,7 +99,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Ella Zhang',
                 'email' => 'ella.zhang@autopartspro.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'AutoParts Pro',
@@ -115,7 +115,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Frank Müller',
                 'email' => 'frank.muller@vendorexpress.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorExpress',
@@ -131,7 +131,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Grace Park',
                 'email' => 'grace.park@vendornet.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorNet',
@@ -147,7 +147,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Henry Kim',
                 'email' => 'henry.kim@vendorglobal.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorGlobal',
@@ -163,7 +163,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Isabella Rossi',
                 'email' => 'isabella.rossi@vendormarket.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorMarket',
@@ -179,7 +179,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Jack Wilson',
                 'email' => 'jack.wilson@vendordirect.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorDirect',
@@ -195,7 +195,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Katherine Lee',
                 'email' => 'katherine.lee@vendornow.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorNow',
@@ -211,7 +211,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Liam Brown',
                 'email' => 'liam.brown@vendorteam.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorTeam',
@@ -227,7 +227,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Mia Garcia',
                 'email' => 'mia.garcia@vendornetwork.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorNetwork',
@@ -243,7 +243,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Noah Smith',
                 'email' => 'noah.smith@vendorgroup.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorGroup',
@@ -259,7 +259,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Olivia Davis',
                 'email' => 'olivia.davis@vendormarket.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorMarket',
@@ -275,7 +275,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Paul Walker',
                 'email' => 'paul.walker@vendorlink.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorLink',
@@ -291,7 +291,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Quinn Harris',
                 'email' => 'quinn.harris@vendornet.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorNet',
@@ -307,7 +307,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Ryan Clark',
                 'email' => 'ryan.clark@vendorconnect.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorConnect',
@@ -323,7 +323,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Sophia Martinez',
                 'email' => 'sophia.martinez@vendorplus.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorPlus',
@@ -339,7 +339,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Tyler Nguyen',
                 'email' => 'tyler.nguyen@vendortech.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'approved',
                 'company' => 'VendorTech',
@@ -356,7 +356,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
     'name' => 'Daniel Smith',
     'email' => 'daniel.smith@manufactory.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'manufacturer',
     'status' => 'approved',
     'company' => 'Manufactory Ltd.',
@@ -371,7 +371,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 [
     'name' => 'Ella Brown',
     'email' => 'ella.brown@automan.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'manufacturer',
     'status' => 'approved',
     'company' => 'AutoMan Corp.',
@@ -386,7 +386,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 [
     'name' => 'Frank Wilson',
     'email' => 'frank.wilson@buildit.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'manufacturer',
     'status' => 'approved',
     'company' => 'BuildIt Manufacturing',
@@ -401,7 +401,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 [
     'name' => 'Grace Lee',
     'email' => 'grace.lee@manuworks.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'manufacturer',
     'status' => 'approved',
     'company' => 'ManuWorks',
@@ -416,7 +416,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 [
     'name' => 'Henry Adams',
     'email' => 'henry.adams@autoforge.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'manufacturer',
     'status' => 'approved',
     'company' => 'AutoForge',
@@ -433,7 +433,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
     'name' => 'Alice Morgan',
     'email' => 'alice.morgan@supplyco.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'supplier',
     'status' => 'approved',
     'company' => 'SupplyCo',
@@ -448,7 +448,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 [
     'name' => 'Brian Lee',
     'email' => 'brian.lee@rawsource.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'supplier',
     'status' => 'approved',
     'company' => 'RawSource',
@@ -463,7 +463,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
 [
     'name' => 'Carla Diaz',
     'email' => 'carla.diaz@partsupply.com',
-    'password' => Hash::make('password'),
+    'password' => Hash::make('autochainnexus'),
     'role' => 'supplier',
     'status' => 'approved',
     'company' => 'PartSupply',
@@ -482,7 +482,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     
         'name' => 'Olivia Turner',
         'email' => 'olivia.turner@retailmart.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'RetailMart',
@@ -495,7 +495,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Ethan Brooks',
         'email' => 'ethan.brooks@shopwise.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'ShopWise',
@@ -508,7 +508,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Sophia Bennett',
         'email' => 'sophia.bennett@urbanstore.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'UrbanStore',
@@ -521,7 +521,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Liam Murphy',
         'email' => 'liam.murphy@quickmart.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'QuickMart',
@@ -534,7 +534,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Mia Collins',
         'email' => 'mia.collins@superstore.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'SuperStore',
@@ -547,7 +547,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Noah Reed',
         'email' => 'noah.reed@marketplace.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'MarketPlace',
@@ -560,7 +560,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Charlotte Hayes',
         'email' => 'charlotte.hayes@retailplus.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'RetailPlus',
@@ -573,7 +573,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Lucas Perry',
         'email' => 'lucas.perry@shopcity.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'ShopCity',
@@ -586,7 +586,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Amelia Foster',
         'email' => 'amelia.foster@retailzone.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'RetailZone',
@@ -599,7 +599,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Mason Gray',
         'email' => 'mason.gray@shopmart.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'ShopMart',
@@ -612,7 +612,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Ella Price',
         'email' => 'ella.price@retailworld.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'RetailWorld',
@@ -625,7 +625,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Logan Bell',
         'email' => 'logan.bell@shopwise.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'ShopWise',
@@ -638,7 +638,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Harper Evans',
         'email' => 'harper.evans@retailmart.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'RetailMart',
@@ -651,7 +651,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Benjamin Scott',
         'email' => 'benjamin.scott@urbanstore.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'UrbanStore',
@@ -664,7 +664,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Emily Adams',
         'email' => 'emily.adams@quickmart.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'QuickMart',
@@ -677,7 +677,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Jack Morris',
         'email' => 'jack.morris@superstore.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'SuperStore',
@@ -690,7 +690,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Grace Walker',
         'email' => 'grace.walker@marketplace.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'MarketPlace',
@@ -703,7 +703,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Henry King',
         'email' => 'henry.king@retailplus.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'RetailPlus',
@@ -716,7 +716,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Zoe Cooper',
         'email' => 'zoe.cooper@shopcity.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'ShopCity',
@@ -729,7 +729,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'William Hughes',
         'email' => 'william.hughes@retailzone.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'retailer',
         'status' => 'approved',
         'company' => 'RetailZone',
@@ -746,7 +746,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Samuel Carter',
         'email' => 'samuel.carter@analytica.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'Analytica Insights',
@@ -759,7 +759,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Victoria Lee',
         'email' => 'victoria.lee@datawise.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'DataWise Analytics',
@@ -772,7 +772,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Matthew Kim',
         'email' => 'matthew.kim@insightpro.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'InsightPro',
@@ -785,7 +785,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Chloe Adams',
         'email' => 'chloe.adams@trendlytics.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'TrendLytics',
@@ -798,7 +798,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Ryan Foster',
         'email' => 'ryan.foster@marketintel.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'MarketIntel',
@@ -811,7 +811,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Ella Brooks',
         'email' => 'ella.brooks@analytix.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'Analytix Group',
@@ -824,7 +824,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'David Green',
         'email' => 'david.green@insightful.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'Insightful Analytics',
@@ -837,7 +837,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Sofia Turner',
         'email' => 'sofia.turner@datanova.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'DataNova',
@@ -850,7 +850,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Jackson Lee',
         'email' => 'jackson.lee@marketmetrics.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'MarketMetrics',
@@ -863,7 +863,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Grace Evans',
         'email' => 'grace.evans@trendwise.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'TrendWise',
@@ -876,7 +876,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Benjamin Scott',
         'email' => 'benjamin.scott@insightedge.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'InsightEdge',
@@ -889,7 +889,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Lily Parker',
         'email' => 'lily.parker@datanalytics.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'DataNaltyics',
@@ -902,7 +902,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Mason Rivera',
         'email' => 'mason.rivera@marketinsight.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'MarketInsight',
@@ -915,7 +915,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Avery Morgan',
         'email' => 'avery.morgan@analytica.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'Analytica Insights',
@@ -928,7 +928,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Logan Bailey',
         'email' => 'logan.bailey@datawise.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'DataWise Analytics',
@@ -941,7 +941,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Scarlett Reed',
         'email' => 'scarlett.reed@insightpro.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'InsightPro',
@@ -954,7 +954,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Elijah Cooper',
         'email' => 'elijah.cooper@trendlytics.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'TrendLytics',
@@ -967,7 +967,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Penelope Ross',
         'email' => 'penelope.ross@marketintel.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'MarketIntel',
@@ -980,7 +980,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Carter James',
         'email' => 'carter.james@analytix.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'Analytix Group',
@@ -993,7 +993,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
     [
         'name' => 'Layla Bennett',
         'email' => 'layla.bennett@insightful.com',
-        'password' => Hash::make('password'),
+        'password' => Hash::make('autochainnexus'),
         'role' => 'analyst',
         'status' => 'approved',
         'company' => 'Insightful Analytics',
@@ -1010,7 +1010,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Natalie Simmons',
                 'email' => 'natalie.simmons@vendortech.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'pending',
                 'company' => 'VendorTech Solutions',
@@ -1023,7 +1023,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Derek Foster',
                 'email' => 'derek.foster@vendormax.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'vendor',
                 'status' => 'pending',
                 'company' => 'VendorMax',
@@ -1036,7 +1036,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Isabella Grant',
                 'email' => 'isabella.grant@manufactory.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'manufacturer',
                 'status' => 'pending',
                 'company' => 'Manufactory Ltd.',
@@ -1049,7 +1049,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Owen Parker',
                 'email' => 'owen.parker@supplyco.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'supplier',
                 'status' => 'pending',
                 'company' => 'SupplyCo',
@@ -1062,7 +1062,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Megan Lewis',
                 'email' => 'shakirannannyombi@gmail.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'retailer',
                 'status' => 'pending',
                 'company' => 'RetailMart',
@@ -1075,7 +1075,7 @@ class ApprovedAndPendingUsersSeeder extends Seeder
             [
                 'name' => 'Evan Mitchell',
                 'email' => 'evan.mitchell@analytica.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('autochainnexus'),
                 'role' => 'analyst',
                 'status' => 'pending',
                 'company' => 'Analytica Insights',

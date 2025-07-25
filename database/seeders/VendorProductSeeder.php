@@ -19,7 +19,7 @@ class VendorProductSeeder extends Seeder
                 'name' => 'Amanda Foster',
                 'role' => 'vendor',
                 'status' => 'approved',
-                'password' => bcrypt('password123'),
+                'password' => bcrypt('autochainnexus'),
             ]
         );
 
