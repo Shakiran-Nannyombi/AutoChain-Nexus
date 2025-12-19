@@ -55,7 +55,7 @@ class VendorTrackingController extends Controller
             ->whereNotNull('updated_at')
             ->selectRaw('
                 status,
-                AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_hours
+                AVG((julianday(updated_at) - julianday(created_at)) * 24) as avg_hours
             ')
             ->groupBy('status')
             ->get();

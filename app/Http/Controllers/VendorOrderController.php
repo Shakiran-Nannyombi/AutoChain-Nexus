@@ -12,17 +12,24 @@ use App\Models\VendorActivity;
 use App\Notifications\VendorNotification;
 use App\Notifications\VendorOrderCreated;
 
+use App\Services\VendorOrderService;
+
 class VendorOrderController extends Controller
 {
+    protected VendorOrderService $service;
+
+    public function __construct(VendorOrderService $service)
+    {
+        $this->service = $service;
+    }
+
     // List all orders for the current vendor (orders TO manufacturers)
     public function index()
     {
         $vendorId = Auth::id();
-        // Manufacturer orders (orders TO manufacturers)
-        $manufacturerOrders = VendorOrder::where('vendor_id', $vendorId)
-            ->with('manufacturer')
-            ->orderByDesc('created_at')
-            ->get();
+        $dashboardData = $this->service->getDashboardData($vendorId);
+        $manufacturerOrders = $dashboardData['manufacturerOrders'];
+        
         // Retailer orders (orders FROM retailers)
         $retailerOrders = \App\Models\RetailerOrder::where('vendor_id', $vendorId)
             ->with('retailer')
@@ -53,10 +60,10 @@ class VendorOrderController extends Controller
         $manufacturers = \App\Models\User::where('role', 'manufacturer')->where('status', 'approved')->get();
         $vendorProducts = \App\Models\Product::where('vendor_id', $vendorId)->get();
         $vendorAddresses = \App\Models\Vendor::where('user_id', $vendorId)->pluck('address')->filter()->unique();
-        $manufacturerOrders = \App\Models\VendorOrder::where('vendor_id', $vendorId)
-            ->with('manufacturer')
-            ->orderByDesc('created_at')
-            ->get();
+        
+        $dashboardData = $this->service->getDashboardData($vendorId);
+        $manufacturerOrders = $dashboardData['manufacturerOrders'];
+        
         return view('dashboards.vendor.manufacturer-orders', compact('manufacturers', 'vendorProducts', 'vendorAddresses', 'manufacturerOrders'));
     }
 
@@ -97,39 +104,24 @@ class VendorOrderController extends Controller
             return response()->json(['success' => false, 'message' => 'Manufacturer not found.'], 404);
         }
 
-        $order = VendorOrder::create([
+        $data = [
             'manufacturer_id' => $request->order_type === 'manufacturer' ? $validated['partner_id'] : null,
-            'vendor_id' => Auth::id(),
-            'product' => $validated['product_id'],
+            'product_id' => $validated['product_id'],
             'product_name' => $product->name,
             'product_category' => $product->category,
             'quantity' => $validated['quantity'],
             'unit_price' => $product->price,
             'total_amount' => $product->price * $validated['quantity'],
-            'status' => 'pending',
-            'ordered_at' => Carbon::now(),
             'expected_delivery_date' => $validated['delivery_date'] ?? null,
             'delivery_point' => $request->delivery_point ?? null,
             'notes' => $validated['special_instructions'],
-        ]);
+        ];
 
-        // Log activity
-        VendorActivity::create([
-            'vendor_id' => Auth::id(),
-            'activity' => 'Created new order',
-            'details' => 'Order ID: ' . $order->id . ', Product: ' . $product->name . ', Quantity: ' . $order->quantity,
-        ]);
-        
-        // Notify vendor
-        Auth::user()->notify(new VendorNotification('Order Created', 'Your order #' . $order->id . ' has been created.'));
-        // Notify manufacturer (real-time)
-        if ($manufacturer) {
-            $manufacturer->notify(new VendorOrderCreated($order));
-        }
+        $order = $this->service->createOrder($data, $manufacturer);
 
         // If AJAX, return JSON. Otherwise, redirect with success message.
         if ($request->ajax() || $request->wantsJson()) {
-        return response()->json(['success' => true, 'message' => 'Order created successfully!', 'order' => $order]);
+            return response()->json(['success' => true, 'message' => 'Order created successfully!', 'order' => $order]);
         } else {
             return redirect()->route('vendor.manufacturer-orders')->with('success', 'Order created successfully!');
         }

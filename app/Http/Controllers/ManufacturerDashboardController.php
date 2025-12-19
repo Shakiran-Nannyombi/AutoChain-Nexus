@@ -51,9 +51,8 @@ class ManufacturerDashboardController extends Controller
     public function checklists()
     {
         $manufacturerId = session('user_id') ?? Auth::id();
-        $suppliers = \App\Models\User::where('role', 'supplier')->where('status', 'approved')->get();
-        $sentChecklists = ChecklistRequest::where('manufacturer_id', $manufacturerId)->with('supplier')->latest()->get();
-        return view('dashboards.manufacturer.checklists', compact('suppliers', 'sentChecklists'));
+        $data = $this->procurementService->getChecklistsData($manufacturerId);
+        return view('dashboards.manufacturer.checklists', $data);
     }
 
     public function sendChecklist(Request $request)
@@ -64,34 +63,15 @@ class ManufacturerDashboardController extends Controller
             'quantities' => 'required|array|min:1',
         ]);
         $manufacturerId = session('user_id') ?? Auth::id();
-        $materials = $request->input('materials');
-        $quantities = $request->input('quantities');
-        $materialsRequested = [];
-        foreach ($materials as $i => $mat) {
-            $mat = trim($mat);
-            $qty = isset($quantities[$i]) ? (int)$quantities[$i] : 0;
-            if ($mat && $qty > 0) {
-                $materialsRequested[$mat] = $qty;
-            }
-        }
-        ChecklistRequest::create([
-            'manufacturer_id' => $manufacturerId,
-            'supplier_id' => $request->supplier_id,
-            'materials_requested' => $materialsRequested,
-            'status' => 'pending',
-        ]);
+        $this->procurementService->createChecklist($manufacturerId, $request->all());
+        
         return redirect()->route('manufacturer.checklists')->with('success', 'Checklist sent to supplier!');
     }
 
     public function inventory_status()
     {
-        $supplierStocks = SupplierStock::all();
-        $retailerStocks = RetailerStock::all();
-
-        $totalSupplierStock = $supplierStocks->sum('quantity');
-        $totalRetailerStock = $retailerStocks->sum('quantity_received');
-
-        return view('dashboards.manufacturer.inventory-status', compact('supplierStocks', 'retailerStocks', 'totalSupplierStock', 'totalRetailerStock'));
+        $data = $this->inventoryService->getInventoryStatus();
+        return view('dashboards.manufacturer.inventory-status', $data);
     }
 
     public function machine_health()
@@ -107,192 +87,50 @@ class ManufacturerDashboardController extends Controller
     public function material_receipt()
     {
         $manufacturerId = session('user_id') ?? Auth::id();
-        $deliveries = \App\Models\Delivery::where('manufacturer_id', $manufacturerId)->with('supplier')->latest()->get();
-        $confirmedOrders = \App\Models\ChecklistRequest::where('manufacturer_id', $manufacturerId)
-            ->where('status', 'fulfilled')
-            ->with('supplier')
-            ->latest()
-            ->get();
-        return view('dashboards.manufacturer.material-receipt', compact('deliveries', 'confirmedOrders'));
+        $data = $this->inventoryService->getMaterialReceipts($manufacturerId);
+        
+        return view('dashboards.manufacturer.material-receipt', $data);
+    }
+
+    protected $productionAnalyticsService;
+    protected $productionLineService;
+    protected $dashboardService;
+    protected $inventoryService;
+    protected $procurementService;
+
+    public function __construct(
+        \App\Services\ProductionAnalyticsService $productionAnalyticsService,
+        \App\Services\ProductionLineService $productionLineService,
+        \App\Services\ManufacturerDashboardService $dashboardService,
+        \App\Services\InventoryService $inventoryService,
+        \App\Services\ProcurementService $procurementService
+    ) {
+        $this->productionAnalyticsService = $productionAnalyticsService;
+        $this->productionLineService = $productionLineService;
+        $this->dashboardService = $dashboardService;
+        $this->inventoryService = $inventoryService;
+        $this->procurementService = $procurementService;
     }
 
     public function production_lines()
     {
-        $processFlows = ProcessFlow::all();
-
-        // Define stage order and their corresponding progress percentages
-        $stageProgressMap = [
-            'raw_materials' => 20,
-            'manufacturing' => 40,
-            'quality_control' => 60,
-            'distribution' => 80,
-            'retail' => 100,
-            'completed' => 100, // Completed items are 100% done
-            'failed' => 0, // Failed items don't contribute to forward progress
-        ];
-
-        $productionLines = [];
-        foreach ($processFlows as $flow) {
-            $itemName = $flow->item_name;
-            if (!isset($productionLines[$itemName])) {
-                $productionLines[$itemName] = [
-                    'completed_items' => 0,
-                    'total_items' => 0,
-                    'has_failed_item' => false,
-                    'has_incomplete_item' => false,
-                    'current_stage' => 'N/A', // Will be updated later
-                    'status' => 'N/A', // Will be updated later
-                    'max_stage_progress' => 0, // To track the furthest stage reached
-                ];
-            }
-            $productionLines[$itemName]['total_items']++;
-
-            if ($flow->status === 'completed') {
-                $productionLines[$itemName]['completed_items']++;
-            } else {
-                $productionLines[$itemName]['has_incomplete_item'] = true;
-            }
-            if ($flow->status === 'failed') {
-                $productionLines[$itemName]['has_failed_item'] = true;
-            }
-        }
-
-        // Determine the overall status and current stage for each line
-        foreach ($productionLines as $itemName => &$data) {
-            // Calculate max_stage_progress for the line
-            $currentLineItems = collect($processFlows)->where('item_name', $itemName);
-            foreach ($currentLineItems as $item) {
-                $stage = $item->status === 'completed' ? 'completed' : ($item->status === 'failed' ? 'failed' : $item->current_stage);
-                $progress = $stageProgressMap[$stage] ?? 0;
-                if ($progress > $data['max_stage_progress']) {
-                    $data['max_stage_progress'] = $progress;
-                }
-            }
-
-            if ($data['has_failed_item']) {
-                $data['status'] = 'stopped';
-                $failedItem = $currentLineItems->where('status', 'failed')->first();
-                $data['current_stage'] = $failedItem->current_stage ?? 'N/A';
-            } elseif (!$data['has_incomplete_item']) {
-                $data['status'] = 'completed';
-                $data['current_stage'] = 'Finished';
-            } else {
-                $data['status'] = 'running';
-                $incompleteItem = $currentLineItems
-                                    ->where('status', '!=', 'completed')
-                                    ->sortBy('entered_stage_at')
-                                    ->first();
-                $data['current_stage'] = $incompleteItem->current_stage ?? 'N/A';
-            }
-        }
-        unset($data); // Unset the reference
-
-        return view('dashboards.manufacturer.production-lines', compact('productionLines', 'processFlows'));
+        $data = $this->productionLineService->getProductionLinesData();
+        return view('dashboards.manufacturer.production-lines', $data);
     }
 
     public function production_analytics()
     {
-        $processFlows = ProcessFlow::all();
+        $data = $this->productionAnalyticsService->getAnalyticsData();
 
-        // 1. Summary Production Statistics
-        $totalItemsProcessed = $processFlows->count();
-        $totalCompletedItems = $processFlows->where('status', 'completed')->count();
-        $totalFailedItems = $processFlows->where('status', 'failed')->count();
-        $overallYield = ($totalItemsProcessed > 0) ? round(($totalCompletedItems / $totalItemsProcessed) * 100, 2) : 0;
+        return view('dashboards.manufacturer.production-analytics', $data);
+    }
 
-        // 2. Stage Distribution (for pie chart)
-        $stageCounts = [
-            'raw_materials' => 0,
-            'manufacturing' => 0,
-            'quality_control' => 0,
-            'distribution' => 0,
-            'retail' => 0,
-            'completed' => 0,
-            'failed' => 0,
-        ];
-
-        foreach ($processFlows as $flow) {
-            if ($flow->status === 'completed') {
-                $stageCounts['completed']++;
-            } elseif ($flow->status === 'failed') {
-                $stageCounts['failed']++;
-            } else {
-                if (array_key_exists($flow->current_stage, $stageCounts)) {
-                    $stageCounts[$flow->current_stage]++;
-                }
-            }
-        }
-
-        $stageLabels = array_keys($stageCounts);
-        $stageData = array_values($stageCounts);
-
-        // 3. Stage Duration Analysis
-        $stageDurations = [
-            'raw_materials' => [],
-            'manufacturing' => [],
-            'quality_control' => [],
-            'distribution' => [],
-            'retail' => [],
-        ];
-
-        foreach ($processFlows as $flow) {
-            if ($flow->entered_stage_at) {
-                $start = Carbon::parse($flow->entered_stage_at);
-                $end = null;
-
-                if ($flow->status === 'completed' && $flow->completed_stage_at) {
-                    $end = Carbon::parse($flow->completed_stage_at);
-                } elseif ($flow->status === 'failed') {
-                    $end = Carbon::parse($flow->updated_at); // Use updated_at for failed items
-                } elseif ($flow->status === 'in_progress') {
-                    $end = Carbon::now(); // For items still in progress
-                }
-
-                if ($end && $flow->current_stage && array_key_exists($flow->current_stage, $stageDurations)) {
-                    $duration = $end->diffInMinutes($start); // Duration in minutes
-                    $stageDurations[$flow->current_stage][] = $duration;
-                }
-            }
-        }
-
-        $averageStageDurations = [];
-        foreach ($stageDurations as $stage => $durations) {
-            $averageStageDurations[$stage] = count($durations) > 0 ? round(array_sum($durations) / count($durations), 2) : 0;
-        }
-
-        // 4. Production Rate Over Time
-        $completedItemsByDate = $processFlows->where('status', 'completed')
-                                            ->groupBy(function($date) {
-                                                return Carbon::parse($date->completed_stage_at)->format('Y-m-d');
-                                            })
-                                            ->map->count();
-
-        $productionRateLabels = $completedItemsByDate->keys()->sort()->values()->toArray();
-        $productionRateData = $completedItemsByDate->values()->toArray();
-
-        // 5. Failure Trends Over Time
-        $failedItemsByDate = $processFlows->where('status', 'failed')
-                                        ->groupBy(function($date) {
-                                            return Carbon::parse($date->updated_at)->format('Y-m-d');
-                                        })
-                                        ->map->count();
-
-        $failureTrendLabels = $failedItemsByDate->keys()->sort()->values()->toArray();
-        $failureTrendData = $failedItemsByDate->values()->toArray();
-
-        return view('dashboards.manufacturer.production-analytics', compact(
-            'stageLabels',
-            'stageData',
-            'totalItemsProcessed',
-            'totalCompletedItems',
-            'totalFailedItems',
-            'overallYield',
-            'averageStageDurations',
-            'productionRateLabels',
-            'productionRateData',
-            'failureTrendLabels',
-            'failureTrendData'
-        ));
+    public function index()
+    {
+        $manufacturerId = Auth::id();
+        $metrics = $this->dashboardService->getDashboardMetrics($manufacturerId);
+        
+        return view('dashboards.manufacturer.index', $metrics);
     }
 
     public function production_reports(Request $request)
@@ -393,48 +231,7 @@ class ManufacturerDashboardController extends Controller
         return view('dashboards.manufacturer.workflow');
     }
 
-    public function index()
-    {
-        $manufacturerId = Auth::id();
-        // Active Orders: count of fulfilled vendor_orders for this manufacturer
-        $activeOrders = \DB::table('vendor_orders')
-            ->where('manufacturer_id', $manufacturerId)
-            ->where('status', 'fulfilled')
-            ->count();
-        // Total Revenue: sum of total_amount for all vendor_orders for this manufacturer
-        $totalRevenue = \DB::table('vendor_orders')
-            ->where('manufacturer_id', $manufacturerId)
-            ->sum('total_amount');
-        // Inventory: count of products for this manufacturer
-        $inventoryCount = \DB::table('products')
-            ->where('manufacturer_id', $manufacturerId)
-            ->count();
-        // Active Vendors: count of unique vendor_ids in fulfilled vendor_orders for this manufacturer
-        $activeVendors = \DB::table('vendor_orders')
-            ->where('manufacturer_id', $manufacturerId)
-            ->where('status', 'fulfilled')
-            ->distinct('vendor_id')
-            ->count('vendor_id');
-        // Recent Orders: last 5 fulfilled vendor_orders for this manufacturer
-        $recentOrders = \DB::table('vendor_orders')
-            ->where('manufacturer_id', $manufacturerId)
-            ->where('status', 'fulfilled')
-            ->orderByDesc('ordered_at')
-            ->limit(5)
-            ->get();
-        // Low Stock Products: products for this manufacturer with stock < 5
-        $lowStockProducts = \DB::table('products')
-            ->where('manufacturer_id', $manufacturerId)
-            ->where('stock', '<', 5)
-            ->get();
-        // Demo revenue values for dashboard display
-        $monthlyRevenue = 12500000.00;
-        $totalRevenue = 98765432.10;
-        return view('dashboards.manufacturer.index', compact(
-            'activeOrders', 'monthlyRevenue', 'inventoryCount', 'activeVendors',
-            'recentOrders', 'lowStockProducts', 'totalRevenue'
-        ));
-    }
+
 
     public function updateProcessFlowItem(Request $request)
     {
@@ -476,25 +273,10 @@ class ManufacturerDashboardController extends Controller
     public function orders(Request $request)
     {
         $manufacturerId = session('user_id') ?? Auth::id();
-        // Load supplier orders (all for now, or filter by supplier if needed)
-        $supplierOrders = \App\Models\SupplierOrder::with(['supplier', 'items'])
-            ->orderByDesc('created_at')
-            ->get();
-        $vendorOrdersQuery = \App\Models\VendorOrder::where('manufacturer_id', $manufacturerId);
         $vendorStatus = $request->input('vendor_status');
-        if ($vendorStatus && in_array($vendorStatus, ['fulfilled', 'cancelled'])) {
-            $vendorOrdersQuery->where('status', $vendorStatus);
-        }
-        $vendorOrders = $vendorOrdersQuery->orderByDesc('created_at')->get();
+        $data = $this->procurementService->getOrdersData($manufacturerId, $vendorStatus);
         
-        // Load deliveries for this manufacturer
-        $deliveries = \App\Models\Delivery::where('manufacturer_id', $manufacturerId)
-            ->with('supplier')
-            ->orderByDesc('created_at')
-            ->get();
-        
-        $productPrices = \DB::table('products')->pluck('price', 'name');
-        return view('dashboards.manufacturer.orders', compact('supplierOrders', 'vendorOrders', 'deliveries', 'productPrices'));
+        return view('dashboards.manufacturer.orders', $data);
     }
 
     public function ordersPartial(Request $request)
@@ -524,18 +306,7 @@ class ManufacturerDashboardController extends Controller
 
     public function remakeOrder($id)
     {
-        $order = \App\Models\ChecklistRequest::findOrFail($id);
-        $materials = $order->materials_requested;
-        // If it's a string, decode it
-        if (is_string($materials)) {
-            $materials = json_decode($materials, true);
-        }
-        \App\Models\ChecklistRequest::create([
-            'manufacturer_id' => $order->manufacturer_id,
-            'supplier_id' => $order->supplier_id,
-            'materials_requested' => $materials,
-            'status' => 'pending',
-        ]);
+        $this->procurementService->remakeOrder($id);
         return back()->with('success', 'Order has been remade and sent to the supplier!');
     }
 

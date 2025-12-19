@@ -1,0 +1,49 @@
+nohup: ignoring input
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------------< [0;36mcom.vendorvalidation:validator-api[0;1m >-----------------[m
+[[1;34mINFO[m] [1mBuilding validator-api 0.0.1-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot-maven-plugin:3.5.3:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36mvalidator-api[0;1m >>>[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mvalidator-api[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.0:compile[m [1m(default-compile)[m @ [36mvalidator-api[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mvalidator-api[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.0:testCompile[m [1m(default-testCompile)[m @ [36mvalidator-api[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m<<< [0;32mspring-boot-maven-plugin:3.5.3:run[m [1m(default-cli)[0;1m < [0;1mtest-compile[m @ [36mvalidator-api[0;1m <<<[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.3:run[m [1m(default-cli)[m @ [36mvalidator-api[0;1m ---[m
+[[1;34mINFO[m] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-12-19T15:11:48.264+03:00  INFO 651021 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Starting ValidatorApiApplication using Java 17.0.17 with PID 651021 (/opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api/target/classes started by dev-kiran in /opt/lampp/htdocs/Inventory-Mgt-System-25/validator-api)
+2025-12-19T15:11:48.267+03:00  INFO 651021 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : No active profile set, falling back to 1 default profile: "default"
+2025-12-19T15:11:48.299+03:00  INFO 651021 --- [validator-api] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-19T15:11:48.299+03:00  INFO 651021 --- [validator-api] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-19T15:11:49.008+03:00  INFO 651021 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8082 (http)
+2025-12-19T15:11:49.020+03:00  INFO 651021 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-19T15:11:49.021+03:00  INFO 651021 --- [validator-api] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-12-19T15:11:49.055+03:00  INFO 651021 --- [validator-api] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-19T15:11:49.056+03:00  INFO 651021 --- [validator-api] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 756 ms
+2025-12-19T15:11:49.691+03:00  WARN 651021 --- [validator-api] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2025-12-19T15:11:49.708+03:00  INFO 651021 --- [validator-api] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8082 (http) with context path '/'
+2025-12-19T15:11:49.716+03:00  INFO 651021 --- [validator-api] [  restartedMain] c.v.v.ValidatorApiApplication            : Started ValidatorApiApplication in 1.739 seconds (process running for 2.011)

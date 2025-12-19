@@ -24,7 +24,7 @@ class AnalystController extends Controller
                       SupplierStock::count();
 
         // Fix: Get monthly sales totals as an array
-        $trends = RetailerSale::select(DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'), DB::raw('SUM(quantity_sold) as total'))
+        $trends = RetailerSale::select(DB::raw('strftime("%Y-%m", created_at) as month'), DB::raw('SUM(quantity_sold) as total'))
                     ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month')
@@ -44,7 +44,7 @@ class AnalystController extends Controller
         $totalSales = \App\Models\RetailerSale::sum('quantity_sold');
         $salesByModel = \App\Models\RetailerSale::select('car_model', \DB::raw('SUM(quantity_sold) as total_sold'))
             ->groupBy('car_model')->orderByDesc('total_sold')->get();
-        $salesByMonth = \App\Models\RetailerSale::select(\DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'), \DB::raw('SUM(quantity_sold) as total_sold'))
+        $salesByMonth = \App\Models\RetailerSale::select(\DB::raw('strftime("%Y-%m", created_at) as month'), \DB::raw('SUM(quantity_sold) as total_sold'))
             ->groupBy('month')->orderBy('month')->get();
 
         // Inventory analytics
@@ -63,7 +63,7 @@ class AnalystController extends Controller
 public function trends()
 {
     // Monthly sales totals
-    $monthlySales = RetailerSale::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, SUM(quantity_sold) as total')
+    $monthlySales = RetailerSale::selectRaw('strftime("%Y-%m", created_at) as month, SUM(quantity_sold) as total')
         ->groupBy('month')
         ->orderBy('month')
         ->pluck('total', 'month')

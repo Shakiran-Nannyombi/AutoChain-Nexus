@@ -38,7 +38,7 @@ class AnalystSampleDataSeeder extends Seeder
                 'email' => $retailerUser->email,
                 'phone' => '123-456-7890',
                 'address' => '123 Retailer Street',
-                'password' => Hash::make('autochainnexus'),
+                'password' => Hash::make('password'),
                 'company' => $retailerUser->company,
             ],
 

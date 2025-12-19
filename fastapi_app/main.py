@@ -11,7 +11,9 @@ import pymysql
 import json
 from fastapi import Request
 from fastapi.responses import JSONResponse
-# Removed problematic import - using Prophet directly instead
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ml/scripts')))
+from Forecast_Allmodels import DemandForecaster
 from fastapi import APIRouter
 
 app = FastAPI()
@@ -25,18 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {"message": "FastAPI ML Service is running", "status": "healthy"}
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
-
 base_dir = os.path.dirname(__file__)
 
 # Load DB config
-with open(os.path.join(base_dir, 'db_config.json')) as f:
+with open(os.path.join(base_dir, '..', 'ml', 'db_config.json')) as f:
     db_config = json.load(f)
 
 def get_sales_df():
@@ -211,35 +205,20 @@ async def forecast_ml(request: Request):
     model_status = "loaded"
     for model in models:
         try:
-            # Filter data for this car model
-            model_df = df[df['Model'] == model].copy()
-            
-            if len(model_df) < 3:
-                results[model] = [{"error": "Not enough data to forecast."}]
-                continue
-            
-            # Group by month and sum quantities
-            monthly = (
-                model_df.groupby(pd.Grouper(key='Date', freq='M'))['Demand']
-                .sum()
-                .reset_index()
-                .rename(columns={'Date': 'ds', 'Demand': 'y'})
-            )
-            
-            # Create and fit Prophet model
-            prophet_model = Prophet()
-            prophet_model.fit(monthly)
-            
-            # Create future dataframe for 12 months
-            future = prophet_model.make_future_dataframe(periods=12, freq='M')
-            forecast = prophet_model.predict(future)
-            
-            # Get the last 12 predictions
-            future_forecast = forecast.tail(12).copy()
-            future_forecast['Month'] = future_forecast['ds'].dt.strftime('%Y-%m')
-            future_forecast['Predicted'] = future_forecast['yhat'].round().astype(int)
-            
-            results[model] = future_forecast[['Month', 'Predicted']].to_dict('records')
+            forecaster = DemandForecaster()
+            forecaster.demand_data = None  # Always use fresh data
+            if force_retrain or not forecaster.model_exists():
+                forecaster.train(df)
+                model_status = "retrained"
+            else:
+                forecaster.load_model()
+                forecaster.demand_data = forecaster.prepare_features(df)
+            print(f"PREDICT: Looking for model {model}")
+            print("PREDICT: Available models:", forecaster.demand_data['Model'].unique())
+            _, pred = forecaster.predict(model, months=12)
+            pred['Month'] = pred['Date'].dt.strftime('%Y-%m')
+            pred['Predicted'] = pred['Predicted_Demand'].astype(int)
+            results[model] = pred[['Month', 'Predicted']].to_dict('records')
         except Exception as e:
             results[model] = [{"error": f"Forecasting failed: {str(e)}"}]
     print("ML forecast results:", results)
@@ -265,8 +244,9 @@ async def retrain_forecast_ml():
         conn.close()
         df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
         df = df.dropna(subset=['Date'])
-        # Using Prophet for forecasting - no separate training needed
-        return {"success": True, "message": "Prophet model ready for forecasting."}
+        forecaster = DemandForecaster()
+        forecaster.train(df)
+        return {"success": True, "message": "Model retrained and saved."}
     except Exception as e:
         return {"success": False, "error": str(e)}
 
@@ -306,7 +286,7 @@ async def api_predict(request: Request):
 def get_retailer_segments():
     import pandas as pd
     import os
-    csv_path = os.path.join(os.path.dirname(__file__), 'retailer_segments.csv')
+    csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ml', 'retailer_segments.csv'))
     if not os.path.exists(csv_path):
         return {"success": False, "error": "Segmentation file not found."}
     df = pd.read_csv(csv_path)
