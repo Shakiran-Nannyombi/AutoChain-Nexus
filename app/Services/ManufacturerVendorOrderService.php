@@ -203,8 +203,14 @@ class ManufacturerVendorOrderService
     {
         $body = '<h2>Your order #' . $order->id . ' has been rejected.</h2>' .
                 '<p><b>Reason:</b> ' . e($reason) . '</p>';
+        $apiUrl = env('JAVA_MAIL_BASE_URL');
+        if (!$apiUrl) {
+            Log::warning('Email API URL not set. Rejection email not sent.');
+            return;
+        }
+
         try {
-            Http::post('http://localhost:8082/api/v1/send-email', [
+            Http::post($apiUrl . '/api/v1/send-email', [
                 'to' => $vendor->email,
                 'subject' => 'Order #' . $order->id . ' Rejected',
                 'body' => $body,
@@ -226,8 +232,14 @@ class ManufacturerVendorOrderService
             'driver_name' => $data['driver_name'] ?? null,
         ])->render();
 
+        $apiUrl = env('JAVA_MAIL_BASE_URL');
+        if (!$apiUrl) {
+            Log::warning('Email API URL not set. Invoice email not sent.');
+            return;
+        }
+
         try {
-            Http::post('http://localhost:8082/api/v1/send-email', [
+            Http::post($apiUrl . '/api/v1/send-email', [
                 'to' => $order->vendor->email,
                 'subject' => 'Order Invoice #' . $order->id,
                 'body' => $invoiceHtml,

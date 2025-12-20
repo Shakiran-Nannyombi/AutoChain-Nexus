@@ -127,8 +127,17 @@ class AdminDashboardService
         }
 
         // --- Stats Cards Data ---
-        $validationApiHealthy = $this->checkApiHealth('http://localhost:8084/api/v1/health');
-        $emailApiHealthy = $this->checkApiHealth('http://localhost:8082/api/v1/health');
+        $validationApiUrl = env('VALIDATOR_API_URL');
+        $emailApiUrl = env('JAVA_MAIL_BASE_URL'); // Mapping based on user input, though code had 8082 for email before.
+        
+        // Auto-detect if ports match previous logic or user logic
+        // Code used 8084 for validation, 8082 for email. 
+        // User says 8082 is Validator, 8081 is Mail. 
+        // I will use generic env vars and let user config decide.
+        
+        $validationApiHealthy = $validationApiUrl ? $this->checkApiHealth($validationApiUrl . '/health') : false;
+        $emailApiHealthy = $emailApiUrl ? $this->checkApiHealth($emailApiUrl . '/health') : false;
+        
         $systemHealth = ($validationApiHealthy && $emailApiHealthy) ? 98 : 50;
 
         $bottlenecksCount = FacilityVisit::where('status', 'pending')

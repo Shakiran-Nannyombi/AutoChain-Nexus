@@ -16,8 +16,23 @@ class DemandPrediction extends Controller
                 return response()->json(['error' => 'No car models provided.'], 400);
             }
 
-            // Call FastAPI service on port 8001 with timeout
-            $response = Http::timeout(60)->post('http://127.0.0.1:8001/forecast', [
+            // Check for configured FastAPI URL
+            $fastApiUrl = env('FASTAPI_URL');
+            
+            if (!$fastApiUrl) {
+                 // Return mock data if service is not configured (Demo Mode)
+                 $mockForecast = [];
+                 foreach ($models as $model) {
+                     $mockForecast[$model] = [
+                        'forecast' => rand(50, 500),
+                        'confidence' => rand(85, 99) . '%'
+                     ];
+                 }
+                 return response()->json(['status' => 'success', 'data' => $mockForecast, 'mock' => true]);
+            }
+
+            // Call FastAPI service with timeout
+            $response = Http::timeout(60)->post($fastApiUrl . '/forecast', [
                 'models' => $models
             ]);
 
