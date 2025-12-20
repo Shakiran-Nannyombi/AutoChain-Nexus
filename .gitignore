@@ -1,6 +1,6 @@
 /.phpunit.cache
 /node_modules
-/public/build
+# /public/build
 /public/hot
 /storage/*.key
 /storage/pail
@@ -37,7 +37,7 @@ __pycache__/
 !storage/app/public/sample_documents/*
 /.phpunit.cache
 /node_modules
-/public/build
+# /public/build
 storage/framework/views/
 storage/logs/
 /public/hot
