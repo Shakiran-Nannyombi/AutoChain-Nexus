@@ -7,12 +7,11 @@ from prophet import Prophet
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 import requests
-import pymysql
 import json
 from fastapi import Request
 from fastapi.responses import JSONResponse
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ml/scripts')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ml/scripts'))) -- Removed for Docker
 from Forecast_Allmodels import DemandForecaster
 from fastapi import APIRouter
 
@@ -29,31 +28,40 @@ app.add_middleware(
 
 base_dir = os.path.dirname(__file__)
 
-# Load DB config
-with open(os.path.join(base_dir, '..', 'ml', 'db_config.json')) as f:
-    db_config = json.load(f)
+# Config for Internal API
+LARAVEL_API_URL = os.getenv('LARAVEL_API_URL', 'http://host.docker.internal:8000') # Default for local dev
+INTERNAL_API_SECRET = os.getenv('INTERNAL_API_SECRET', 'changeme')
 
 def get_sales_df():
     try:
-        conn = pymysql.connect(
-            host=db_config['host'],
-            user=db_config['user'],
-            password=db_config['password'],
-            database=db_config['database'],
-            cursorclass=pymysql.cursors.DictCursor
-        )
-        query = """
-            SELECT product as car_model, quantity as quantity_sold, ordered_at as created_at, manufacturer_id as region
-            FROM vendor_orders
-            WHERE status = 'fulfilled'
-        """
-        df = pd.read_sql(query, conn)
-        conn.close()
+        url = f"{LARAVEL_API_URL}/api/internal/sales-data"
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-Internal-Secret": INTERNAL_API_SECRET
+        }
+        
+        print(f"Fetching data from: {url}")
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+             raise Exception(f"API Error {response.status_code}: {response.text}")
+             
+        data = response.json()
+        
+        # Convert list of dicts to DataFrame
+        df = pd.DataFrame(data)
+        
+        if df.empty:
+            return pd.DataFrame(columns=['car_model', 'quantity_sold', 'created_at', 'region'])
+            
         df['created_at'] = pd.to_datetime(df['created_at'], errors='coerce')
         df = df.dropna(subset=['created_at'])
         return df
     except Exception as e:
-        raise Exception(f"Database connection failed: {e}")
+        print(f"Data Fetch Failed: {e}")
+        # Return empty DF on failure to prevent crash, but log error
+        return pd.DataFrame(columns=['car_model', 'quantity_sold', 'created_at', 'region'])
 
 class ForecastRequest(BaseModel):
     model: str
@@ -169,37 +177,28 @@ async def forecast_ml(request: Request):
     if not models:
         return {"error": "No car models provided."}
     # Load live data from vendor_orders
+    # Load live data from vendor_orders (via API due to SQLite isolation)
     try:
-        print("DB CONFIG:", db_config)  # Debug print
-        conn = pymysql.connect(
-            host=db_config['host'],
-            user=db_config['user'],
-            password=db_config['password'],
-            database=db_config['database'],
-            cursorclass=pymysql.cursors.DictCursor
-        )
-        query = """
-            SELECT product as Model, quantity as Demand, ordered_at as Date, manufacturer_id as Dealer_Region
-            FROM vendor_orders
-            WHERE status = 'fulfilled'
-        """
-        with conn.cursor() as cursor:
-            cursor.execute(query)
-            rows = cursor.fetchall()
-        conn.close()
-        print("RAW ROWS:", rows[:5])  # Print first 5 rows for debug
-        import pandas as pd
-        df = pd.DataFrame(rows)
-        print("DF FROM DICTS:", df.head())
-        print("DF dtypes:", df.dtypes)
-        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
-        df = df.dropna(subset=['Date'])
-        print("DF HEAD:", df.head(10))
-        print("DF COLUMNS:", df.columns.tolist())
-        print("DF MODELS:", df['Model'].unique())
-        print("DF ROWS:", len(df))
+        df = get_sales_df()
+        
+        # Rename columns to match what ML model expects (Model, Demand, Date, Dealer_Region)
+        # API returns: car_model, quantity_sold, created_at, region
+        df = df.rename(columns={
+            'car_model': 'Model',
+            'quantity_sold': 'Demand',
+            'created_at': 'Date',
+            'region': 'Dealer_Region'
+        })
+        
+        # Debug prints
+        print("DF HEAD:", df.head())
+        print("DF Models:", df['Model'].unique())
+        
+        if df.empty:
+             return {"error": "No data available from Main App API."}
+             
     except Exception as e:
-        return {"error": f"Database connection failed: {e}"}
+        return {"error": f"Data fetch connection failed: {e}"}
     # Prepare and forecast
     results = {}
     model_status = "loaded"
@@ -228,20 +227,13 @@ async def forecast_ml(request: Request):
 async def retrain_forecast_ml():
     # Force retrain and save model
     try:
-        conn = pymysql.connect(
-            host=db_config['host'],
-            user=db_config['user'],
-            password=db_config['password'],
-            database=db_config['database'],
-            cursorclass=pymysql.cursors.DictCursor
-        )
-        query = """
-            SELECT product as Model, quantity as Demand, ordered_at as Date, manufacturer_id as Dealer_Region
-            FROM vendor_orders
-            WHERE status = 'fulfilled'
-        """
-        df = pd.read_sql(query, conn)
-        conn.close()
+        df = get_sales_df()
+        df = df.rename(columns={
+            'car_model': 'Model',
+            'quantity_sold': 'Demand',
+            'created_at': 'Date',
+            'region': 'Dealer_Region'
+        })
         df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
         df = df.dropna(subset=['Date'])
         forecaster = DemandForecaster()
@@ -255,8 +247,14 @@ async def api_predict(request: Request):
     data = await request.json()
     model = data.get("model")
     region = data.get("region")
-    # Use the same logic as /forecast (DB fallback)
+    # Use the same logic as /forecast (API fallback)
     df = get_sales_df()
+    df = df.rename(columns={
+        'car_model': 'car_model', # Already matches
+        'quantity_sold': 'quantity_sold',
+        'created_at': 'created_at',
+        'region': 'region'
+    })
     if 'region' not in df.columns:
         df['region'] = df.get('retailer_id', 'Unknown')
     grouped = (

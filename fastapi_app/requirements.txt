@@ -4,10 +4,12 @@
      prophet
      scikit-learn
      sqlalchemy
-     pymysql
+     psycopg2-binary
      requests
      uvicorn
      plotly
      xgboost
      lightgbm
      seaborn
+     matplotlib
+     joblib
