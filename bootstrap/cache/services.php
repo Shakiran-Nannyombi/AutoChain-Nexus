@@ -38,6 +38,7 @@
     34 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
     35 => 'App\\Providers\\AppServiceProvider',
     36 => 'App\\Providers\\ViewServiceProvider',
+    37 => 'App\\Providers\\RepositoryServiceProvider',
   ),
   'eager' => 
   array (
@@ -62,6 +63,7 @@
     18 => 'Spatie\\SignalAwareCommand\\SignalAwareCommandServiceProvider',
     19 => 'App\\Providers\\AppServiceProvider',
     20 => 'App\\Providers\\ViewServiceProvider',
+    21 => 'App\\Providers\\RepositoryServiceProvider',
   ),
   'deferred' => 
   array (

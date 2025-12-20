@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'App')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/darkmode.js'])
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/apple-icon-180.png') }}">
+    <meta name="theme-color" content="#ffffff">
     <meta name="user-id" content="{{ auth()->id() ?? session('user_id') }}"> 
     @stack('styles')
     <script>

@@ -1,0 +1,74 @@
+{
+  "public/images/logo.png": {
+    "file": "assets/logo-C7wF05Ce.png",
+    "src": "public/images/logo.png"
+  },
+  "resources/css/admin.css": {
+    "file": "assets/admin-D6fDdqZ2.css",
+    "src": "resources/css/admin.css",
+    "isEntry": true
+  },
+  "resources/css/analyst.css": {
+    "file": "assets/analyst-Bd9c5eh0.css",
+    "src": "resources/css/analyst.css",
+    "isEntry": true
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-COkuraF7.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/auth.css": {
+    "file": "assets/auth-CtfjnIN3.css",
+    "src": "resources/css/auth.css",
+    "isEntry": true
+  },
+  "resources/css/chat.css": {
+    "file": "assets/chat-B9Q5FzKZ.css",
+    "src": "resources/css/chat.css",
+    "isEntry": true
+  },
+  "resources/css/manufacturer.css": {
+    "file": "assets/manufacturer-usOS3ciT.css",
+    "src": "resources/css/manufacturer.css",
+    "isEntry": true
+  },
+  "resources/css/retailer.css": {
+    "file": "assets/retailer-77b4I3xA.css",
+    "src": "resources/css/retailer.css",
+    "isEntry": true
+  },
+  "resources/css/supplier.css": {
+    "file": "assets/supplier-bHJzvQws.css",
+    "src": "resources/css/supplier.css",
+    "isEntry": true
+  },
+  "resources/css/vendor.css": {
+    "file": "assets/vendor-D1n9N2uZ.css",
+    "src": "resources/css/vendor.css",
+    "isEntry": true
+  },
+  "resources/css/welcome.css": {
+    "file": "assets/welcome-BjBbcjzP.css",
+    "src": "resources/css/welcome.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-D1CF-BxB.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/darkmode.js": {
+    "file": "assets/darkmode-By0nt60h.js",
+    "name": "darkmode",
+    "src": "resources/js/darkmode.js",
+    "isEntry": true
+  },
+  "resources/js/slider.js": {
+    "file": "assets/slider-vICBBery.js",
+    "name": "slider",
+    "src": "resources/js/slider.js",
+    "isEntry": true
+  }
+}

@@ -1,10 +1,10 @@
-package com.vendorvalidation.validator_api;
+package com.autochain.emailapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ValidatorApiApplicationTests {
+class EmailApiApplicationTests {
 
 	@Test
 	void contextLoads() {

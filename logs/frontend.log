@@ -1,0 +1,14 @@
+nohup: ignoring input
+
+> dev
+> vite
+
+3:11:45 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+
+  VITE v6.3.5  ready in 349 ms
+
+  ➜  Local:   http://localhost:5173/
+
+  LARAVEL v12.17.0  plugin v1.2.0
+
+  ➜  APP_URL: http://127.0.0.1:8000

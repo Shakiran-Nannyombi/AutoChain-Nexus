@@ -19,6 +19,4 @@
 <a href="{{ route('analyst.chat') }}" class="nav-item{{ request()->is('analyst/chat') ? ' active' : '' }}">
     <i class="fas fa-comments"></i> Chat
 </a>
-<a href="{{ route('analyst.settings') }}" class="nav-item{{ request()->is('analyst/settings') ? ' active' : '' }}">
-    <i class="fas fa-cog"></i> Settings
-</a>
+

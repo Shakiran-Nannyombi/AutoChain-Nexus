@@ -69,7 +69,7 @@ class VendorDashboardController extends Controller
             'segment',
             DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
             DB::raw('AVG((SELECT COUNT(* ) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
-            DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
+            DB::raw('AVG(EXTRACT(DAY FROM (NOW() - (SELECT MAX(purchase_date) FROM purchases WHERE purchases.customer_id = customers.id)))) as avg_recency'),
             DB::raw('COUNT(*) as count')
         )
         ->whereNotNull('segment')
@@ -120,7 +120,7 @@ class VendorDashboardController extends Controller
             'segment',
             \DB::raw('AVG((SELECT SUM(amount) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_total_spent'),
             \DB::raw('AVG((SELECT COUNT(*) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_purchases'),
-            \DB::raw('AVG((SELECT DATEDIFF(CURDATE(), MAX(purchase_date)) FROM purchases WHERE purchases.customer_id = customers.id)) as avg_recency'),
+            \DB::raw('AVG(EXTRACT(DAY FROM (NOW() - (SELECT MAX(purchase_date) FROM purchases WHERE purchases.customer_id = customers.id)))) as avg_recency'),
             \DB::raw('COUNT(*) as count')
         )
         ->whereNotNull('segment')

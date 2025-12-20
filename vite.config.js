@@ -21,6 +21,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/darkmode.js',
                 'resources/js/slider.js',
+                'public/images/logo.png',
             ],
             refresh: true,
         }),
