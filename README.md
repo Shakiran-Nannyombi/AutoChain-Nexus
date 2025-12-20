@@ -2,7 +2,7 @@
 
 ## Live Car Inventory Management System
 
-![Autochain Nexus Logo](public/images/homescreenshot.png)
+![Autochain Nexus Logo](public/images/AutoChainNexus.png)
 
 **🌐 Live System**: [https://laravel-service.onrender.com](https://laravel-service.onrender.com)
 
