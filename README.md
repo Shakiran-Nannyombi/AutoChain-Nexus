@@ -4,7 +4,7 @@
 
 ![Autochain Nexus Logo](public/images/AutoChainNexus.png)
 
-**🌐 Live System**: [https://laravel-service.onrender.com](https://laravel-service.onrender.com)
+**🌐 Live System**: [https://autochain-nexus.onrender.com](https://autochain-nexus.onrender.com)
 
 This is a multi-role inventory management system built with Laravel 11, featuring role-based dashboards, automated vendor validation, and cloud-native microservices architecture.
 
@@ -12,12 +12,12 @@ This system serves manufacturers, suppliers, vendors, retailers, analysts, and a
 
 ## Deployment Architecture with Production Services
 
-- **Main Application**: [Laravel on Render](https://laravel-service.onrender.com)
-- **ML/Analytics API**: [FastAPI Service](https://fastapi-service-m1uo.onrender.com)
-- **Email Service**: [Spring Boot Email API](https://email-api-service.onrender.com)
-- **Document Validator**: [Spring Boot Validator API](https://validator-api-service.onrender.com)
-- **Database**: Supabase PostgreSQL (Cloud)
-- **Custom Domain**: laravel-service.onrender.com
+- **Main Application**: [Laravel on Render](https://autochain-nexus.onrender.com)
+- **ML/Analytics API**: [FastAPI Service](https://fastapiserviuce.onrender.com)
+- **Email Service**: [Spring Boot Email API](https://springbootservice.onrender.com)
+- **Document Validator**: [Spring Boot Validator API](https://validator-api-f40v.onrender.com)
+- **Database**: SQLite (Attached Disk on Render)
+- **Custom Domain**: autochain-nexus.onrender.com
 
 ## Key Features of our System
 
@@ -455,10 +455,16 @@ docker run -p 8000:80 inventory-system
 
 ### Production Service URLs
 
-- **Main Application**: https://laravel-service.onrender.com
-- **FastAPI ML Service**: https://fastapi-service-m1uo.onrender.com
-- **Email API**: https://email-api-service.onrender.com
-- **Validator API**: https://validator-api-service.onrender.com
+- **Main Application**: https://larvelsercive.onrender.com
+- **FastAPI ML Service**: https://fastapiserviuce.onrender.com
+- **Email API**: https://springbootservice.onrender.com
+- **Validator API**: https://validator-api-f40v.onrender.com
+
+### Demo Credentials
+
+- **Admin Email**: `admin@autochain.com`
+- **Password**: `password`
+- **Email API Username**: `admin` (Environment: `JAVA_MAIL_USERNAME`)
 
 ### Key API Endpoints
 
@@ -526,8 +532,8 @@ For technical support or questions, please contact the development team or creat
 
 ---
 
-**🌐 Live System**: [https://laravel-service.onrender.com](https://laravel-service.onrender.com)
+**🌐 Live System**: [https://larvelsercive.onrender.com](https://larvelsercive.onrender.com)
 
 ### Built with ❤️ using Laravel 11, FastAPI, Spring Boot, and cloud-native technologies
 
-#### Deployed on Render • Database by Supabase • Domain by Render
+#### Deployed on Render • Database by SQLite • Domain by Render
