@@ -388,7 +388,7 @@ class AdminDashboardService
         // Monthly sessions
         // Monthly sessions
         $monthlySessions = DB::table('user_logins')
-            ->selectRaw('to_char(logged_in_at, \'YYYY-MM\') as month, COUNT(*) as sessions')
+            ->selectRaw('strftime("%Y-%m", logged_in_at) as month, COUNT(*) as sessions')
             ->where('logged_in_at', '>=', now()->subMonths(12)->startOfMonth())
             ->groupBy('month')
             ->orderBy('month', 'asc')
@@ -397,7 +397,7 @@ class AdminDashboardService
         // Annual sessions
         // Annual sessions
         $annualSessions = DB::table('user_logins')
-            ->selectRaw('to_char(logged_in_at, \'YYYY\') as year, COUNT(*) as sessions')
+            ->selectRaw('strftime("%Y", logged_in_at) as year, COUNT(*) as sessions')
             ->where('logged_in_at', '>=', now()->subYears(5)->startOfYear())
             ->groupBy('year')
             ->orderBy('year', 'asc')
