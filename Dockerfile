@@ -20,7 +20,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Update Apache Config to point to public/
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf | tee /etc/apache2/conf-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Let Laravel's public/.htaccess handle routing
+RUN sed -ri -e '/<Directory \$\{APACHE_DOCUMENT_ROOT\}>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 RUN a2enmod rewrite
 
 WORKDIR /var/www/html
@@ -34,8 +36,9 @@ RUN composer install --no-dev --optimize-autoloader
 # Build Frontend Assets
 RUN npm install && npm run build
 
-# Permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+# Permissions (views/logs are gitignored, so create Laravel's runtime dirs)
+RUN mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 # Copy Entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
