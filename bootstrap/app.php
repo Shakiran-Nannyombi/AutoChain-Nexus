@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Render terminates HTTPS at its proxy; trust X-Forwarded-Proto so
+        // asset and route URLs are generated as https (avoids mixed content).
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'user_or_admin' => \App\Http\Middleware\UserOrAdmin::class,
